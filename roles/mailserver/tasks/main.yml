@@ -1,0 +1,19 @@
+---
+- name: Ensure Postfix is installed
+  ansible.builtin.apt:
+    name: postfix
+    state: present
+  tags:
+    - install
+
+- name: Set Postfix recipient_delimiter
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^recipient_delimiter ='
+    line: 'recipient_delimiter = -'
+    create: true
+    mode: u=rw,g=r,o=r
+  notify:
+    - Restart Postfix
+  tags:
+    - config
