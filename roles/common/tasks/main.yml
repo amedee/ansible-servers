@@ -1,0 +1,26 @@
+---
+- name: Upgrade all packages
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    upgrade: dist
+    autoclean: true
+    autoremove: true
+  become: true
+  tags:
+    - install
+
+- name: Check if reboot required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: reboot_required_file
+  tags:
+    - always
+
+- name: Reboot
+  when: reboot_required_file.stat.exists
+  ansible.builtin.reboot:
+  become: true
+  tags:
+    - never
+    - reboot-if-needed

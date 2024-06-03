@@ -9,3 +9,4 @@
 # This file is also being managed automatically by the gitown tool.
 .gitattributes @amedee
 .gitownrc @amedee
+.pre-commit-config.yaml @amedee
