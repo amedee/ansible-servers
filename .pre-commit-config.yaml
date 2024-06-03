@@ -1,0 +1,78 @@
+---
+repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.6.0
+      hooks:
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+          - id: check-yaml
+          - id: check-added-large-files
+    - repo: https://github.com/adrienverge/yamllint.git
+      rev: v1.35.1
+      hooks:
+          - id: yamllint
+            args: [--format, parsable, --strict]
+    - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+      rev: 0.2.3
+      hooks:
+          - id: yamlfmt
+    - repo: https://github.com/ansible-community/ansible-lint
+      rev: v24.5.0
+      hooks:
+          - id: ansible-lint
+    - repo: https://github.com/semaphor-dk/dansabel
+      rev: 1.4.0
+      hooks:
+          - id: dansabel
+    - repo: https://github.com/IamTheFij/ansible-pre-commit
+      rev: v0.1.2
+      hooks:
+          - id: encryption-check
+    - repo: https://github.com/milin/gitown
+      rev: v0.1.7
+      hooks:
+          - id: gitown
+            args: [--codeowners_filename=CODEOWNERS]
+    - repo: https://codeberg.org/frnmst/md-toc
+      rev: 9.0.0
+      hooks:
+          - id: md-toc
+            args: [-p, cmark, -l6]
+    - repo: https://github.com/igorshubovych/markdownlint-cli
+      rev: v0.41.0
+      hooks:
+          - id: markdownlint
+    - repo: https://github.com/jackdewinter/pymarkdown
+      rev: v0.9.20
+      hooks:
+          - id: pymarkdown
+    - repo: https://github.com/lorenzwalthert/gitignore-tidy
+      rev: 0.1.2
+      hooks:
+          - id: tidy-gitignore
+    - repo: https://github.com/Yelp/detect-secrets
+      rev: v1.5.0
+      hooks:
+          - id: detect-secrets
+            args: [--baseline, .secrets.baseline]
+    - repo: https://github.com/gitleaks/gitleaks
+      rev: v8.18.3
+      hooks:
+          - id: gitleaks
+    - repo: https://github.com/PrincetonUniversity/blocklint
+      rev: v0.2.5
+      hooks:
+          - id: blocklint
+    - repo: https://github.com/python-jsonschema/check-jsonschema
+      rev: 0.28.4
+      hooks:
+          - id: check-github-actions
+            args: [--verbose]
+    - repo: https://github.com/rhysd/actionlint
+      rev: v1.7.1
+      hooks:
+          - id: actionlint
+    - repo: https://github.com/jorisroovers/gitlint
+      rev: v0.19.1
+      hooks:
+          - id: gitlint
