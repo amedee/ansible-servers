@@ -1,0 +1,25 @@
+# Auto detect text files and perform LF normalization
+*          text=auto
+
+#
+# The above will handle all files NOT found below
+#
+
+# Ansible playbooks
+*.yml      text
+*.cfg      text
+
+# Documents
+*.md       text diff=markdown linguist-detectable=true
+
+# Other code and config files
+*.yaml     text
+*.js       text
+.gitownrc  text
+
+#
+# Exclude files from exporting
+#
+
+.gitattributes export-ignore
+.gitignore     export-ignore
