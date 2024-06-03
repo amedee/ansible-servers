@@ -1,0 +1,30 @@
+---
+name: ansible-lint
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: ["main", "stable", "release/v*"]
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set ansible.cfg location
+        run: echo "ANSIBLE_CONFIG=ansible.cfg" >> $GITHUB_ENV
+      - name: Run ansible-lint
+        id: ansible-lint
+        uses: ansible/ansible-lint@main
+      - name: Install community.general
+        run: ansible-galaxy collection install community.general
+      - name: Run playbook
+        if: steps.ansible-lint.outcome == 'success'
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: playbooks/site.yml
+          key: ${{secrets.SSH_PRIVATE_KEY}}
+          options: |
+            --inventory inventory/production
