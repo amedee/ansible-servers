@@ -1,0 +1,9 @@
+---
+all:
+    children:
+        mailservers:
+            hosts:
+                box.vangasse.eu:
+        webservers:
+            hosts:
+                amedee.be:
