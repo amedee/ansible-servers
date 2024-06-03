@@ -1,0 +1,5 @@
+---
+- name: Webservers Playbook
+  hosts: webservers
+  roles:
+    - webserver

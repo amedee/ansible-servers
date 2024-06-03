@@ -1,0 +1,6 @@
+---
+- name: Common Playbook
+  hosts: all
+  strategy: ansible.builtin.free  # noqa: run-once[play]
+  roles:
+    - common

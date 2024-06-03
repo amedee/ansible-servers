@@ -1,0 +1,7 @@
+---
+- name: Common Playbook
+  import_playbook: common.yml
+- name: Mailservers Playbook
+  import_playbook: mailservers.yml
+- name: Webservers Playbook
+  import_playbook: webservers.yml

@@ -1,0 +1,5 @@
+---
+- name: Mailservers Playbook
+  hosts: mailservers
+  roles:
+    - mailserver
