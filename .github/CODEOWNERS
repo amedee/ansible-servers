@@ -8,5 +8,14 @@
 
 # This file is also being managed automatically by the gitown tool.
 .gitattributes @amedee
+.github/workflows/ansible.yml @amedee
+.gitignore @amedee
 .gitownrc @amedee
 .pre-commit-config.yaml @amedee
+inventory/production/group_vars/all.yml @amedee
+inventory/production/hosts.yaml @amedee
+playbooks/mailservers.yml @amedee
+playbooks/site.yml @amedee
+roles/common/tasks/main.yml @amedee
+roles/mailserver/handlers/main.yml @amedee
+roles/mailserver/tasks/main.yml @amedee

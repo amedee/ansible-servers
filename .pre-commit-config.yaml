@@ -23,7 +23,8 @@ repos:
       rev: v0.1.7
       hooks:
           - id: gitown
-            args: [--codeowners_filename=CODEOWNERS]
+            args: [--codeowners_filename=.github/CODEOWNERS]
+            exclude: .github/CODEOWNERS
     - repo: https://codeberg.org/frnmst/md-toc
       rev: 9.0.0
       hooks:
