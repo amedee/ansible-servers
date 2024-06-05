@@ -1,3 +1,3 @@
 ---
 ansible_user: root
-ansible_ssh_private_key_file: ~/.ssh/DigitalOcean
+# ansible_ssh_private_key_file: ~/.ssh/DigitalOcean

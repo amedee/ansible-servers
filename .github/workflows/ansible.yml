@@ -1,5 +1,5 @@
 ---
-name: ansible-lint
+name: ansible
 on:
   workflow_dispatch:
   push:
@@ -20,6 +20,8 @@ jobs:
         uses: ansible/ansible-lint@main
       - name: Install community.general
         run: ansible-galaxy collection install community.general
+      - name: Create controlmasters directory
+        run: mkdir --parents ~/.ssh/controlmasters
       - name: Run playbook
         if: steps.ansible-lint.outcome == 'success'
         uses: dawidd6/action-ansible-playbook@v2
