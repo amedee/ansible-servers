@@ -8,7 +8,8 @@
 
 # This file is also being managed automatically by the gitown tool.
 .gitattributes @amedee
-.github/workflows/ansible.yml @amedee
+.github/workflows/ansible-deploy.yml @amedee
+.github/workflows/ansible-lint.yml @amedee
 .gitignore @amedee
 .gitownrc @amedee
 .pre-commit-config.yaml @amedee
