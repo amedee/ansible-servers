@@ -2,19 +2,29 @@
 name: ansible-deploy
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
   schedule:
     - cron: '30 5 * * *'
-  workflow_run:
-    workflows: [ansible-lint]
-    types:
-      - completed
 jobs:
+  ansible-lint:
+    uses: amedee/ansible-servers/.github/workflows/ansible-lint.yml@main
   ansible-playbook:
     name: Ansible Playbook
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: [ansible-lint]
+    if: always() && needs.ansible-lint.result == 'success'
     steps:
       - uses: actions/checkout@v4
+      - name: Check last ansible-lint status
+        id: lastJobStatus
+        if: always()
+        run: |
+          LAST_JOB_STATUS=$(gh run list --workflow ansible-lint.yml | grep -oh "completed.*" | head -1 | awk '{print $2}')
+          echo "stateMessage=$LAST_JOB_STATUS" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set ansible.cfg location
         run: echo "ANSIBLE_CONFIG=ansible.cfg" >> $GITHUB_ENV
       - name: Install community.general
@@ -22,6 +32,7 @@ jobs:
       - name: Create controlmasters directory
         run: mkdir --parents ~/.ssh/controlmasters
       - name: Run playbook
+        if: always() && steps.lastJobStatus.outputs.stateMessage == 'success'
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: playbooks/site.yml
