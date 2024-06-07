@@ -1,17 +1,21 @@
 ---
-name: ansible-lint
-permissions:
-  contents: read
+name: Ansible Lint
+
 on:
   workflow_call:
   workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
   ansible-lint:
     name: Ansible Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Run ansible-lint
         id: ansible-lint
         uses: ansible/ansible-lint@main
