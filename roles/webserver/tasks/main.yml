@@ -1,7 +1,26 @@
 ---
-- name: Ensure nginx is installed
+- name: Install a list of packages
   ansible.builtin.apt:
-    name: nginx
+    update_cache: true
+    cache_valid_time: 3600
     state: present
+    pkg:
+      - curl
+      - ghostscript
+      - imagemagick
+      - mysql-client
+      - nginx
+      - openssl
+      - php
+      - php-curl
+      - php-imagick
+      - php-intl
+      - php-json
+      - php-mbstring
+      - php-mysql
+      - php-ssh2
+      - php-xml
+      - php-xmlrpc
+      - php-zip
   tags:
     - install

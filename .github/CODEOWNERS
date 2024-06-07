@@ -15,6 +15,7 @@
 .pre-commit-config.yaml @amedee
 inventory/production/group_vars/all.yml @amedee
 inventory/production/host_vars/amedee.be.yml @amedee
+inventory/production/host_vars/box.vangasse.eu.yml @amedee
 inventory/production/hosts.yaml @amedee
 playbooks/mailservers.yml @amedee
 playbooks/site.yml @amedee

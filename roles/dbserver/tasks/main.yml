@@ -1,0 +1,10 @@
+---
+- name: Install a list of packages
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    state: present
+    pkg:
+      - mysql-server
+  tags:
+    - install
