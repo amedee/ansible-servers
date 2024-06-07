@@ -2,10 +2,10 @@
 name: Codacy Security Scan
 
 on:
-  workflow_call:
-  workflow_dispatch:
   schedule:
     - cron: '19 8 * * 2'
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
