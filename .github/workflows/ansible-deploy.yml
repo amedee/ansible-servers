@@ -33,8 +33,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set ansible.cfg location
-        run: echo "ANSIBLE_CONFIG=ansible.cfg" >> $GITHUB_ENV
+      - name: Set environment variables
+        run: |
+            echo "ANSIBLE_CONFIG=ansible.cfg" >> $GITHUB_ENV
+            echo "ANSIBLE_STDOUT_CALLBACK=yaml" >> $GITHUB_ENV
 
       - name: Install community.general
         run: ansible-galaxy collection install community.general
