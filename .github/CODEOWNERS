@@ -22,6 +22,8 @@ inventory/production/host_vars/box.vangasse.eu.yml @amedee
 inventory/production/hosts.yaml @amedee
 playbooks/mailservers.yml @amedee
 playbooks/site.yml @amedee
+playbooks/webservers.yml @amedee
 roles/common/tasks/main.yml @amedee
 roles/mailserver/handlers/main.yml @amedee
 roles/mailserver/tasks/main.yml @amedee
+roles/webserver/tasks/main.yml @amedee
