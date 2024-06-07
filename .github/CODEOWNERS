@@ -13,6 +13,7 @@
 .gitignore @amedee
 .gitownrc @amedee
 .pre-commit-config.yaml @amedee
+ansible.cfg @amedee
 inventory/production/group_vars/all.yml @amedee
 inventory/production/host_vars/amedee.be.yml @amedee
 inventory/production/host_vars/box.vangasse.eu.yml @amedee
