@@ -10,6 +10,7 @@
 .gitattributes @amedee
 .github/workflows/ansible-deploy.yml @amedee
 .github/workflows/ansible-lint.yml @amedee
+.github/workflows/codacy.yml @amedee
 .gitignore @amedee
 .gitownrc @amedee
 .pre-commit-config.yaml @amedee
