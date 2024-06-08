@@ -3,3 +3,14 @@
   ansible.builtin.service:
     name: postfix
     state: restarted
+  listen: Restart Postfix
+
+- name: Update Postfix hashtables
+  ansible.builtin.command:
+    chdir: /etc/postfix/sasl
+    cmd: postmap sasl_passwd
+  register: postmap_output
+  changed_when: false
+  listen: Update Postfix hashtables
+  tags:
+    - config

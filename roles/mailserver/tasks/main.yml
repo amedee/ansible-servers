@@ -6,14 +6,43 @@
   tags:
     - install
 
-- name: Set Postfix recipient_delimiter
+- name: Configure Postfix
   ansible.builtin.lineinfile:
     path: /etc/postfix/main.cf
-    regexp: '^recipient_delimiter ='
-    line: 'recipient_delimiter = -'
     create: true
-    mode: u=rw,g=r,o=r
+    owner: root
+    mode: u=rw,go=r
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop: "{{ mailserver_postfix_settings }}"
+  notify: Restart Postfix
+  tags:
+    - config
+
+- name: Create /etc/postfix/sasl directory
+  ansible.builtin.file:
+    path: /etc/postfix/sasl
+    state: directory
+    owner: root
+    mode: u=rwx,go=rx
+  tags:
+    - config
+
+- name: Load Sendgrid API key
+  ansible.builtin.include_vars:
+    file: sendgrid.yml
+    name: sendgrid
+  tags:
+    - config
+
+- name: Create /etc/postfix/sasl/sasl_passwd from template
+  ansible.builtin.template:
+    src: sasl_passwd.j2
+    dest: /etc/postfix/sasl/sasl_passwd
+    owner: root
+    mode: u=rw,go=
   notify:
+    - Update Postfix hashtables
     - Restart Postfix
   tags:
     - config

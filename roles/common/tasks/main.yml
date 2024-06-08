@@ -22,5 +22,4 @@
   ansible.builtin.reboot:
   become: true
   tags:
-    - never
     - reboot-if-needed

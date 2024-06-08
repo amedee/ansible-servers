@@ -15,6 +15,7 @@
 .gitignore @amedee
 .gitownrc @amedee
 .pre-commit-config.yaml @amedee
+LICENSE @amedee
 README.md @amedee
 ansible.cfg @amedee
 inventory/production/group_vars/all.yml @amedee
@@ -25,6 +26,8 @@ playbooks/mailservers.yml @amedee
 playbooks/site.yml @amedee
 playbooks/webservers.yml @amedee
 roles/common/tasks/main.yml @amedee
+roles/dbserver/tasks/main.yml @amedee
 roles/mailserver/handlers/main.yml @amedee
 roles/mailserver/tasks/main.yml @amedee
+roles/mailserver/vars/main.yml @amedee
 roles/webserver/tasks/main.yml @amedee
