@@ -1,0 +1,79 @@
+# This is a slightly modified version of the header_checks filter file for mail.securitysage.com, published by SecuritySage Inc.
+# This filter is based on the work of Jeffrey Posluns <jeff@posluns.com>
+# Filter Version 20040407-1
+
+# For more information about UCE/spam and how to stop it, please see http://www.securitysage.com/guides/postfix_uce.html
+# For the latest *short* header checks file please see http://www.securitysage.com/files/header_checks.short
+# For the latest *short* body checks file please see http://www.securitysage.com/files/body_checks.short
+# For the latest mime header checks file please see http://www.securitysage.com/files/mime_header_checks
+# If you need a copy of the old header or body checks, just change short to long in the file name.
+
+# UPDATE: These filters are no longer being updated regularly. We intend to continue updating once or twice a month, but due to the introduction of
+#	new anti-spam technologies and mechanisms (see the guides in the URL above), header and body checks are nowhere near as effective as they
+#	used to be. We will however maintain a *short* list of header and body checks that contain anti-spam filters, but will not contain
+#	any of the spam-like strings.
+
+# Please feel free to copy, use, discuss, link to, or modify this file in compliance with the rules below:
+#  1. These filters (or portions thereof) may not be sold or included in a package (software or otherwise) for which fees are charged.
+#  2. If you wish to sell or include these filters as part of a package for which fees are charged, please contact us to arrange for a redistribution license.
+#  3. Leave this header information intact.
+#  4. Do not change the SPAM-ID numbers. We use these numbers to help track false rejections.
+#  5. if you modify this file, indicate such on the line below, so that people can be aware that the filter is not an original version.
+
+# We use the header_checks file to remove some headers that we find undesirable.
+# Return receipts and software versions are the most significant in this situation.
+# For more information, please see http://www.securitysage.com/guides/postfix_anonym.html
+#/^Received: from 127.0.0.1/			IGNORE
+/^Disposition-Notification-To:/			IGNORE
+
+# On some systems we create a custom log entry for SpamAssassin confirmed spam emails.
+# If you want to drop or hold these emails, change WARN to DISCARD or HOLD respectively.
+# You can also use the FILTER command to forward all spam to another process or account.
+# /^X-Spam-Flag: YES/				WARN SpamAssassin Confirmed Spam Content
+
+# These are headers used to track some spam messages.
+/^Bel-Tracking: .*/				REJECT Confirmed spam. Go away.
+/^Hel-Tracking: .*/				REJECT Confirmed spam. Go away.
+/^Kel-Tracking: .*/				REJECT Confirmed spam. Go away.
+/^BIC-Tracking: .*/				REJECT Confirmed spam. Go away.
+/^Lid-Tracking: .*/				REJECT Confirmed spam. Go away.
+
+# Following Will Block Spams With Many Spaces In The Subject.
+/^Subject: .*            /			REJECT Your subject had too many subsequent spaces. Please change the subject and try again.
+
+# Emails with eronious dates (or dates far in the past) will appear at the top or bottom of your mail client.
+# This is a common method that spammers use to try and get your attention on their emails.
+#/^Date: .* 2004/				REJECT Your computer still thinks it's 2004. Fix your system clock and try again.
+#/^Date: .* 2003/				REJECT Your computer still thinks it's 2003. Fix your system clock and try again.
+/^Date: .* 200[0-4]/				REJECT Your email has a date from the past. Fix your system clock and try again.
+/^Date: .* 19[0-9][0-9]/			REJECT Your email has a date from the past. Fix your system clock and try again.
+
+# This filter will block subjects that contain ISO specifications.
+# If you use any languages other than English, you might need to comment this out.
+# /^Subject: .*\=\?ISO/				REJECT We don't accept strange character sets.
+
+# This will block messages that do not have an address in the From: header.
+# Note: This may violate RFC, but blocks a very significant amount of spam. If you implement this, you risk getting listed in http://www.rfc-ignorant.org
+#/^From: <>/					REJECT You need to specify a return address, otherwise we will not accept your email.
+
+# Following Are Alphabetical Listings Of Subject Contents That Will Be Blocked.
+
+
+# Following is a listing of known mass mailer programs.
+/^X-Mailer: 0001/                               REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: Avalanche/                          REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: Crescent Internet Tool/             REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: DiffondiCool/                       REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: E-Mail Delivery Agent/              REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: Emailer Platinum/                   REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: Entity/                             REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: Extractor/                          REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: Floodgate/                          REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: GOTO Software Sarbacane/            REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: MailWorkz/                          REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: MassE-Mail/                         REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: MaxBulk.Mailer/                     REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: News Breaker Pro/                   REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: SmartMailer/                        REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: StormPort/                          REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.
+/^X-Mailer: SuperMail-2/                        REJECT You used an email program that is used almost exclusively for spam. We do not accept email sent using this program.

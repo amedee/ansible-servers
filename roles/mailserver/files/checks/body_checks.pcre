@@ -1,0 +1,55 @@
+# This is a slightly modified version of the  body_checks filter file for mail.securitysage.com, published by SecuritySage Inc.
+# This filter is based on the work of Jeffrey Posluns <jeff@posluns.com>
+# Filter Version 20040307-1
+
+# For more information about UCE/spam and how to stop it, please see http://www.securitysage.com/guides/postfix_uce.html
+# For the latest *short* header checks file please see http://www.securitysage.com/files/header_checks.short
+# For the latest *short* body checks file please see http://www.securitysage.com/files/body_checks.short
+# For the latest mime header checks file please see http://www.securitysage.com/files/mime_header_checks
+# If you need a copy of the old header or body checks, just change short to long in the file name.
+
+# UPDATE: These filters are no longer being updated regularly. We intend to continue updating once or twice a month, but due
+#       new anti-spam technologies and mechanisms (see the guides in the URL above), header and body checks are nowhere near as effective as they
+#       used to be. We will however maintain a *short* list of header an body checks that contain filter-bypass mechanisms, but will not contain
+#       any of the spam-like strings.
+
+# Please feel free to copy, use, discuss, link to, or modify this file in compliance with the rules below:
+#  1. These filters (or portions thereof) may not be sold or included in a package (software or otherwise) for which fees are charged.
+#  2. If you wish to sell or include these filters as part of a package for which fees are charged, please contact us to arrange for a redistribution license.
+#  3. Leave this header information intact.
+#  4. Do not change the SPAM-ID numbers. We use these numbers to help track false rejections.
+#  5. if you modify this file, indicate such on the line below, so that people can be aware that the filter is not an original version.
+
+# Note: Attachment filtration is now the providence of the mime_header_checks file.
+# For the latest mime_header_checks file, please see http://www.securitysage.com/files/mime_header_checks
+
+# The tag below can cause some mail clients to open new windows or execute code.
+/iframe src=cid/					REJECT Your email contained potentially dangerous code. Please resend your message in plain text.
+
+# This will reject any line that uses more then seven "=20" to replace whitespace.
+/^.*=20[^>]*=20[^>]*=20[^>]*=20[^>]*=20[^>]*=20[^>]*=20[^>]*/	REJECT Your email program uses "=20" instead of spaces. Please correct this (try setting your mail program to use plain text) and resend your message.
+
+# This will reject any line that uses more than three &# to hide links. There are two possible ways of doing this:
+# /^.*\&\#[^>]\&\#[^>]\&\#[^>]/				REJECT Your email is not using a proper character set. Please correct this (try setting your mail program to use plain text) and resend your message.
+/^.*\&\#[^>]{0,3}\;\&\#[^>]{0,3}\;\&\#[^>]{0,3}\;/	REJECT Your email is not using a proper character set. Please correct this (try setting your mail program to use plain text) and resend your message.
+
+# Thanks to Liviu Daia <liviu.daia@imar.ro> and Noel Jones <njones@megan.vbhcs.org>
+# This will reject emails where any line contains eight or more script/comment tags.
+/(<!(--|[^>]*>).*){8}/					REJECT Your email contained a lot of script tags. Please correct this (try setting your mail program to use plain text) and resend your message.
+
+# Thanks to Brad Emerson <bemerson@akamail.com> and Victor Duchovni <Victor.Duchovni@morganstanley.com>
+# This will reject emails with script/comment tags that are in the middle of a word.
+/^.*[a-z]<![a-z]*[0-9]*>[a-z]/				REJECT Your email contained wrongly placed script tags. Please correct this (try setting your mail program to use plain text) and resend your message.
+
+# Thanks to Jeroen Ouwehand <jeroenx@wanadoo.nl>
+# This will reject more kinds of script/comment tags that are in the middle of a word.
+/^.*[a-z]<!--[a-z]*[0-9]*-->[a-z]/			REJECT Your email contained wrongly placed script tags. Please correct this (try setting your mail program to use plain text) and resend your message.
+
+# Thanks to David Bullock <david.bullock@bullnet.com> and Donovan Hill <alt@lazyeyez.net>
+# This will reject emails with obfuscated URLs, but only works with PCRE.
+#/<a href=(3D"|"|).*(%[0-9][0-9]){4}.*("|)>/		REJECT So you think you can hide a URL in your spam? Think again!
+#/^.*[0-9a-fA-F]{0,3}%[0-9a-fA-F]{0,3}/			REJECT So you think you can hide a URL in your spam? Think again!
+
+# This will reject some variants of Sobig viruses
+/^RSLxwtYBDB6FCv8ybBcS0zp9VU5of3K4BXuwyehTM0RI9IrSjVuwP94xfn0wgOjouKWzGXHVk3qg$/	REJECT Your email looked like it contained a virus. Please run a virus scanner on your computer and try again.
+/^TVqQAAMAAAAEAAAA\/\/8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA$/	REJECT Your email looked like it contained a virus. Please run a virus scanner on your computer and try again.

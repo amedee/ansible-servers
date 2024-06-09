@@ -1,0 +1,27 @@
+# This is a slightly modified version of the mime_header_checks filter file for mail.securitysage.com, published by SecuritySage Inc.
+# This filter is the work of Jeffrey Posluns <jeff@posluns.com>
+# Filter Version 20040504-1
+
+# For more information about UCE/spam and how to stop it, please see http://www.securitysage.com/guides/postfix_uce.html
+# For the latest *short* header checks file please see http://www.securitysage.com/files/header_checks.short
+# For the latest *short* body checks file please see http://www.securitysage.com/files/body_checks.short
+# For the latest mime header checks file please see http://www.securitysage.com/files/mime_header_checks
+
+# Please feel free to copy, use, discuss, link to, or modify this file in compliance with the rules below:
+#  1. These filters (or portions thereof) may not be sold or included in a package (software or otherwise) for which fees are charged.
+#  2. If you wish to sell or include these filters as part of a package for which fees are charged, please contact us to arrange for a redistribution license.
+#  3. Leave this header information intact.
+#  4. Do not change the SPAM-ID numbers. We use these numbers to help track false rejections.
+#  5. if you modify this file, indicate such on the line below, so that people can be aware that the filter is not an original version.
+
+# This entry will reject messages with attachments that could be dangerous, and will inform the sender of what type of attachemnt was rejected.
+/^\s*Content-(Disposition|Type).*name\s*=\s*"?(.+\.(ad[ep]|asd|ba[st]|c[ho]m|cmd|cpl|crt|dbx|dll|exe|hlp|hta|in[fs]|isp|js|jse|lnk|md[etw]|ms[cipt]|nws|ocx|ops|pcd|pi|pif|prf|reg|scf|scr|sct|sh[bms]|swf|uue|vb|vb[esx]|vxd|wab|ws[cfh]))"?\s*$/	REJECT Files attached to emails that contain or end in "$3" are prohibited on this server as they may contain viruses. The file named "$2" was rejected.
+
+# This will filter our certain types of attachments that can be considered dangerous.
+/name=[^>]*your_details.zip/ REJECT Mail filters have determined that your email appears to be infected with the Sobig virus.
+
+/^\s*Content-(Disposition|Type).*name\s*=\s*"?((Attach|Information|TextDocument|Readme|Msg|Msginfo|Document|Info|Attachedfile|Attacheddocument|TextDocument|Text|TextFile|Letter|MoreInfo|Message)\.zip)"?\s*$/ REJECT Mail filters have determined that your email appears to be infected with the Bagle virus.
+
+/^\s*Content-(Disposition|Type).*name\s*=\s*"?((Patch|MS-Security|MS-UD|UpDate|sys-patch|MS-Q).*\.zip)"?\s*$/ REJECT Mail filters have determined that your email appears to be infected with the Sober virus.
+
+/^\s*Content-(Disposition|Type).*name\s*=\s*"?((doc_word3_|document_all_|part01_|product_|letter_|information_|document_|details_|screensaver_|website_|data_|text_|file_|prod_info_).*\.zip)"?\s*$/ REJECT Mail filters have determined that your email appears to be infected with the Netsky virus.

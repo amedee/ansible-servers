@@ -27,6 +27,8 @@ playbooks/site.yml @amedee
 playbooks/webservers.yml @amedee
 roles/common/tasks/main.yml @amedee
 roles/dbserver/tasks/main.yml @amedee
+roles/mailserver/files/checks/body_checks.pcre @amedee
+roles/mailserver/files/checks/mime_header_checks.pcre @amedee
 roles/mailserver/handlers/main.yml @amedee
 roles/mailserver/tasks/main.yml @amedee
 roles/mailserver/vars/main.yml @amedee
