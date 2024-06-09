@@ -1,4 +1,8 @@
 ---
+mailserver_packages:
+  - postfix
+  - postfix-pcre
+
 mailserver_postfix_directories:
   - /etc/postfix/checks
   - /etc/postfix/sasl

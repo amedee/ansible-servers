@@ -1,8 +1,10 @@
 ---
-- name: Ensure Postfix is installed
+- name: Ensure software is installed
   ansible.builtin.apt:
-    name: postfix
+    update_cache: true
+    cache_valid_time: 3600
     state: present
+    pkg: "{{ mailserver_packages }}"
   tags:
     - install
 

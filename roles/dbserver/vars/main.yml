@@ -1,0 +1,3 @@
+---
+dbserver_packages:
+  - mysql-server
