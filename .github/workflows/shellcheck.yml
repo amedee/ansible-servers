@@ -1,0 +1,20 @@
+---
+name: ShellCheck
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Run ShellCheck
+        uses: azohra/shell-linter@latest
+        with:
+          exclude-paths: "Vagrantfile,LICENSE,.github/CODEOWNERS"

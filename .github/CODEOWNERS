@@ -26,11 +26,13 @@ inventory/production/group_vars/all.yml @amedee
 inventory/production/host_vars/amedee.be.yml @amedee
 inventory/production/host_vars/box.vangasse.eu.yml @amedee
 inventory/production/hosts.yml @amedee
+inventory/staging/.gitignore @amedee
 playbooks/mailservers.yml @amedee
 playbooks/site.yml @amedee
 playbooks/webservers.yml @amedee
 roles/common/tasks/main.yml @amedee
 roles/dbserver/tasks/main.yml @amedee
+roles/dbserver/vars/main.yml @amedee
 roles/mailserver/files/checks/body_checks.pcre @amedee
 roles/mailserver/files/checks/header_checks.pcre @amedee
 roles/mailserver/files/checks/mime_header_checks.pcre @amedee
