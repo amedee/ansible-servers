@@ -7,7 +7,10 @@
 
 
 # This file is also being managed automatically by the gitown tool.
+.config/.secrets.baseline @amedee
+.config/ansible-lint.yml @amedee
 .gitattributes @amedee
+.github/dependabot.yml @amedee
 .github/workflows/ansible-deploy.yml @amedee
 .github/workflows/ansible-lint.yml @amedee
 .github/workflows/codacy.yml @amedee
@@ -28,6 +31,7 @@ playbooks/webservers.yml @amedee
 roles/common/tasks/main.yml @amedee
 roles/dbserver/tasks/main.yml @amedee
 roles/mailserver/files/checks/body_checks.pcre @amedee
+roles/mailserver/files/checks/header_checks.pcre @amedee
 roles/mailserver/files/checks/mime_header_checks.pcre @amedee
 roles/mailserver/handlers/main.yml @amedee
 roles/mailserver/tasks/main.yml @amedee
