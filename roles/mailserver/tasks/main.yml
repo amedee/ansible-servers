@@ -1,5 +1,6 @@
 ---
 - name: Ensure software is installed
+  become: true
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
@@ -9,6 +10,7 @@
     - install
 
 - name: Create directories if they don't exist
+  become: true
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -26,6 +28,7 @@
     - config
 
 - name: Create /etc/postfix/sasl/sasl_passwd from template
+  become: true
   ansible.builtin.template:
     src: sasl_passwd.j2
     dest: /etc/postfix/sasl/sasl_passwd
@@ -37,6 +40,7 @@
     - config
 
 - name: Copy checks files
+  become: true
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/postfix/checks/
@@ -48,6 +52,7 @@
     - config
 
 - name: Configure Postfix
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/postfix/main.cf
     create: true

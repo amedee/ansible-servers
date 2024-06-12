@@ -1,5 +1,6 @@
 ---
 - name: Update Postfix hashtables
+  become: true
   ansible.builtin.command:
     chdir: /etc/postfix/sasl
     cmd: postmap sasl_passwd

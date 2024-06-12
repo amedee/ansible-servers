@@ -1,12 +1,12 @@
 ---
 - name: Upgrade all packages
+  become: true
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
     upgrade: dist
     autoclean: true
     autoremove: true
-  become: true
   tags:
     - install
 
@@ -19,7 +19,7 @@
 
 - name: Reboot
   when: reboot_required_file.stat.exists
-  ansible.builtin.reboot:
   become: true
+  ansible.builtin.reboot:
   tags:
     - reboot-if-needed
