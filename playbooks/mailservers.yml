@@ -1,5 +1,5 @@
 ---
-- name: Mailservers Playbook
+- name: Configure mail servers
   hosts: mailservers
   roles:
     - mailserver

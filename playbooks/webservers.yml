@@ -1,5 +1,5 @@
 ---
-- name: Webservers Playbook
+- name: Configure web servers
   hosts: webservers
   roles:
     - webserver
