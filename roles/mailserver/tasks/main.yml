@@ -64,3 +64,14 @@
   notify: Restart Postfix
   tags:
     - config
+
+- name: Configure logrotate for Postfix
+  become: true
+  ansible.builtin.copy:
+    src: postfix
+    dest: /etc/logrotate.d/postfix
+    owner: root
+    mode: u=rw,go=r
+  notify: Restart Rsyslog
+  tags:
+    - config

@@ -17,3 +17,10 @@
     name: postfix
     state: restarted
   listen: Restart Postfix
+
+- name: Restart Rsyslog
+  become: true
+  ansible.builtin.service:
+    name: rsyslog
+    state: restarted
+  listen: Restart Rsyslog
