@@ -6,8 +6,6 @@
     cache_valid_time: 3600
     state: present
     pkg: "{{ mailserver_packages }}"
-  tags:
-    - install
 
 - name: Create directories if they don't exist
   become: true
@@ -17,15 +15,11 @@
     owner: root
     mode: u=rwx,go=rx
   loop: "{{ mailserver_postfix_directories }}"
-  tags:
-    - config
 
 - name: Load Sendgrid API key
   ansible.builtin.include_vars:
     file: sendgrid.yml
     name: sendgrid
-  tags:
-    - config
 
 - name: Create /etc/postfix/sasl/sasl_passwd from template
   become: true
@@ -36,8 +30,6 @@
     mode: u=rw,go=
   notify:
     - Update Postfix hashtables
-  tags:
-    - config
 
 - name: Copy checks files
   become: true
@@ -48,8 +40,6 @@
     mode: u=rw,go=r
   with_fileglob: "checks/*_checks.pcre"
   notify: Restart Postfix
-  tags:
-    - config
 
 - name: Configure Postfix
   become: true
@@ -62,8 +52,6 @@
     line: "{{ item.line }}"
   loop: "{{ mailserver_postfix_settings }}"
   notify: Restart Postfix
-  tags:
-    - config
 
 - name: Configure logrotate for Postfix
   become: true
@@ -73,5 +61,3 @@
     owner: root
     mode: u=rw,go=r
   notify: Restart Rsyslog
-  tags:
-    - config
