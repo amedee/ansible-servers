@@ -7,19 +7,13 @@
     upgrade: dist
     autoclean: true
     autoremove: true
-  tags:
-    - install
 
 - name: Check if reboot required
   ansible.builtin.stat:
     path: /var/run/reboot-required
   register: reboot_required_file
-  tags:
-    - always
 
 - name: Reboot
   when: reboot_required_file.stat.exists
   become: true
   ansible.builtin.reboot:
-  tags:
-    - reboot-if-needed
