@@ -27,6 +27,9 @@ inventory/production/host_vars/amedee.be.yml @amedee
 inventory/production/host_vars/box.vangasse.eu.yml @amedee
 inventory/production/hosts.yml @amedee
 inventory/staging/.gitignore @amedee
+inventory/staging/get_inventory.sh @amedee
+inventory/staging/group_vars/all.yml @amedee
+playbooks/common.yml @amedee
 playbooks/mailservers.yml @amedee
 playbooks/site.yml @amedee
 playbooks/webservers.yml @amedee
@@ -38,6 +41,7 @@ roles/mailserver/files/checks/header_checks.pcre @amedee
 roles/mailserver/files/checks/mime_header_checks.pcre @amedee
 roles/mailserver/handlers/main.yml @amedee
 roles/mailserver/tasks/main.yml @amedee
+roles/mailserver/templates/sasl_passwd.j2 @amedee
 roles/mailserver/vars/main.yml @amedee
 roles/webserver/tasks/main.yml @amedee
 roles/webserver/vars/main.yml @amedee
