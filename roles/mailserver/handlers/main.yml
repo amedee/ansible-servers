@@ -8,8 +8,6 @@
   changed_when: false
   listen: Update Postfix hashtables
   notify: Restart Postfix
-  tags:
-    - config
 
 - name: Restart Postfix
   become: true
