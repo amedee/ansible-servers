@@ -64,3 +64,11 @@ jobs:
           vault_password: ${{secrets.VAULT_PASSWORD}}
           options: |
             --inventory inventory/production
+
+      - name: Archive Ansible log
+        uses: actions/upload-artifact@v4
+        with:
+          name: ansible.log
+          path: ~/.ansible/ansible.log
+          compression-level: 9
+          overwrite: true
