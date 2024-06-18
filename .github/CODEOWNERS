@@ -25,6 +25,7 @@ ansible.cfg @amedee
 inventory/production/group_vars/all.yml @amedee
 inventory/production/host_vars/amedee.be.yml @amedee
 inventory/production/host_vars/box.vangasse.eu.yml @amedee
+inventory/production/host_vars/staging.amedee.be.yml @amedee
 inventory/production/hosts.yml @amedee
 inventory/staging/.gitignore @amedee
 inventory/staging/get_inventory.sh @amedee
