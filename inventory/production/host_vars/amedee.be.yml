@@ -1,2 +1,3 @@
 ---
 ansible_user: ubuntu
+wordpress_db_host: intrepid-db.c39l3d16hlyo.us-east-1.rds.amazonaws.com
