@@ -8,15 +8,44 @@
     group: www-data
     mode: u=rwx,go=rx
 
-- name: Check if wp-config.php exists
+- name: Check if wp-config-sample.php exists
   ansible.builtin.stat:
     path: "{{ webserver_directory }}/wp-config-sample.php"
-  register: wp_config
+  register: wp_config_sample
 
 - name: Download WordPress
+  when: not wp_config_sample.stat.exists
+  become: true
+  ansible.builtin.command:
+    cmd: >
+      wp core download
+        --path={{ webserver_directory }}
+        --allow-root
+  register: wp_core_download
+  changed_when: true
+
+- name: Check if wp-config.php exists
+  ansible.builtin.stat:
+    path: "{{ webserver_directory }}/wp-config.php"
+  register: wp_config
+
+- name: Load WordPress password
+  when: not wp_config.stat.exists
+  ansible.builtin.include_vars:
+    file: wordpress.yml
+
+- name: Create a new wp-config.php
   when: not wp_config.stat.exists
   become: true
   ansible.builtin.command:
-    cmd: "wp core download --path={{ webserver_directory }} --allow-root"
+    cmd: >
+      wp config create
+        --dbname={{ webserver_db_name }}
+        --dbuser={{ webserver_db_user }}
+        --dbpass={{ webserver_db_password }}
+        --dbhost={{ webserver_db_host }}
+        --path={{ webserver_directory }}
+        --skip-check
+        --allow-root
   register: wp_core_download
   changed_when: true
