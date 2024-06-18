@@ -21,3 +21,6 @@ webserver_packages:
 webserver_wpcli_path: /usr/local/bin/wp
 webserver_wpcli_url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 webserver_directory: /var/www/html
+webserver_default_indexfiles:
+  - index.html
+  - index.nginx-debian.html
