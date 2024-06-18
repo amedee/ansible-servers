@@ -6,3 +6,10 @@
     cache_valid_time: 3600
     state: present
     pkg: "{{ dbserver_packages }}"
+
+- name: Start and enable mysql service
+  become: true
+  ansible.builtin.service:
+    name: mysql
+    state: started
+    enabled: true
