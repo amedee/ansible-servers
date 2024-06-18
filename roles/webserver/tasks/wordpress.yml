@@ -1,0 +1,22 @@
+---
+- name: "Check existence of webserver directory {{ webserver_directory }}"
+  become: true
+  ansible.builtin.file:
+    path: "{{ webserver_directory }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: u=rwx,go=rx
+
+- name: Check if wp-config.php exists
+  ansible.builtin.stat:
+    path: "{{ webserver_directory }}/wp-config-sample.php"
+  register: wp_config
+
+- name: Download WordPress
+  when: not wp_config.stat.exists
+  become: true
+  ansible.builtin.command:
+    cmd: "wp core download --path={{ webserver_directory }} --allow-root"
+  register: wp_core_download
+  changed_when: true

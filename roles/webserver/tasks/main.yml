@@ -12,4 +12,6 @@
 - name: Check if latest version of WP-CLI is installed
   ansible.builtin.import_tasks: wpcli.yml
 
+- name: "Install WordPress in {{ webserver_directory }}"
+  ansible.builtin.import_tasks: wordpress.yml
 
