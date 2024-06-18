@@ -23,6 +23,9 @@ all:
     mailservers:
       hosts:
         ${HOSTNAME}:
+    dbservers:
+      hosts:
+        ${HOSTNAME}:
     webservers:
       hosts:
         ${HOSTNAME}:
