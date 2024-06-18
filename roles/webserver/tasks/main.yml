@@ -15,3 +15,5 @@
 - name: "Install WordPress in {{ webserver_directory }}"
   ansible.builtin.import_tasks: wordpress.yml
 
+- name: "Set defaults on {{ webserver_directory }}"
+  ansible.builtin.import_tasks: htmldir.yml
