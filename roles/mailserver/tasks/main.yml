@@ -28,8 +28,7 @@
     dest: /etc/postfix/sasl/sasl_passwd
     owner: root
     mode: u=rw,go=
-  notify:
-    - Update Postfix hashtables
+  notify: Update Postfix hashtables
 
 - name: Copy checks files
   become: true
