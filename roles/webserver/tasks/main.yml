@@ -6,8 +6,6 @@
     cache_valid_time: 3600
     state: present
     pkg: "{{ webserver_packages }}"
-  tags:
-    - install
 
 - name: Check if latest version of WP-CLI is installed
   ansible.builtin.import_tasks: wpcli.yml
