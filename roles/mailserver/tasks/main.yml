@@ -10,11 +10,10 @@
 - name: Create directories if they don't exist
   become: true
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ mailserver_postfix_directories }}"
     state: directory
     owner: root
     mode: u=rwx,go=rx
-  loop: "{{ mailserver_postfix_directories }}"
 
 - name: Load Sendgrid API key
   ansible.builtin.include_vars:
