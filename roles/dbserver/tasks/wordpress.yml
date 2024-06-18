@@ -1,0 +1,22 @@
+---
+- name: Load WordPress db variables
+  ansible.builtin.include_vars:
+    file: wordpress.yml
+
+- name: "Create database '{{ dbserver_wp_db_name }}'"
+  become: true
+  community.mysql.mysql_db:
+    name: "{{ dbserver_wp_db_name }}"
+    state: present
+    login_user: root
+    login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: "Create database user '{{ dbserver_wp_db_user }}'"
+  become: true
+  community.mysql.mysql_user:
+    name: "{{ dbserver_wp_db_user }}"
+    password: "{{ dbserver_wp_db_password }}"
+    priv: "{{ dbserver_wp_db_name }}.*:ALL"
+    state: present
+    login_user: root
+    login_unix_socket: /run/mysqld/mysqld.sock
