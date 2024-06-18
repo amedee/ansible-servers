@@ -29,10 +29,10 @@
     path: "{{ webserver_directory }}/wp-config.php"
   register: wp_config
 
-- name: Load WordPress password
+- name: Load WordPress db variables
   when: not wp_config.stat.exists
   ansible.builtin.include_vars:
-    file: wordpress.yml
+    file: ../../dbserver/vars/wordpress.yml
 
 - name: Create a new wp-config.php
   when: not wp_config.stat.exists
@@ -40,12 +40,11 @@
   ansible.builtin.command:
     cmd: >
       wp config create
-        --dbname={{ webserver_db_name }}
-        --dbuser={{ webserver_db_user }}
-        --dbpass={{ webserver_db_password }}
-        --dbhost={{ webserver_db_host }}
+        --dbname={{ dbserver_wp_db_name }}
+        --dbuser={{ dbserver_wp_db_user }}
+        --dbpass={{ dbserver_wp_db_password }}
+        --dbhost={{ dbserver_wp_db_host }}
         --path={{ webserver_directory }}
-        --skip-check
         --allow-root
   register: wp_core_download
   changed_when: true

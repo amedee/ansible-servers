@@ -14,10 +14,5 @@
     state: started
     enabled: true
 
-- name: Create a new database with name 'wordpress'
-  become: true
-  community.mysql.mysql_db:
-    name: wordpress
-    state: present
-    login_user: root
-    login_unix_socket: /run/mysqld/mysqld.sock
+- name: Create WordPress database and user
+  ansible.builtin.import_tasks: wordpress.yml
