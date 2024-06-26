@@ -17,6 +17,7 @@
     name: "{{ dbserver_wp_db_user }}"
     password: "{{ dbserver_wp_db_password }}"
     priv: "{{ dbserver_wp_db_name }}.*:ALL"
+    column_case_sensitive: true
     state: present
     login_user: root
     login_unix_socket: /run/mysqld/mysqld.sock
