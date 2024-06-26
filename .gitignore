@@ -1,5 +1,6 @@
 *.iml
 *.log
 *.sql
+*.xz
 .idea/
 .vagrant/
