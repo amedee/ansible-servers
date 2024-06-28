@@ -1,6 +1,0 @@
----
-- name: Apply common configuration to all nodes
-  hosts: all
-  strategy: ansible.builtin.free  # noqa: run-once[play]
-  roles:
-    - common

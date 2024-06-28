@@ -34,7 +34,9 @@ playbooks/common.yml @amedee
 playbooks/mailservers.yml @amedee
 playbooks/site.yml @amedee
 playbooks/webservers.yml @amedee
+roles/common/handlers/main.yml @amedee
 roles/common/tasks/main.yml @amedee
+roles/dbserver/handlers/main.yml @amedee
 roles/dbserver/tasks/main.yml @amedee
 roles/dbserver/tasks/wordpress.yml @amedee
 roles/dbserver/vars/main.yml @amedee
@@ -43,6 +45,7 @@ roles/mailserver/files/checks/header_checks.pcre @amedee
 roles/mailserver/files/checks/mime_header_checks.pcre @amedee
 roles/mailserver/files/postfix @amedee
 roles/mailserver/handlers/main.yml @amedee
+roles/mailserver/meta/main.yml @amedee
 roles/mailserver/tasks/main.yml @amedee
 roles/mailserver/templates/sasl_passwd.j2 @amedee
 roles/mailserver/vars/main.yml @amedee
