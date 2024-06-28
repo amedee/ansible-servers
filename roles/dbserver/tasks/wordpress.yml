@@ -29,3 +29,6 @@
     state: present
     login_user: root
     login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: Force all notified handlers to run at this point
+  ansible.builtin.meta: flush_handlers
