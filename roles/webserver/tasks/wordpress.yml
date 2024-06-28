@@ -48,3 +48,15 @@
         --allow-root
   register: wp_core_download
   changed_when: true
+
+- name: "Install theme {{ webserver_wp_theme }}"
+  become: true
+  ansible.builtin.command:
+    cmd: >
+      wp theme install
+        {{ webserver_wp_theme }}
+        --activate
+        --path={{ webserver_directory }}
+        --allow-root
+  register: wp_theme_install
+  changed_when: true
