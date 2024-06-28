@@ -37,7 +37,7 @@
     owner: root
     mode: u=rw,go=r
   with_fileglob: "checks/*_checks.pcre"
-  notify: Restart Postfix
+  notify: Update Postfix hashtables
 
 - name: Configure Postfix
   become: true

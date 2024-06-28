@@ -13,12 +13,6 @@
     owner: root
     mode: u=rwx,go=rx
 
-- name: Ensure WP-CLI is executable
-  become: true
-  ansible.builtin.file:
-    path: "{{ webserver_wpcli_path }}"
-    mode: u=rwx,go=rx
-
 - name: Check if installed WP-CLI is at the latest version
   become: true
   become_user: "{{ ansible_user }}"

@@ -2,5 +2,7 @@
 dbserver_packages:
   - mysql-client
   - mysql-server
+  - python3-boto3
   - python3-mysqldb
+  - python3-packaging
   - python3-pip

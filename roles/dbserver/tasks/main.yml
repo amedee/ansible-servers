@@ -7,12 +7,5 @@
     state: present
     pkg: "{{ dbserver_packages }}"
 
-- name: Start and enable mysql service
-  become: true
-  ansible.builtin.service:
-    name: mysql
-    state: started
-    enabled: true
-
 - name: Create WordPress database and user
   ansible.builtin.import_tasks: wordpress.yml
