@@ -3,3 +3,4 @@ dbserver_packages:
   - mysql-client
   - mysql-server
   - python3-mysqldb
+  - python3-pip

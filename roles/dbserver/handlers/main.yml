@@ -1,0 +1,35 @@
+---
+- name: Copy database dump to remote
+  ansible.builtin.copy:
+    src: "{{ dbserver_wp_db_name }}.sql.xz"
+    dest: "/tmp/{{ dbserver_wp_db_name }}.sql.xz"
+    mode: '0600'
+  notify:
+    - Import database dump
+
+- name: Get database dump from S3
+  amazon.aws.s3_object:
+    bucket: backups-by-amedee
+    object: "{{ dbserver_wp_db_name }}.sql.xz"
+    dest: "/tmp/{{ dbserver_wp_db_name }}.sql.xz"
+    mode: get
+    overwrite: different
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+    region: us-east-1
+  notify:
+    - Import database dump
+
+- name: Import database dump
+  become: true
+  community.mysql.mysql_db:
+    name: "{{ dbserver_wp_db_name }}"
+    state: import
+    target: "/tmp/{{ dbserver_wp_db_name }}.sql.xz"
+  notify: Delete database dump
+
+- name: Delete database dump
+  become: true
+  ansible.builtin.file:
+    path: "/tmp/{{ dbserver_wp_db_name }}.sql.xz"
+    state: absent

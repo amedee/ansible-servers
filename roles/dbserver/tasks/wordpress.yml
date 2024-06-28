@@ -3,6 +3,12 @@
   ansible.builtin.include_vars:
     file: wordpress.yml
 
+- name: Install required Python module
+  become: true
+  ansible.builtin.pip:
+    name:
+      - boto3
+
 - name: "Create database '{{ dbserver_wp_db_name }}'"
   become: true
   community.mysql.mysql_db:
@@ -10,6 +16,8 @@
     state: present
     login_user: root
     login_unix_socket: /run/mysqld/mysqld.sock
+  notify:
+    - Get database dump from S3
 
 - name: "Create database user '{{ dbserver_wp_db_user }}'"
   become: true
