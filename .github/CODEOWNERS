@@ -22,6 +22,7 @@ LICENSE @amedee
 README.md @amedee
 Vagrantfile @amedee
 ansible.cfg @amedee
+deploy_to_staging.sh @amedee
 inventory/production/group_vars/all.yml @amedee
 inventory/production/host_vars/amedee.be.yml @amedee
 inventory/production/host_vars/box.vangasse.eu.yml @amedee
