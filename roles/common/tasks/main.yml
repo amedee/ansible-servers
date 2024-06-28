@@ -8,3 +8,20 @@
     autoclean: true
     autoremove: true
   notify: Check if reboot required
+
+- name: Install a list of packages
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    state: present
+    pkg: "{{ common_packages }}"
+
+- name: Add a cron job for hadori (Hardlink Done Right)
+  become: true
+  ansible.builtin.cron:
+    user: root
+    cron_file: hadori
+    name: "hadori"
+    job: "/usr/bin/time (/usr/bin/df -m / ; /usr/bin/hadori --no-time / ; /usr/bin/df -m /)"
+    special_time: weekly
