@@ -60,3 +60,16 @@
         --allow-root
   register: wp_theme_install
   changed_when: true
+
+- name: Install WordPress plugins
+  become: true
+  ansible.builtin.command:
+    cmd: >
+      wp plugin install
+        {{ item }}
+        --activate
+        --path={{ webserver_directory }}
+        --allow-root
+  loop: "{{ webserver_wp_plugins }}"
+  register: wp_plugin_install
+  changed_when: true

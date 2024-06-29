@@ -27,3 +27,10 @@ webserver_default_indexfiles:
   - index.nginx-debian.html
 
 webserver_wp_theme: neve
+webserver_wp_plugins:
+  - akismet
+  - elementor
+  - jetpack
+  - jetpack-boost
+  - jetpack-protect
+  - wordfence
