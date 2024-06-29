@@ -7,6 +7,23 @@
     state: present
     pkg: "{{ webserver_packages }}"
 
+- name: Copy website config files
+  become: true
+  ansible.builtin.copy:
+    src: sites-available/amedee.be
+    dest: /etc/nginx/sites-available/amedee.be
+    owner: root
+    mode: u=rw,go=r
+  notify: Restart nginx
+
+- name: Create a symbolic link
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/amedee.be
+    dest: /etc/nginx/sites-enabled/default
+    owner: root
+    state: link
+  notify: Restart nginx
+
 - name: Check if latest version of WP-CLI is installed
   ansible.builtin.import_tasks: wpcli.yml
 
