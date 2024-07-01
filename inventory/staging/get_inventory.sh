@@ -16,14 +16,9 @@ all:
   hosts:
     ${HOSTNAME}:
       ansible_host: $IP
-      ansible_user: vagrant
       ansible_ssh_private_key_file: .vagrant/machines/default/virtualbox/private_key
-      dbserver_wp_db_host: localhost
   children:
     mailservers:
-      hosts:
-        ${HOSTNAME}:
-    dbservers:
       hosts:
         ${HOSTNAME}:
     webservers:

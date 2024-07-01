@@ -29,11 +29,6 @@
     path: "{{ webserver_directory }}/wp-config.php"
   register: wp_config
 
-- name: Load WordPress db variables
-  when: not wp_config.stat.exists
-  ansible.builtin.include_vars:
-    file: ../../dbserver/vars/wordpress.yml
-
 - name: Create a new wp-config.php
   when: not wp_config.stat.exists
   become: true

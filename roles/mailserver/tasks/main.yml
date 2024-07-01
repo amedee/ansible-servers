@@ -15,11 +15,6 @@
     owner: root
     mode: u=rwx,go=rx
 
-- name: Load Sendgrid API key
-  ansible.builtin.include_vars:
-    file: sendgrid.yml
-    name: sendgrid
-
 - name: Create /etc/postfix/sasl/sasl_passwd from template
   become: true
   ansible.builtin.template:

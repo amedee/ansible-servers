@@ -1,8 +1,4 @@
 ---
-- name: Load WordPress db variables
-  ansible.builtin.include_vars:
-    file: wordpress.yml
-
 - name: "Create database '{{ dbserver_wp_db_name }}'"
   become: true
   community.mysql.mysql_db:
