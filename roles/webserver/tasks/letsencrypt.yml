@@ -1,0 +1,47 @@
+---
+- name: Check if Certbot is already configured
+  ansible.builtin.stat:
+    path: /etc/letsencrypt/renewal/amedee.be.conf
+  register: letsencrypt
+
+- name: Get letsencrypt backup from S3
+  when: not (letsencrypt.stat.exists and letsencrypt.stat.isreg)
+  amazon.aws.s3_object:
+    bucket: backups-by-amedee
+    object: letsencrypt.tar.xz
+    dest: /tmp/letsencrypt.tar.xz
+    mode: get
+    overwrite: different
+    access_key: "{{ common_aws_access_key }}"
+    secret_key: "{{ common_aws_secret_key }}"
+    region: us-east-1
+
+- name: Extract letsencrypt backup on the remote machine
+  when: not (letsencrypt.stat.exists and letsencrypt.stat.isreg)
+  become: true
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: /tmp/letsencrypt.tar.xz
+    dest: /etc/
+    owner: root
+  notify: Restart nginx
+
+- name: Uninstall apt Certbot (old version)
+  become: true
+  ansible.builtin.apt:
+    name: certbot
+    state: absent
+    autoremove: true
+
+- name: Install snap Certbot (new version)
+  become: true
+  community.general.snap:
+    name: certbot
+    classic: true
+  notify: Restart nginx
+
+- name: Prepare the Certbot command
+  ansible.builtin.file:
+    src: /snap/bin/certbot
+    dest: /usr/bin/certbot
+    state: link

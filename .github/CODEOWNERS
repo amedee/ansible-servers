@@ -52,6 +52,7 @@ roles/mailserver/templates/sasl_passwd.j2 @amedee
 roles/mailserver/vars/main.yml @amedee
 roles/webserver/files/sites-available/amedee.be @amedee
 roles/webserver/handlers/main.yml @amedee
+roles/webserver/tasks/letsencrypt.yml @amedee
 roles/webserver/tasks/main.yml @amedee
 roles/webserver/tasks/wordpress.yml @amedee
 roles/webserver/tasks/wpcli.yml @amedee

@@ -24,6 +24,9 @@
     state: link
   notify: Restart nginx
 
+- name: Install and configure Letsencrypt
+  ansible.builtin.import_tasks: letsencrypt.yml
+
 - name: Check if latest version of WP-CLI is installed
   ansible.builtin.import_tasks: wpcli.yml
 
