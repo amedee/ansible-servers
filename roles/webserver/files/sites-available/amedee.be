@@ -5,7 +5,7 @@ limit_req_zone $binary_remote_addr zone=mylimit:10m rate=10r/s;
 server {
     root /var/www/html;
     index index.php;
-    server_name localhost;
+    server_name amedee.be;
 
     location / {
         limit_req zone=mylimit burst=20 nodelay;
@@ -83,23 +83,12 @@ server {
 
 }
 
-# HTTP to HTTPS Redirection
-server {
-    listen 80;
-    listen [::]:80;
-    server_name amedee.be;
-
-    if ($host = amedee.be) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
-    return 404; # managed by Certbot
-}
-
-# Wildcard Subdomain Redirection
+# Redirect all HTTP traffic to HTTPS
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    server_name _ amedee.be *.amedee.be;
+    server_name _;
+
     server_tokens off;
 
     location / {
