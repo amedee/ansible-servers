@@ -8,6 +8,7 @@ webserver_packages:
   - openssl
   - php
   - php-curl
+  - php-fpm
   - php-imagick
   - php-intl
   - php-json
