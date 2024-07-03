@@ -68,3 +68,28 @@
   loop: "{{ webserver_wp_plugins }}"
   register: wp_plugin_install
   changed_when: true
+
+- name: Create directory /tmp/wp-content
+  ansible.builtin.file:
+    path: /tmp/wp-content
+    state: directory
+    mode: u=rwx,go=rx
+
+- name: Get WordPress uploads from S3
+  amazon.aws.s3_object:
+    bucket: backups-by-amedee
+    object: wp-content/uploads.tar.xz
+    dest: /tmp/wp-content/uploads.tar.xz
+    mode: get
+    overwrite: different
+    access_key: "{{ common_aws_access_key }}"
+    secret_key: "{{ common_aws_secret_key }}"
+    region: us-east-1
+
+- name: Extract WordPress uploads on the remote machine
+  become: true
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: /tmp/wp-content/uploads.tar.xz
+    dest: /var/www/html/wp-content/
+    owner: www-data
