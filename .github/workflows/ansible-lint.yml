@@ -16,11 +16,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install community.general
-        run: ansible-galaxy collection install --force community.general
-
-      - name: Install community.mysql
-        run: ansible-galaxy collection install --force community.mysql
+      - name: Install Ansible Galaxy collections
+        run: ansible-galaxy collection install --force community.general community.mysql amazon.aws
 
       - name: Run ansible-lint
         id: ansible-lint
