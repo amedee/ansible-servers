@@ -15,6 +15,7 @@
 .github/workflows/ansible-lint.yml @amedee
 .github/workflows/codacy.yml @amedee
 .github/workflows/delete-workflow-runs.yml @amedee
+.github/workflows/shellcheck.yml @amedee
 .gitignore @amedee
 .gitownrc @amedee
 .pre-commit-config.yaml @amedee
@@ -35,6 +36,7 @@ playbooks/common.yml @amedee
 playbooks/mailservers.yml @amedee
 playbooks/site.yml @amedee
 playbooks/webservers.yml @amedee
+roles/blog/tasks/wordpress.yml @amedee
 roles/common/handlers/main.yml @amedee
 roles/common/tasks/main.yml @amedee
 roles/common/vars/main.yml @amedee
@@ -53,6 +55,7 @@ roles/mailserver/templates/sasl_passwd.j2 @amedee
 roles/mailserver/vars/main.yml @amedee
 roles/webserver/files/sites-available/amedee.be @amedee
 roles/webserver/handlers/main.yml @amedee
+roles/webserver/meta/main.yml @amedee
 roles/webserver/tasks/letsencrypt.yml @amedee
 roles/webserver/tasks/main.yml @amedee
 roles/webserver/tasks/wordpress.yml @amedee

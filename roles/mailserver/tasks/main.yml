@@ -1,5 +1,5 @@
 ---
-- name: Ensure software is installed
+- name: Install a list of packages
   become: true
   ansible.builtin.apt:
     update_cache: true

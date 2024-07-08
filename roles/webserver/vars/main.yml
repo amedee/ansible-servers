@@ -19,19 +19,7 @@ webserver_packages:
   - php-xmlrpc
   - php-zip
 
-webserver_wpcli_path: /usr/local/bin/wp
-webserver_wpcli_url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-
 webserver_directory: /var/www/html
 webserver_default_indexfiles:
   - index.html
   - index.nginx-debian.html
-
-webserver_wp_theme: neve
-webserver_wp_plugins:
-  - akismet
-  - elementor
-  - jetpack
-  - jetpack-boost
-  - jetpack-protect
-  - wordfence

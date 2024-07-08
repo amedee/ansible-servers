@@ -1,5 +1,5 @@
 ---
 - name: Mail Servers Playbook
   import_playbook: mailservers.yml
-- name: Web Servers Playbook
-  import_playbook: webservers.yml
+- name: Blog Playbook
+  import_playbook: blogs.yml

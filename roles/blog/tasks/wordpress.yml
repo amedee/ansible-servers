@@ -1,13 +1,4 @@
 ---
-- name: "Check existence of webserver directory {{ webserver_directory }}"
-  become: true
-  ansible.builtin.file:
-    path: "{{ webserver_directory }}"
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: u=rwx,go=rx
-
 - name: Check if wp-config-sample.php exists
   ansible.builtin.stat:
     path: "{{ webserver_directory }}/wp-config-sample.php"
@@ -23,6 +14,7 @@
         --allow-root
   register: wp_core_download
   changed_when: true
+  notify: Change permissions of webserver directory
 
 - name: Check if wp-config.php exists
   ansible.builtin.stat:
@@ -35,26 +27,29 @@
   ansible.builtin.command:
     cmd: >
       wp config create
-        --dbname={{ dbserver_wp_db_name }}
-        --dbuser={{ dbserver_wp_db_user }}
-        --dbpass={{ dbserver_wp_db_password }}
-        --dbhost={{ dbserver_wp_db_host }}
+        --dbname={{ blog_wp_db_name }}
+        --dbuser={{ blog_wp_db_user }}
+        --dbpass={{ blog_wp_db_password }}
+        --dbhost={{ blog_wp_db_host }}
         --path={{ webserver_directory }}
         --allow-root
   register: wp_core_download
   changed_when: true
+  notify: Change permissions of webserver directory
 
-- name: "Install theme {{ webserver_wp_theme }}"
+- name: Install WordPress themes
   become: true
   ansible.builtin.command:
     cmd: >
       wp theme install
-        {{ webserver_wp_theme }}
+        {{ item }}
         --activate
         --path={{ webserver_directory }}
         --allow-root
+  loop: "{{ blog_wp_themes }}"
   register: wp_theme_install
   changed_when: true
+  notify: Change permissions of webserver directory
 
 - name: Install WordPress plugins
   become: true
@@ -65,9 +60,10 @@
         --activate
         --path={{ webserver_directory }}
         --allow-root
-  loop: "{{ webserver_wp_plugins }}"
+  loop: "{{ blog_wp_plugins }}"
   register: wp_plugin_install
   changed_when: true
+  notify: Change permissions of webserver directory
 
 - name: Create directory /tmp/wp-content
   ansible.builtin.file:
@@ -91,5 +87,6 @@
   ansible.builtin.unarchive:
     remote_src: true
     src: /tmp/wp-content/uploads.tar.xz
-    dest: /var/www/html/wp-content/
+    dest: "{{ webserver_directory }}/wp-content/"
     owner: www-data
+  notify: Change permissions of webserver directory

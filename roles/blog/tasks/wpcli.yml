@@ -1,15 +1,15 @@
 ---
 - name: Check if WP-CLI is already installed
   ansible.builtin.stat:
-    path: "{{ webserver_wpcli_path }}"
+    path: "{{ blog_wpcli_path }}"
   register: wpcli
 
 - name: Download WP-CLI
   when: not wpcli.stat.exists
   become: true
   ansible.builtin.get_url:
-    url: "{{ webserver_wpcli_url }}"
-    dest: "{{ webserver_wpcli_path }}"
+    url: "{{ blog_wpcli_url }}"
+    dest: "{{ blog_wpcli_path }}"
     owner: root
     mode: u=rwx,go=rx
 

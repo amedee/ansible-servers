@@ -1,18 +1,18 @@
 ---
-- name: "Create database '{{ dbserver_wp_db_name }}'"
+- name: "Create database '{{ blog_wp_db_name }}'"
   become: true
   community.mysql.mysql_db:
-    name: "{{ dbserver_wp_db_name }}"
+    name: "{{ blog_wp_db_name }}"
     state: present
     login_user: root
     login_unix_socket: /run/mysqld/mysqld.sock
 
-- name: "Create database user '{{ dbserver_wp_db_user }}'"
+- name: "Create database user '{{ blog_wp_db_user }}'"
   become: true
   community.mysql.mysql_user:
-    name: "{{ dbserver_wp_db_user }}"
-    password: "{{ dbserver_wp_db_password }}"
-    priv: "{{ dbserver_wp_db_name }}.*:ALL"
+    name: "{{ blog_wp_db_user }}"
+    password: "{{ blog_wp_db_password }}"
+    priv: "{{ blog_wp_db_name }}.*:ALL"
     column_case_sensitive: true
     state: present
     login_user: root
@@ -21,8 +21,8 @@
 - name: Get database dump from S3
   amazon.aws.s3_object:
     bucket: backups-by-amedee
-    object: "{{ dbserver_wp_db_name }}.sql.xz"
-    dest: "/tmp/{{ dbserver_wp_db_name }}.sql.xz"
+    object: "{{ blog_wp_db_name }}.sql.xz"
+    dest: "/tmp/{{ blog_wp_db_name }}.sql.xz"
     mode: get
     overwrite: different
     access_key: "{{ common_aws_access_key }}"
@@ -32,6 +32,6 @@
 - name: Import database dump
   become: true
   community.mysql.mysql_db:
-    name: "{{ dbserver_wp_db_name }}"
+    name: "{{ blog_wp_db_name }}"
     state: import
-    target: "/tmp/{{ dbserver_wp_db_name }}.sql.xz"
+    target: "/tmp/{{ blog_wp_db_name }}.sql.xz"

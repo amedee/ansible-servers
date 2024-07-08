@@ -1,0 +1,10 @@
+---
+- name: Change permissions of webserver directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ webserver_directory }}"
+    owner: www-data
+    group: www-data
+    recurse: true
+    # supposed to set directories to 755 and files to 644
+    mode: u=rwX,go=rX

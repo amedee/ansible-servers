@@ -1,5 +1,5 @@
 ---
-- name: Ensure software is installed
+- name: Install a list of packages
   become: true
   ansible.builtin.apt:
     update_cache: true
@@ -32,14 +32,14 @@
     state: link
   notify: Restart nginx
 
+- name: "Check existence of webserver directory {{ webserver_directory }}"
+  become: true
+  ansible.builtin.file:
+    path: "{{ webserver_directory }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: u=rwx,go=rx
+
 - name: Install and configure Letsencrypt
   ansible.builtin.import_tasks: letsencrypt.yml
-
-- name: Check if latest version of WP-CLI is installed
-  ansible.builtin.import_tasks: wpcli.yml
-
-- name: "Install WordPress in {{ webserver_directory }}"
-  ansible.builtin.import_tasks: wordpress.yml
-
-- name: "Set defaults on {{ webserver_directory }}"
-  ansible.builtin.import_tasks: htmldir.yml

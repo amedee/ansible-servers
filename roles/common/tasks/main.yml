@@ -7,12 +7,7 @@
     upgrade: dist
     autoclean: true
     autoremove: true
-  notify: Reboot
-
-- name: Check if reboot required
-  ansible.builtin.stat:
-    path: /var/run/reboot-required
-  register: reboot_required_file
+  notify: Check if reboot required
 
 - name: Install a list of packages
   become: true
@@ -21,3 +16,4 @@
     cache_valid_time: 3600
     state: present
     pkg: "{{ common_packages }}"
+  notify: Check if reboot required

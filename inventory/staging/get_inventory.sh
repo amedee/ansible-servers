@@ -20,7 +20,7 @@ all:
     mailservers:
       hosts:
         ${HOSTNAME}:
-    webservers:
+    blogs:
       hosts:
         ${HOSTNAME}:
 EOF

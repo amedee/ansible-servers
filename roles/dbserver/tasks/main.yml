@@ -1,5 +1,5 @@
 ---
-- name: Install system packages
+- name: Install a list of packages
   become: true
   ansible.builtin.apt:
     update_cache: true
@@ -11,6 +11,3 @@
   become: true
   ansible.builtin.pip:
     name: "{{ dbserver_python_packages }}"
-
-- name: Create WordPress database and user
-  ansible.builtin.import_tasks: wordpress.yml
