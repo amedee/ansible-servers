@@ -41,6 +41,9 @@ jobs:
     name: Ansible Playbook
     runs-on: ubuntu-latest
     needs: [codacy, ansible-lint, shellcheck]
+    strategy:
+      matrix:
+        host: [box.vangasse.eu, staging.amedee.be]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -64,11 +67,12 @@ jobs:
           vault_password: ${{secrets.VAULT_PASSWORD}}
           options: |
             --inventory inventory/production
+            --limit ${{ matrix.host }}
 
       - name: Archive Ansible log
         uses: actions/upload-artifact@v4
         with:
-          name: ansible.log
+          name: ansible-${{ matrix.host }}.log
           path: ~/.ansible/ansible.log
           compression-level: 9
           overwrite: true
