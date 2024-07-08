@@ -29,9 +29,12 @@
 - name: Uninstall apt Certbot (old version)
   become: true
   ansible.builtin.apt:
-    name: certbot
+    name:
+      - apache2
+      - certbot
     state: absent
     autoremove: true
+  notify: Restart nginx
 
 - name: Install snap Certbot (new version)
   become: true
