@@ -16,7 +16,15 @@
     mode: u=rw,go=r
   notify: Restart nginx
 
+- name: Delete DigitalOcean website config
+  become: true
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/digitalocean
+    state: absent
+  notify: Restart nginx
+
 - name: Create a symbolic link
+  become: true
   ansible.builtin.file:
     src: /etc/nginx/sites-available/amedee.be
     dest: /etc/nginx/sites-enabled/default
