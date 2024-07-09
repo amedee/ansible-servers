@@ -17,15 +17,26 @@
   become: true
   become_user: "{{ ansible_user }}"
   ansible.builtin.command:
-    cmd: wp cli check-update
+    cmd: >
+      wp cli check-update
+        --format=table
+        --no-color
+        --allow-root
   register: wp_cli_checkupdate
   changed_when: false
   failed_when: false
 
+- name: Debug wp cli check-update
+  ansible.builtin.debug:
+    var: wp_cli_checkupdate.stdout
+
 - name: Update WP-CLI
-  when: not "WP-CLI is at the latest version" in wp_cli_checkupdate.stdout
+  when: not "Success" in wp_cli_checkupdate.stdout
   become: true
   ansible.builtin.command:
-    cmd: wp cli update --yes --allow-root
+    cmd: >
+      wp cli update
+        --yes
+        --allow-root
   register: wp_cli_update
   changed_when: true
