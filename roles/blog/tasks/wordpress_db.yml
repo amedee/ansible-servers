@@ -18,7 +18,16 @@
     login_user: root
     login_unix_socket: /run/mysqld/mysqld.sock
 
+- name: Check if WordPress tables exist
+  community.mysql.mysql_query:
+    login_db: "{{ blog_wp_db_name }}"
+    query: SHOW TABLES FROM {{ blog_wp_db_name }} LIKE 'wp_posts';
+    login_unix_socket: /run/mysqld/mysqld.sock
+  register: wp_posts
+  changed_when: false
+
 - name: Get database dump from S3
+  when: wp_posts.rowcount | first | int == 0
   amazon.aws.s3_object:
     bucket: backups-by-amedee
     object: "{{ blog_wp_db_name }}.sql.xz"
@@ -30,6 +39,7 @@
     region: us-east-1
 
 - name: Import database dump
+  when: wp_posts.rowcount | first | int == 0
   become: true
   community.mysql.mysql_db:
     name: "{{ blog_wp_db_name }}"
