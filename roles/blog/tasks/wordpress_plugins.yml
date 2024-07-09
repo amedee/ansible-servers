@@ -1,0 +1,24 @@
+---
+- name: Check WordPress plugin {{ wp_plugin }}
+  ansible.builtin.command:
+    cmd: >
+      wp plugin is-installed
+        {{ wp_plugin }}
+        --path={{ webserver_directory }}
+        --allow-root
+  changed_when: false
+  failed_when: false
+  register: wp_plugin_is_installed
+
+- name: Install WordPress plugin {{ wp_plugin }}
+  when: wp_plugin_is_installed.rc | int != 0
+  become: true
+  ansible.builtin.command:
+    cmd: >
+      wp plugin install
+        {{ wp_plugin }}
+        --activate
+        --path={{ webserver_directory }}
+        --allow-root
+  changed_when: true
+  notify: Change permissions of webserver directory

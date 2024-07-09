@@ -38,32 +38,18 @@
   notify: Change permissions of webserver directory
 
 - name: Install WordPress themes
-  become: true
-  ansible.builtin.command:
-    cmd: >
-      wp theme install
-        {{ item }}
-        --activate
-        --path={{ webserver_directory }}
-        --allow-root
+  ansible.builtin.include_tasks:
+    file: wordpress_themes.yml
   loop: "{{ blog_wp_themes }}"
-  register: wp_theme_install
-  changed_when: true
-  notify: Change permissions of webserver directory
+  loop_control:
+    loop_var: wp_theme
 
 - name: Install WordPress plugins
-  become: true
-  ansible.builtin.command:
-    cmd: >
-      wp plugin install
-        {{ item }}
-        --activate
-        --path={{ webserver_directory }}
-        --allow-root
+  ansible.builtin.include_tasks:
+    file: wordpress_plugins.yml
   loop: "{{ blog_wp_plugins }}"
-  register: wp_plugin_install
-  changed_when: true
-  notify: Change permissions of webserver directory
+  loop_control:
+    loop_var: wp_plugin
 
 - name: Create directory /tmp/wp-content
   ansible.builtin.file:
