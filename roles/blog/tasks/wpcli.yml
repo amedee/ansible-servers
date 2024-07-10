@@ -8,7 +8,7 @@
   when: not wpcli.stat.exists
   become: true
   ansible.builtin.get_url:
-    url: "{{ blog_wpcli_url }}"
+    url: "{{ blog_wpcli_url }}" # checkov:skip=Checkov_CKV2_ANSIBLE_2:The URL in the variable uses HTTPS
     dest: "{{ blog_wpcli_path }}"
     owner: root
     mode: u=rwx,go=rx
