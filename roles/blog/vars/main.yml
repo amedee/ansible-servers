@@ -13,12 +13,19 @@ blog_wp_db_password: !vault |
   6165386135393933610a336635383663663231643961376337646661656532613131663436323832
   39653937656433393930666663666661393365653831323534366238393033323664
 
-blog_wp_themes:
+blog_wp_themes_install:
   - neve
-blog_wp_plugins:
+blog_wp_plugins_install:
   - akismet
   - elementor
   - jetpack
   - jetpack-boost
   - jetpack-protect
   - wordfence
+
+blog_wp_themes_uninstall:
+  - twentytwentytwo
+  - twentytwentythree
+  - twentytwentyfour
+blog_wp_plugins_uninstall:
+  - hello

@@ -37,8 +37,13 @@ playbooks/mailservers.yml @amedee
 playbooks/site.yml @amedee
 playbooks/webservers.yml @amedee
 roles/blog/handlers/main.yml @amedee
+roles/blog/meta/main.yml @amedee
 roles/blog/tasks/wordpress.yml @amedee
 roles/blog/tasks/wordpress_db.yml @amedee
+roles/blog/tasks/wordpress_plugins_install.yml @amedee
+roles/blog/tasks/wordpress_plugins_uninstall.yml @amedee
+roles/blog/tasks/wordpress_themes_install.yml @amedee
+roles/blog/tasks/wordpress_themes_uninstall.yml @amedee
 roles/blog/tasks/wpcli.yml @amedee
 roles/common/handlers/main.yml @amedee
 roles/common/tasks/main.yml @amedee

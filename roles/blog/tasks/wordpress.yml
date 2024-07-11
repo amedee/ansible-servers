@@ -37,15 +37,29 @@
 
 - name: Install WordPress themes
   ansible.builtin.include_tasks:
-    file: wordpress_themes.yml
-  loop: "{{ blog_wp_themes }}"
+    file: wordpress_themes_install.yml
+  loop: "{{ blog_wp_themes_install }}"
   loop_control:
     loop_var: wp_theme
 
 - name: Install WordPress plugins
   ansible.builtin.include_tasks:
-    file: wordpress_plugins.yml
-  loop: "{{ blog_wp_plugins }}"
+    file: wordpress_plugins_install.yml
+  loop: "{{ blog_wp_plugins_install }}"
+  loop_control:
+    loop_var: wp_plugin
+
+- name: Uninstall WordPress themes
+  ansible.builtin.include_tasks:
+    file: wordpress_themes_uninstall.yml
+  loop: "{{ blog_wp_themes_uninstall }}"
+  loop_control:
+    loop_var: wp_theme
+
+- name: Uninstall WordPress plugins
+  ansible.builtin.include_tasks:
+    file: wordpress_plugins_uninstall.yml
+  loop: "{{ blog_wp_plugins_uninstall }}"
   loop_control:
     loop_var: wp_plugin
 
