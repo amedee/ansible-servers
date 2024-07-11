@@ -7,14 +7,13 @@
 - name: Download WordPress
   when: not wp_config_sample.stat.exists
   become: true
+  become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     cmd: >
       wp core download
         --path={{ webserver_directory }}
-        --allow-root
   register: wp_core_download
   changed_when: true
-  notify: Change permissions of webserver directory
 
 - name: Check if wp-config.php exists
   ansible.builtin.stat:
@@ -24,6 +23,7 @@
 - name: Create a new wp-config.php
   when: not wp_config.stat.exists
   become: true
+  become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     cmd: >
       wp config create
@@ -32,10 +32,8 @@
         --dbpass={{ blog_wp_db_password }}
         --dbhost={{ blog_wp_db_host }}
         --path={{ webserver_directory }}
-        --allow-root
   register: wp_core_download
   changed_when: true
-  notify: Change permissions of webserver directory
 
 - name: Install WordPress themes
   ansible.builtin.include_tasks:
@@ -74,5 +72,4 @@
     remote_src: true
     src: /tmp/wp-content/uploads.tar.xz
     dest: "{{ webserver_directory }}/wp-content/"
-    owner: www-data
-  notify: Change permissions of webserver directory
+    owner: "{{ webserver_user }}"

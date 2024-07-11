@@ -37,8 +37,8 @@
   ansible.builtin.file:
     path: "{{ webserver_directory }}"
     state: directory
-    owner: www-data
-    group: www-data
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_user }}"
     mode: u=rwx,go=rx
 
 - name: Install and configure Letsencrypt

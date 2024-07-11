@@ -1,11 +1,12 @@
 ---
 - name: Check WordPress theme {{ wp_theme }}
+  become: true
+  become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     cmd: >
       wp theme is-installed
         {{ wp_theme }}
         --path={{ webserver_directory }}
-        --allow-root
   changed_when: false
   failed_when: false
   register: wp_theme_is_installed
@@ -13,12 +14,11 @@
 - name: Install WordPress theme {{ wp_theme }}
   when: wp_theme_is_installed.rc | int != 0
   become: true
+  become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     cmd: >
       wp theme install
         {{ wp_theme }}
         --activate
         --path={{ webserver_directory }}
-        --allow-root
   changed_when: true
-  notify: Change permissions of webserver directory

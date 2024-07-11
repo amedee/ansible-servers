@@ -15,13 +15,12 @@
 
 - name: Check if installed WP-CLI is at the latest version
   become: true
-  become_user: "{{ ansible_user }}"
+  become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     cmd: >
       wp cli check-update
         --format=table
         --no-color
-        --allow-root
   register: wp_cli_checkupdate
   changed_when: false
   failed_when: false
