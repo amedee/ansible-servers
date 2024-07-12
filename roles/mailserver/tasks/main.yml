@@ -19,7 +19,7 @@
 - name: Create /etc/postfix/sasl/sasl_passwd from template
   become: true
   ansible.builtin.template:
-    src: sasl_passwd.j2
+    src: etc/postfix/sasl/sasl_passwd.j2
     dest: /etc/postfix/sasl/sasl_passwd
     owner: root
     mode: u=rw,go=
@@ -32,7 +32,7 @@
     dest: /etc/postfix/checks/
     owner: root
     mode: u=rw,go=r
-  with_fileglob: "checks/*_checks.pcre"
+  with_fileglob: "etc/postfix/checks/*_checks.pcre"
   notify: Update Postfix hashtables
 
 - name: Configure Postfix
@@ -50,7 +50,7 @@
 - name: Configure logrotate for Postfix
   become: true
   ansible.builtin.copy:
-    src: postfix
+    src: etc/logrotate.d/postfix
     dest: /etc/logrotate.d/postfix
     owner: root
     mode: u=rw,go=r

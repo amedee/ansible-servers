@@ -23,5 +23,5 @@ ansible-playbook playbooks/site.yml
 [mailinabox]:   https://mailinabox.email/
 [badge]:        https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml/badge.svg
 [deployment]:   https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml
-[checks files]: roles/mailserver/files/checks
+[checks files]: roles/mailserver/files/etc/postfix/checks
 [securitysage]: https://web.archive.org/web/20070106001401/http://www.securitysage.com:80/guides/postfix_uce.html

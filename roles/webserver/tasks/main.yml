@@ -10,7 +10,7 @@
 - name: Copy website config files
   become: true
   ansible.builtin.copy:
-    src: sites-available/amedee.be
+    src: etc/nginx/sites-available/amedee.be
     dest: /etc/nginx/sites-available/amedee.be
     owner: root
     mode: u=rw,go=r
