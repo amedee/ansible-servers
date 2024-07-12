@@ -1,0 +1,9 @@
+---
+- name: Copy custom DNS settings
+  become: true
+  ansible.builtin.copy:
+    src: home/user-data/dns/custom.yaml
+    dest: /home/user-data/dns/custom.yaml
+    owner: root
+    mode: u=rw,go=r
+  notify: DNS update

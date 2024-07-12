@@ -32,6 +32,7 @@ inventory/production/hosts.yml @amedee
 inventory/staging/.gitignore @amedee
 inventory/staging/get_inventory.sh @amedee
 inventory/staging/group_vars/all.yml @amedee
+playbooks/blogs.yml @amedee
 playbooks/common.yml @amedee
 playbooks/mailservers.yml @amedee
 playbooks/site.yml @amedee
