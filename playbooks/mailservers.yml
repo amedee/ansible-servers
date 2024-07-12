@@ -3,4 +3,4 @@
   hosts: mailservers
   strategy: ansible.builtin.free  # noqa: run-once[play]
   roles:
-    - mailserver
+    - mailinabox

@@ -17,9 +17,6 @@ all:
     ${HOSTNAME}:
       ansible_host: $IP
   children:
-    mailservers:
-      hosts:
-        ${HOSTNAME}:
     blogs:
       hosts:
         ${HOSTNAME}:
