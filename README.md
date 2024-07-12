@@ -1,6 +1,9 @@
 # ansible-servers
 
-Ansible playbooks to configure my servers
+Ansible playbooks to configure my servers:
+
+- amedee.be: based on DigitalOcean's [1-Click LEMP Droplet][lemp droplet]
+- box.vangasse.eu: Standard Ubuntu 22.04 LTS droplet with [Mail-in-a-Box][mailinabox]
 
 Deploy with
 
@@ -12,10 +15,12 @@ ansible-playbook playbooks/site.yml
 
 ## References
 
-* The Postfix [checks files][checks files] are retrieved from the
+- The Postfix [checks files][checks files] are retrieved from the
   [Web Archive of securitysage.com][securitysage].
   Last retrieval date: 6 January 2007.
 
+[lemp droplet]: https://do.co/2GOFe5J#start
+[mailinabox]:   https://mailinabox.email/
 [badge]:        https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml/badge.svg
 [deployment]:   https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml
 [checks files]: roles/mailserver/files/checks
