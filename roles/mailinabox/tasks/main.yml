@@ -7,3 +7,17 @@
     owner: root
     mode: u=rw,go=r
   notify: DNS update
+
+- name: Install APT packages
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+    state: present
+    pkg: "{{ mailinabox_packages }}"
+
+- name: Install redoc-cli
+  become: true
+  community.general.npm:
+    name: redoc-cli
+    global: true

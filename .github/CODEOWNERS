@@ -53,6 +53,8 @@ roles/dbserver/handlers/main.yml @amedee
 roles/dbserver/tasks/main.yml @amedee
 roles/dbserver/tasks/wordpress.yml @amedee
 roles/dbserver/vars/main.yml @amedee
+roles/mailinabox/files/home/user-data/dns/custom.yaml @amedee
+roles/mailinabox/tasks/main.yml @amedee
 roles/mailserver/files/etc/logrotate.d/postfix @amedee
 roles/mailserver/files/etc/postfix/checks/body_checks.pcre @amedee
 roles/mailserver/files/etc/postfix/checks/header_checks.pcre @amedee
@@ -60,7 +62,7 @@ roles/mailserver/files/etc/postfix/checks/mime_header_checks.pcre @amedee
 roles/mailserver/handlers/main.yml @amedee
 roles/mailserver/meta/main.yml @amedee
 roles/mailserver/tasks/main.yml @amedee
-roles/mailserver/templates/etc/postfix/sasl_passwd.j2 @amedee
+roles/mailserver/templates/etc/postfix/sasl/sasl_passwd.j2 @amedee
 roles/mailserver/vars/main.yml @amedee
 roles/webserver/files/etc/nginx/sites-available/amedee.be @amedee
 roles/webserver/handlers/main.yml @amedee
