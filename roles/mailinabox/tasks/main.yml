@@ -14,7 +14,7 @@
     update_cache: true
     cache_valid_time: 3600
     state: present
-    pkg: "{{ mailinabox_packages }}"
+    pkg: "{{ mailinabox_apt_packages }}"
 
 - name: Install redoc-cli
   become: true

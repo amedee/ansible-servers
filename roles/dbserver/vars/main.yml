@@ -1,5 +1,5 @@
 ---
-dbserver_packages:
+dbserver_apt_packages:
   - mysql-client
   - mysql-server
   - python3-mysqldb

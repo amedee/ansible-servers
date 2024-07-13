@@ -1,5 +1,5 @@
 ---
-mailserver_packages:
+mailserver_apt_packages:
   - postfix
   - postfix-pcre
 

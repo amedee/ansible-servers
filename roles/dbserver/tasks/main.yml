@@ -1,11 +1,11 @@
 ---
-- name: Install a list of packages
+- name: Install APT packages
   become: true
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
     state: present
-    pkg: "{{ dbserver_packages }}"
+    pkg: "{{ dbserver_apt_packages }}"
 
 - name: Install Python packages
   become: true
