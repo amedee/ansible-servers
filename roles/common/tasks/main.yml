@@ -9,11 +9,16 @@
     autoremove: true
   notify: Check if reboot required
 
-- name: Install a list of packages
+- name: Install APT packages
   become: true
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
     state: present
-    pkg: "{{ common_packages }}"
+    pkg: "{{ common_apt_packages }}"
   notify: Check if reboot required
+
+- name: Install snap packages
+  become: true
+  community.general.snap:
+    name: "{{ common_snap_packages }}"

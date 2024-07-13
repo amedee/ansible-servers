@@ -1,5 +1,5 @@
 ---
-webserver_packages:
+webserver_apt_packages:
   - curl
   - ghostscript
   - imagemagick

@@ -1,7 +1,10 @@
 ---
-common_packages:
+common_apt_packages:
   - hadori
   - mc
+
+common_snap_packages:
+  - yq
 
 common_aws_access_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
