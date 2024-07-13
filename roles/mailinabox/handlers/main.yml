@@ -4,3 +4,9 @@
   ansible.builtin.command:
     cmd: /root/mailinabox/tools/dns_update --force
   changed_when: true
+
+- name: Perform backup
+  become: true
+  ansible.builtin.command:
+    cmd: /root/mailinabox/management/backup.py
+  changed_when: true

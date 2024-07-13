@@ -1,0 +1,2 @@
+---
+mailinabox_backup_target: s3://s3.us-east-1.amazonaws.com/backups-by-amedee/mail-in-a-box
