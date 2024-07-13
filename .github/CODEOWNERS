@@ -4,6 +4,5 @@
 # * <@insert_github_username>
 #
 # Order is important. The last matching pattern has the most precedence.
-* @amedee # I am the only owner of all the code in the repo
 
-# This file is also being managed automatically by the gitown tool.
+* @amedee # I am the only owner of all the code in the repo
