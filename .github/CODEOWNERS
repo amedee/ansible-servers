@@ -55,6 +55,7 @@ roles/dbserver/tasks/wordpress.yml @amedee
 roles/dbserver/vars/main.yml @amedee
 roles/mailinabox/files/home/user-data/dns/custom.yaml @amedee
 roles/mailinabox/tasks/main.yml @amedee
+roles/mailinabox/templates/home/user-data/backup/custom.yaml.j2 @amedee
 roles/mailserver/files/etc/logrotate.d/postfix @amedee
 roles/mailserver/files/etc/postfix/checks/body_checks.pcre @amedee
 roles/mailserver/files/etc/postfix/checks/header_checks.pcre @amedee

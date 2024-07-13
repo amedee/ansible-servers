@@ -21,3 +21,12 @@
   community.general.npm:
     name: redoc-cli
     global: true
+
+- name: Create backup config from template
+  become: true
+  ansible.builtin.template:
+    src: home/user-data/backup/custom.yaml.j2
+    dest: /home/user-data/backup/custom.yaml
+    owner: root
+    mode: u=rw,go=r
+  notify: Perform backup
