@@ -1,6 +1,7 @@
 ---
 webserver_apt_packages:
   - curl
+  - elinks
   - ghostscript
   - imagemagick
   - mysql-client
