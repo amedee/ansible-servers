@@ -9,7 +9,7 @@ server {
 
     location / {
         limit_req zone=mylimit burst=20 nodelay;
-        try_files $uri $uri/ /index.php?q=$uri&$args /index.php$is_args$args /index.php?$query_string =404;
+        try_files $uri $uri/ /index.php?q=$uri&$args;
     }
 
     # PHP Processing
