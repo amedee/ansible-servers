@@ -1,21 +1,20 @@
 amedee.be:
-  A: 209.38.38.53
+  A: 52.0.177.103
   TXT: pinterest-site-verification=25f529bc9ccfe7c40ede802261902e48
-'*.amedee.be': 209.38.38.53
-mta-sts.amedee.be: 209.38.38.53
-staging.amedee.be: 209.38.38.53
-www.amedee.be: 209.38.38.53
-em6081.amedee.be:
-  CNAME: u44990685.wl186.sendgrid.net.
-s1._domainkey.amedee.be:
-  CNAME: s1.domainkey.u44990685.wl186.sendgrid.net.
-s2._domainkey.amedee.be:
-  CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
+www.amedee.be: 52.0.177.103
+mta-sts.amedee.be: 52.0.177.103
+'*.amedee.be': 52.0.177.103
 em980.vangasse.eu:
   CNAME: u44990685.wl186.sendgrid.net.
 s1._domainkey.vangasse.eu:
   CNAME: s1.domainkey.u44990685.wl186.sendgrid.net.
 s2._domainkey.vangasse.eu:
+  CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
+em6081.amedee.be:
+  CNAME: u44990685.wl186.sendgrid.net.
+s1._domainkey.amedee.be:
+  CNAME: s1.domainkey.u44990685.wl186.sendgrid.net.
+s2._domainkey.amedee.be:
   CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
 em5813.box.vangasse.eu:
   CNAME: u44990685.wl186.sendgrid.net.
@@ -23,3 +22,4 @@ s1._domainkey.box.vangasse.eu:
   CNAME: s1.domainkey.u44990685.wl186.sendgrid.net.
 s2._domainkey.box.vangasse.eu:
   CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
+staging.amedee.be: 209.38.38.53
