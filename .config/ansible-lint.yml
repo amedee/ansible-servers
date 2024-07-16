@@ -5,3 +5,6 @@
 #    https://ansible-lint.readthedocs.io/configuring/#ansible-lint-configuration
 
 profile: production
+
+exclude_paths:
+  - roles/geerlingguy.swap/

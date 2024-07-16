@@ -1,4 +1,8 @@
 ---
+roles:
+  - name: geerlingguy.swap
+    version: 1.2.0
+
 collections:
   - name: amazon.aws
     version: 8.1.0
