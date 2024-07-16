@@ -68,6 +68,7 @@ jobs:
           options: |
             --inventory inventory/production
             --limit ${{ matrix.host }}
+            -vvv
 
       - name: Archive Ansible log
         uses: actions/upload-artifact@v4
