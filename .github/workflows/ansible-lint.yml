@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Ansible Galaxy collections
-        run: ansible-galaxy collection install --force community.general community.mysql amazon.aws
+        run: ansible-galaxy install -r requirements.yml
 
       - name: Run ansible-lint
         id: ansible-lint
