@@ -4,3 +4,4 @@
 *.xz
 .idea/
 .vagrant/
+roles/geerlingguy.swap/
