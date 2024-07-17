@@ -8,10 +8,11 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
   config.vm.network "forwarded_port", guest: 443, host: 8443, host_ip: "127.0.0.1"
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = "1024"
+    vb.memory = "2048"
+    vb.linked_clone = true
   end
-
-  config.vm.provision "shell",
-    path: "inventory/staging/get_inventory.sh",
-    run: "always"
+  config.vm.provision "shell" do |s|
+    s.path = "inventory/staging/get_inventory.sh"
+    s.run = "always"
+  end
 end
