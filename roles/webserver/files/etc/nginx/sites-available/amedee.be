@@ -41,24 +41,6 @@ server {
         deny all;
     }
 
-    # JetPack IP Whitelisting for xmlrpc.php
-    location = /xmlrpc.php {
-        error_page 403 = @xmlrpc;
-        allow 192.0.64.0/18;
-        allow 64.34.206.0/24;
-        allow 198.181.116.0/22;
-        allow 66.155.105.128/26;
-        allow 69.90.253.0/24;
-        allow 76.74.248.128/25;
-        allow 76.74.255.0/25;
-        allow 2001:1978:1e00:3::/64;
-        allow 2620:115:c000::/40;
-        deny all;
-    }
-    location @xmlrpc {
-        return 301 https://$host/xmlrpc/;
-    }
-
     # Disable Unwanted HTTP Requests
     if ($request_method !~ ^(GET|HEAD|POST)$) {
         return 444;
