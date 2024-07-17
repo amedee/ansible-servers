@@ -72,15 +72,6 @@ server {
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
-    # Improve Security Headers
-    add_header Content-Security-Policy "default-src 'self'";
-    add_header Feature-Policy "geolocation 'self'";
-    add_header Permissions-Policy "geolocation=(self)";
-    add_header Referrer-Policy no-referrer-when-downgrade;
-    add_header X-Content-Type-Options nosniff;
-    add_header X-Frame-Options DENY;
-    add_header X-XSS-Protection "1; mode=block";
-
 }
 
 # Redirect all HTTP traffic to HTTPS
