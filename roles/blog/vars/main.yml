@@ -31,6 +31,5 @@ blog_wp_plugins_install:
 blog_wp_themes_uninstall:
   - twentytwentytwo
   - twentytwentythree
-  - twentytwentyfour
 blog_wp_plugins_uninstall:
   - hello
