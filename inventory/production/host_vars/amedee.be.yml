@@ -1,3 +1,4 @@
 ---
-ansible_user: ubuntu
-dbserver_wp_db_host: intrepid-db.c39l3d16hlyo.us-east-1.rds.amazonaws.com
+ansible_user: root
+dbserver_wp_db_host: localhost
+swap_file_size_mb: '4096'

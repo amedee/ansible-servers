@@ -43,7 +43,7 @@ jobs:
     needs: [codacy, ansible-lint, shellcheck]
     strategy:
       matrix:
-        host: [box.vangasse.eu, staging.amedee.be]
+        host: [box.vangasse.eu, amedee.be]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
