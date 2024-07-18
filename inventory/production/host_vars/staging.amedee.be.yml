@@ -1,4 +1,0 @@
----
-ansible_user: root
-dbserver_wp_db_host: localhost
-swap_file_size_mb: '4096'
