@@ -5,7 +5,7 @@ IP=$(hostname -I | awk '{print $2}')
 
 # Determine the Ubuntu version
 UBUNTU_VERSION=$(lsb_release -cs)
-HOSTNAME="ubuntu_${UBUNTU_VERSION}"
+HOSTNAME="ubuntu-${UBUNTU_VERSION}"
 
 # Create the inventory file
 INVENTORY="/vagrant/inventory/staging"
@@ -15,7 +15,8 @@ cat <<EOF > "${INVENTORY}/hosts.yml"
 all:
   hosts:
     ${HOSTNAME}:
-      ansible_host: $IP
+      ansible_host: ${IP}
+      hostname: ${HOSTNAME}
   children:
     blogs:
       hosts:

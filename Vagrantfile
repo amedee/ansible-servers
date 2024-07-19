@@ -11,8 +11,6 @@ Vagrant.configure("2") do |config|
     vb.memory = "2048"
     vb.linked_clone = true
   end
-  config.vm.provision "shell" do |s|
-    s.path = "inventory/staging/get_inventory.sh"
-    s.run = "always"
-  end
+  script = "inventory/staging/get_inventory.sh"
+  config.vm.provision "shell", path: script, run: "always"
 end
