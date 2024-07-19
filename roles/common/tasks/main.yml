@@ -22,3 +22,7 @@
   become: true
   community.general.snap:
     name: "{{ common_snap_packages }}"
+
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ hostname }}"
