@@ -26,3 +26,27 @@
 - name: Set hostname
   ansible.builtin.hostname:
     name: "{{ hostname }}"
+
+- name: Get my public IP
+  community.general.ipify_facts:
+  register: my_ip_address
+
+- name: Add mailinabox IP address to munin-node.conf
+  when: my_ip_address != "142.93.227.16"
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/munin/munin-node.conf
+    line: allow ^142\.93\.227\.16$
+    insertafter: "^allow .*"
+    owner: root
+    mode: u=rw,go=r
+  notify: Restart munin-node
+
+- name: Allow access to port 4949
+  when: my_ip_address != "142.93.227.16"
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: 4949
+    src: 142.93.227.16
+  notify: Restart munin-node

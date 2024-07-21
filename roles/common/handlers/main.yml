@@ -10,3 +10,9 @@
   when: reboot_required_file.stat.exists
   become: true
   ansible.builtin.reboot:
+
+- name: Restart munin-node
+  become: true
+  ansible.builtin.service:
+    name: munin-node
+    state: restarted
