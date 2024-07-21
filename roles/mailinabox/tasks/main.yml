@@ -30,3 +30,12 @@
     owner: root
     mode: u=rw,go=r
   notify: Perform backup
+
+- name: Add webserver to munin configuration
+  become: true
+  ansible.builtin.copy:
+    src: etc/munin/munin-conf.d/webserver
+    dest: /etc/munin/munin-conf.d/webserver
+    owner: root
+    mode: u=rw,go=r
+  notify: Restart munin

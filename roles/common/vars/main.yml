@@ -2,6 +2,7 @@
 common_apt_packages:
   - hadori
   - mc
+  - munin-node
 
 common_snap_packages:
   - yq
