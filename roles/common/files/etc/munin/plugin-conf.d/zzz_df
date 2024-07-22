@@ -1,0 +1,6 @@
+[df*]
+env.warning 92
+env.critical 98
+env.exclude none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs cgroup_root devtmpfs tmpfs
+env.exclude_re ^/run
+env.exclude_re ^/dev/shm

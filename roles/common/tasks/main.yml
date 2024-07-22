@@ -50,3 +50,13 @@
     port: 4949
     src: 142.93.227.16
   notify: Restart munin-node
+
+- name: Exclude loop devices from Munin df and diskstats plugin
+  become: true
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/munin/plugin-conf.d/
+    owner: root
+    mode: u=rw,go=r
+  with_fileglob: "etc/munin/plugin-conf.d/zzz_*"
+  notify: Restart munin-node

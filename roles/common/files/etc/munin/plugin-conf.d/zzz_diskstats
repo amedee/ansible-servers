@@ -1,0 +1,2 @@
+[diskstats*]
+env.exclude loop
