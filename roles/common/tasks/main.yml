@@ -59,3 +59,30 @@
         mode: u=rw,go=r
       with_fileglob: "etc/munin/plugin-conf.d/zzz_*"
       notify: Restart munin-node
+
+- name: Hardlink specified directories using hadori
+  become: true
+  block:
+    - name: Ensure hadori is installed
+      ansible.builtin.package:
+        name: hadori
+        state: present
+
+    - name: Hardlink /bin, /sbin, /lib, /lib64, /usr, /opt
+      ansible.builtin.command:
+        argv:
+          - /usr/bin/hadori
+          - --verbose
+          - /bin
+          - /sbin
+          - /lib
+          - /lib64
+          - /usr
+          - /opt
+      register: hadori_output
+      changed_when: hadori_output.stdout != ""
+
+    - name: Display hadori output
+      when: hadori_output.stdout != ""
+      ansible.builtin.debug:
+        var: hadori_output.stdout

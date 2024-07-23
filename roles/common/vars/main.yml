@@ -1,6 +1,5 @@
 ---
 common_apt_packages:
-  - hadori
   - mc
   - munin-node
 
