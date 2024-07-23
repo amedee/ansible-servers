@@ -1,27 +1,27 @@
 ---
-- name: Upgrade all packages
+- name: Install and upgrade software
   become: true
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 3600
-    upgrade: dist
-    autoclean: true
-    autoremove: true
-  notify: Check if reboot required
+  block:
+    - name: Upgrade all packages
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        upgrade: dist
+        autoclean: true
+        autoremove: true
+      notify: Check if reboot required
 
-- name: Install APT packages
-  become: true
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 3600
-    state: present
-    pkg: "{{ common_apt_packages }}"
-  notify: Check if reboot required
+    - name: Install APT packages
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        state: present
+        pkg: "{{ common_apt_packages }}"
+      notify: Check if reboot required
 
-- name: Install snap packages
-  become: true
-  community.general.snap:
-    name: "{{ common_snap_packages }}"
+    - name: Install snap packages
+      community.general.snap:
+        name: "{{ common_snap_packages }}"
 
 - name: Set hostname
   ansible.builtin.hostname:
@@ -31,32 +31,31 @@
   community.general.ipify_facts:
   register: my_ip_address
 
-- name: Add mailinabox IP address to munin-node.conf
+- name: Configure Munin
   when: my_ip_address != "142.93.227.16"
   become: true
-  ansible.builtin.lineinfile:
-    path: /etc/munin/munin-node.conf
-    line: allow ^142\.93\.227\.16$
-    insertafter: "^allow .*"
-    owner: root
-    mode: u=rw,go=r
-  notify: Restart munin-node
+  block:
+    - name: Add mailinabox IP address to munin-node.conf
+      ansible.builtin.lineinfile:
+        path: /etc/munin/munin-node.conf
+        line: allow ^142\.93\.227\.16$
+        insertafter: "^allow .*"
+        owner: root
+        mode: u=rw,go=r
+      notify: Restart munin-node
 
-- name: Allow access to port 4949
-  when: my_ip_address != "142.93.227.16"
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: 4949
-    src: 142.93.227.16
-  notify: Restart munin-node
+    - name: Allow access to port 4949
+      community.general.ufw:
+        rule: allow
+        port: 4949
+        src: 142.93.227.16
+      notify: Restart munin-node
 
-- name: Exclude loop devices from Munin df and diskstats plugin
-  become: true
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: /etc/munin/plugin-conf.d/
-    owner: root
-    mode: u=rw,go=r
-  with_fileglob: "etc/munin/plugin-conf.d/zzz_*"
-  notify: Restart munin-node
+    - name: Exclude loop devices from Munin df and diskstats plugin
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: /etc/munin/plugin-conf.d/
+        owner: root
+        mode: u=rw,go=r
+      with_fileglob: "etc/munin/plugin-conf.d/zzz_*"
+      notify: Restart munin-node
