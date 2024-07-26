@@ -39,3 +39,11 @@
     owner: root
     mode: u=rw,go=r
   notify: Restart munin
+
+- name: Expunge Trash and Spam
+  become: true
+  ansible.builtin.copy:
+    src: etc/cron.daily/doveadm-expunge.sh
+    dest: /etc/cron.daily/doveadm-expunge.sh
+    owner: root
+    mode: u=rwx,go=r
