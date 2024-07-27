@@ -87,3 +87,10 @@
     src: /tmp/wp-content/uploads.tar.xz
     dest: "{{ webserver_directory }}/wp-content/"
     owner: "{{ webserver_user }}"
+
+- name: Configure Redis
+  ansible.builtin.include_tasks:
+    file: wordpress_config_redis.yml
+  loop: "{{ blog_wp_redis }}"
+  loop_control:
+    loop_var: wp_config_redis

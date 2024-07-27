@@ -1,0 +1,25 @@
+---
+- name: Get Redis value for {{ wp_config_redis.name }}
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    cmd: >
+      wp config get
+        {{ wp_config_redis.name }}
+        --path={{ webserver_directory }}
+  changed_when: false
+  failed_when: false
+  register: wp_config
+
+- name: Set Redis value for {{ wp_config_redis.name }}
+  when: wp_config.stdout != wp_config_redis.value
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    cmd: >
+      wp config set
+        {{ wp_config_redis.name }}
+        {{ wp_config_redis.value }}
+        --path={{ webserver_directory }}
+  changed_when: true
+  failed_when: false
