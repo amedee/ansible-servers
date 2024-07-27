@@ -25,6 +25,7 @@ blog_wp_plugins_install:
   - pc-robotstxt
   - plugin-report
   - redirection
+  - redis-cache
   - syntaxhighlighter
   - wordfence
 
@@ -33,3 +34,8 @@ blog_wp_themes_uninstall:
   - twentytwentythree
 blog_wp_plugins_uninstall:
   - hello
+
+blog_wp_redis:
+  - { name: 'WP_CACHE_KEY_SALT', value: 'amedee.be' }
+  - { name: 'WP_REDIS_PASSWORD', value: "{{ webserver_redis_password }}" }
+  - { name: 'WP_REDIS_PREFIX', value: 'amedee.be_' }

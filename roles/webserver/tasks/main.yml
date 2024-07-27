@@ -43,3 +43,15 @@
 
 - name: Install and configure Letsencrypt
   ansible.builtin.import_tasks: letsencrypt.yml
+
+- name: Configure Redis
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/redis/redis.conf
+    create: true
+    owner: root
+    mode: u=rw,go=r
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop: "{{ webserver_redis_settings }}"
+  notify: Restart redis
