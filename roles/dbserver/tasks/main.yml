@@ -11,3 +11,14 @@
   become: true
   ansible.builtin.pip:
     name: "{{ dbserver_python_packages }}"
+
+- name: Disable binary logging in MySQL
+  become: true
+  community.general.ini_file:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    section: mysqld
+    option: disable_log_bin
+    allow_no_value: true
+    owner: root
+    mode: u=rw,go=r
+  notify: Restart mysql
