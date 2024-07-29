@@ -2,6 +2,7 @@
 common_apt_packages:
   - mc
   - munin-node
+  - ncdu
 
 common_snap_packages:
   - yq
