@@ -72,21 +72,9 @@
         name: hadori
         state: present
 
-    - name: Hardlink /bin, /sbin, /lib, /lib64, /usr, /opt
-      ansible.builtin.command:
-        argv:
-          - /usr/bin/hadori
-          - --verbose
-          - /bin
-          - /sbin
-          - /lib
-          - /lib64
-          - /usr
-          - /opt
-      register: hadori_output
-      changed_when: hadori_output.stdout != ""
-
-    - name: Display hadori output
-      when: hadori_output.stdout != ""
-      ansible.builtin.debug:
-        var: hadori_output.stdout
+    - name: Copy monthly cron job for hadori
+      ansible.builtin.copy:
+        src: etc/cron.monthly/hadori
+        dest: /etc/cron.monthly/hadori
+        owner: root
+        mode: u=rwx,go=r
