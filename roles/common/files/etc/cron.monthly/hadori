@@ -1,0 +1,2 @@
+#!/bin/sh
+/usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt
