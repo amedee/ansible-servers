@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   lint:
+    name: Run ShellCheck
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
