@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   ansible-lint:
-    name: Ansible Lint
+    name: Run ansible-lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

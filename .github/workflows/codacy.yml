@@ -2,6 +2,9 @@
 name: Codacy Security Scan
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     - cron: '19 8 * * 2'
   workflow_call:
