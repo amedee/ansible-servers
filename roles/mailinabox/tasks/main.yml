@@ -8,18 +8,6 @@
     mode: u=rw,go=r
   notify: DNS update
 
-- name: Install APT packages
-  become: true
-  ansible.builtin.apt:
-    state: present
-    pkg: "{{ mailinabox_apt_packages }}"
-
-- name: Install redoc-cli
-  become: true
-  community.general.npm:
-    name: redoc-cli
-    global: true
-
 - name: Create backup config from template
   become: true
   ansible.builtin.template:
