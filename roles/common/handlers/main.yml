@@ -1,4 +1,12 @@
 ---
+- name: APT autoclean
+  ansible.builtin.apt:
+    autoclean: true
+
+- name: APT autoremove
+  ansible.builtin.apt:
+    autoremove: true
+
 - name: Check if reboot required
   ansible.builtin.stat:
     path: /var/run/reboot-required
