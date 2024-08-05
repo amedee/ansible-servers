@@ -14,8 +14,6 @@
     - name: Upgrade all packages
       ansible.builtin.apt:
         upgrade: dist
-        autoclean: true
-        autoremove: true
       notify:
         - APT autoclean
         - APT autoremove
