@@ -11,8 +11,6 @@
 - name: Install APT packages
   become: true
   ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 3600
     state: present
     pkg: "{{ mailinabox_apt_packages }}"
 
