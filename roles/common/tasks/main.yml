@@ -33,12 +33,7 @@
   ansible.builtin.hostname:
     name: "{{ hostname }}"
 
-- name: Get my public IP
-  community.general.ipify_facts:
-  register: my_ip_address
-
 - name: Configure Munin
-  when: my_ip_address != "142.93.227.16"
   become: true
   block:
     - name: Add mailinabox IP address to munin-node.conf
