@@ -79,14 +79,7 @@
     access_key: "{{ common_aws_access_key }}"
     secret_key: "{{ common_aws_secret_key }}"
     region: us-east-1
-
-- name: Extract WordPress uploads on the remote machine
-  become: true
-  ansible.builtin.unarchive:
-    remote_src: true
-    src: /tmp/wp-content/uploads.tar.xz
-    dest: "{{ webserver_directory }}/wp-content/"
-    owner: "{{ webserver_user }}"
+  notify: Extract WordPress uploads on the remote machine
 
 - name: Configure Redis
   ansible.builtin.include_tasks:
