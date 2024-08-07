@@ -8,10 +8,11 @@
 - name: Copy website config files
   become: true
   ansible.builtin.copy:
-    src: etc/nginx/sites-available/amedee.be
-    dest: /etc/nginx/sites-available/amedee.be
+    src: etc/nginx/
+    dest: /etc/nginx/
     owner: root
     mode: u=rw,go=r
+    directory_mode: u=rwx,go=rx
   notify: Restart nginx
 
 - name: Delete DigitalOcean website config
