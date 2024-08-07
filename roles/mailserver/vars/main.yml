@@ -19,6 +19,7 @@ mailserver_postfix_settings:
   - { regexp: '^smtp_sasl_security_options', line: 'smtp_sasl_security_options = noanonymous' }
   - { regexp: '^smtp_sasl_tls_security_options', line: 'smtp_sasl_tls_security_options = noanonymous' }
   - { regexp: '^smtp_tls_security_level', line: 'smtp_tls_security_level = encrypt' }
+  - { regexp: '^smtpd_sasl_auth_enable', line: 'smtpd_sasl_auth_enable = yes' }
 
 mailserver_sendgrid_api_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
