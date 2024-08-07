@@ -52,20 +52,11 @@
         src: 142.93.227.16
       notify: Restart munin-node
 
-    - name: Exclude loop devices from Munin df and diskstats plugin
-      ansible.builtin.copy:
-        src: "{{ item }}"
-        dest: /etc/munin/plugin-conf.d/
-        owner: root
-        mode: u=rw,go=r
-      with_fileglob: "etc/munin/plugin-conf.d/zzz_*"
-      notify: Restart munin-node
-
-- name: Copy cron jobs
+- name: Copy etc files
   become: true
   ansible.builtin.copy:
-    src: "{{ item }}"
+    src: etc/
     dest: /etc/
     owner: root
     mode: u=rwx,go=rX
-  with_fileglob: "etc/cron.*"
+    directory_mode: u=rwx,go=rx
