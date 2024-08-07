@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 # Expunge Trash and Spam
 DOVEADM=$(which doveadm)
 

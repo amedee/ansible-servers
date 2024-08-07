@@ -18,4 +18,4 @@ jobs:
       - name: Run ShellCheck
         uses: azohra/shell-linter@6bbeaa868df09c34ddc008e6030cfe89c03394a1 # v0.6.0
         with:
-          exclude-paths: "Vagrantfile,LICENSE,.github/CODEOWNERS"
+          exclude-paths: "Vagrantfile,LICENSE,.github/CODEOWNERS,roles/*/files/etc/munin/*-conf.d"
