@@ -2,13 +2,6 @@
 - name: Install and upgrade software
   become: true
   block:
-    - name: Copy daily cron job for apt-get update
-      ansible.builtin.copy:
-        src: etc/cron.daily/apt-get_update.sh
-        dest: /etc/cron.daily/apt-get_update.sh
-        owner: root
-        mode: u=rwx,go=r
-
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
@@ -68,10 +61,11 @@
       with_fileglob: "etc/munin/plugin-conf.d/zzz_*"
       notify: Restart munin-node
 
-- name: Copy monthly cron job for hadori
+- name: Copy cron jobs
   become: true
   ansible.builtin.copy:
-    src: etc/cron.monthly/hadori.sh
-    dest: /etc/cron.monthly/hadori.sh
+    src: "{{ item }}"
+    dest: /etc/
     owner: root
-    mode: u=rwx,go=r
+    mode: u=rwx,go=rX
+  with_fileglob: "etc/cron.*"
