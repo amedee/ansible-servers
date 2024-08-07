@@ -2,10 +2,17 @@
 - name: Install and upgrade software
   become: true
   block:
+    - name: Copy daily cron job for apt-get update
+      ansible.builtin.copy:
+        src: etc/cron.daily/apt-get_update.sh
+        dest: /etc/cron.daily/apt-get_update.sh
+        owner: root
+        mode: u=rwx,go=r
+
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
-        cache_valid_time: 3600
+        cache_valid_time: 86400 # One day
       register: result
       retries: 3
       delay: 60
