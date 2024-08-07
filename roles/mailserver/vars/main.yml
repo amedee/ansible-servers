@@ -3,10 +3,6 @@ mailserver_apt_packages:
   - postfix
   - postfix-pcre
 
-mailserver_postfix_directories:
-  - /etc/postfix/checks
-  - /etc/postfix/sasl
-
 mailserver_postfix_settings:
   - { regexp: '^body_checks', line: 'body_checks = pcre:/etc/postfix/checks/body_checks.pcre'}
   - { regexp: '^header_checks', line: 'header_checks = pcre:/etc/postfix/checks/header_checks.pcre'}

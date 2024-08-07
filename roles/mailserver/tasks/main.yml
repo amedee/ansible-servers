@@ -5,14 +5,17 @@
     state: present
     pkg: "{{ mailserver_apt_packages }}"
 
-- name: Create directories if they don't exist
+- name: Copy etc files
   become: true
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
+  ansible.builtin.copy:
+    src: etc/
+    dest: /etc/
     owner: root
-    mode: u=rwx,go=rx
-  loop: "{{ mailserver_postfix_directories }}"
+    mode: u=rw,go=r
+    directory_mode: u=rwx,go=rx
+  notify:
+    - Restart Postfix
+    - Restart Rsyslog
 
 - name: Create /etc/postfix/sasl/sasl_passwd from template
   become: true
@@ -21,16 +24,6 @@
     dest: /etc/postfix/sasl/sasl_passwd
     owner: root
     mode: u=rw,go=
-  notify: Update Postfix hashtables
-
-- name: Copy checks files
-  become: true
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: /etc/postfix/checks/
-    owner: root
-    mode: u=rw,go=r
-  with_fileglob: "etc/postfix/checks/*_checks.pcre"
   notify: Update Postfix hashtables
 
 - name: Configure Postfix
@@ -44,12 +37,3 @@
     line: "{{ item.line }}"
   loop: "{{ mailserver_postfix_settings }}"
   notify: Restart Postfix
-
-- name: Configure logrotate for Postfix
-  become: true
-  ansible.builtin.copy:
-    src: etc/logrotate.d/postfix
-    dest: /etc/logrotate.d/postfix
-    owner: root
-    mode: u=rw,go=r
-  notify: Restart Rsyslog
