@@ -23,11 +23,13 @@ blog_wp_plugins_install:
   - jetpack-boost
   - jetpack-protect
   - pc-robotstxt
+  - performance-lab
   - plugin-report
   - redirection
   - redis-cache
   - syntaxhighlighter
   - wordfence
+  - wp-youtube-lyte
 
 blog_wp_themes_uninstall:
   - twentytwentytwo
