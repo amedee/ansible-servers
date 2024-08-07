@@ -68,17 +68,10 @@
       with_fileglob: "etc/munin/plugin-conf.d/zzz_*"
       notify: Restart munin-node
 
-- name: Hardlink specified directories using hadori
+- name: Copy monthly cron job for hadori
   become: true
-  block:
-    - name: Ensure hadori is installed
-      ansible.builtin.package:
-        name: hadori
-        state: present
-
-    - name: Copy monthly cron job for hadori
-      ansible.builtin.copy:
-        src: etc/cron.monthly/hadori
-        dest: /etc/cron.monthly/hadori
-        owner: root
-        mode: u=rwx,go=r
+  ansible.builtin.copy:
+    src: etc/cron.monthly/hadori.sh
+    dest: /etc/cron.monthly/hadori.sh
+    owner: root
+    mode: u=rwx,go=r
