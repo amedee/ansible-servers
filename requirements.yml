@@ -10,3 +10,5 @@ collections:
     version: 9.2.0
   - name: community.mysql
     version: 3.9.0
+  - name: debops.debops
+    version: 3.1.0

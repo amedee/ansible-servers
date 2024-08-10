@@ -1,4 +1,10 @@
 ---
+- name: Install APT packages
+  become: true
+  ansible.builtin.apt:
+    state: present
+    pkg: "{{ mailinabox_apt_packages }}"
+
 - name: Copy custom DNS settings
   become: true
   ansible.builtin.copy:
@@ -8,7 +14,7 @@
     mode: u=rw,go=r
   notify: DNS update
 
-- name: Create backup config from template
+- name: Configure duplicity
   become: true
   ansible.builtin.template:
     src: home/user-data/backup/custom.yaml.j2
