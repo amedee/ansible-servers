@@ -26,10 +26,11 @@
     mode: u=rw,go=r
   notify: Restart munin
 
-- name: Expunge Trash and Spam
+- name: Copy /etc files
   become: true
   ansible.builtin.copy:
-    src: etc/cron.daily/doveadm-expunge.sh
-    dest: /etc/cron.daily/doveadm-expunge.sh
+    src: etc/
+    dest: /etc/
     owner: root
-    mode: u=rwx,go=r
+    mode: u=rwX,go=rX
+    directory_mode: u=rwx,go=rx
