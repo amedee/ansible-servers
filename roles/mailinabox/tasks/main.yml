@@ -17,20 +17,43 @@
     mode: u=rw,go=r
   notify: Restart munin
 
-- name: Copy /etc files
+- name: Copy files
   become: true
   ansible.builtin.copy:
-    src: etc/
-    dest: /etc/
+    src: "{{ item }}/"
+    dest: "/{{ item }}/"
     owner: root
     mode: u=rwX,go=rX
     directory_mode: u=rwx,go=rx
+  loop:
+    - etc
+    - root
 
-- name: Create backup config from template
+- name: Configure duplicity
   become: true
-  ansible.builtin.template:
-    src: home/user-data/backup/custom.yaml.j2
-    dest: /home/user-data/backup/custom.yaml
-    owner: root
-    mode: u=rw,go=r
-  notify: Perform backup
+  block:
+    - name: Uninstall apt version of duplicity
+      ansible.builtin.apt:
+        name: duplicity
+        state: absent
+
+    - name: Download duplicity snap package
+      ansible.builtin.get_url:
+        url: https://downloads.sourceforge.net/project/duplicity/snaps/duplicity_3.0.0_amd64.snap
+        dest: /root/downloads/duplicity_3.0.0_amd64.snap
+        mode: u=rw,go=r
+        owner: root
+
+    - name: Install snap version of duplicity
+      community.general.snap:
+        name: /root/downloads/duplicity_3.0.0_amd64.snap
+        classic: true
+        dangerous: true
+
+    - name: Create backup config from template
+      ansible.builtin.template:
+        src: home/user-data/backup/custom.yaml.j2
+        dest: /home/user-data/backup/custom.yaml
+        owner: root
+        mode: u=rw,go=r
+      notify: Perform backup
