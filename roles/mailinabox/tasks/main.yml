@@ -32,23 +32,19 @@
 - name: Configure duplicity
   become: true
   block:
-    - name: Uninstall apt version of duplicity
-      ansible.builtin.apt:
+    - name: Uninstall snap version of duplicity
+      community.general.snap:
         name: duplicity
         state: absent
 
-    - name: Download duplicity snap package
-      ansible.builtin.get_url:
-        url: https://downloads.sourceforge.net/project/duplicity/snaps/duplicity_3.0.0_amd64.snap
-        dest: /root/downloads/duplicity_3.0.0_amd64.snap
-        mode: u=rw,go=r
-        owner: root
+    - name: Install apt version of duplicity
+      ansible.builtin.apt:
+        name: duplicity=3.0.2-ppa202408091359~ubuntu22.04.1
 
-    - name: Install snap version of duplicity
-      community.general.snap:
-        name: /root/downloads/duplicity_3.0.0_amd64.snap
-        classic: true
-        dangerous: true
+    - name: Prevent duplicity from being upgraded
+      ansible.builtin.dpkg_selections:
+        name: duplicity
+        selection: hold
 
     - name: Create backup config from template
       ansible.builtin.template:
