@@ -64,10 +64,19 @@
         mode: u=rw,go=r
       notify: Restart munin-node
 
-    - name: Add webserver to munin configuration
+    - name: Add munin host configurations
       ansible.builtin.copy:
-        src: etc/munin/munin-conf.d/webserver
-        dest: /etc/munin/munin-conf.d/webserver
+        src: etc/munin/munin-conf.d/
+        dest: /etc/munin/munin-conf.d/
+        owner: root
+        mode: u=rw,go=r
+      notify: Restart munin
+
+    - name: Remove duplicate munin host configuration
+      community.general.ini_file:
+        path: /etc/munin/munin.conf
+        section: box.vangasse.eu
+        state: absent
         owner: root
         mode: u=rw,go=r
       notify: Restart munin
