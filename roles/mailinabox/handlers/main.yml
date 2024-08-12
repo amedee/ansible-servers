@@ -16,3 +16,14 @@
   ansible.builtin.service:
     name: munin
     state: restarted
+
+- name: Reload systemd
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  notify: Restart munin-node
+
+- name: Restart munin-node
+  become: true
+  ansible.builtin.service:
+    name: munin-node
+    state: restarted
