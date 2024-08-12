@@ -11,6 +11,11 @@
       delay: 60
       until: result is not failed
 
+    - name: Remove apport
+      ansible.builtin.apt:
+        name: apport
+        state: absent
+
     - name: Upgrade all packages
       ansible.builtin.apt:
         upgrade: dist
