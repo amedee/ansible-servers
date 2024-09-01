@@ -26,21 +26,14 @@
     mode: u=rw,go=r
   notify: DNS update
 
-- name: Configure duplicity
+- name: Create backup config from template
   become: true
-  block:
-    - name: Allow duplicity to be upgraded
-      ansible.builtin.dpkg_selections:
-        name: duplicity
-        selection: install
-
-    - name: Create backup config from template
-      ansible.builtin.template:
-        src: home/user-data/backup/custom.yaml.j2
-        dest: /home/user-data/backup/custom.yaml
-        owner: root
-        mode: u=rw,go=r
-      notify: Perform backup
+  ansible.builtin.template:
+    src: home/user-data/backup/custom.yaml.j2
+    dest: /home/user-data/backup/custom.yaml
+    owner: root
+    mode: u=rw,go=r
+  notify: Perform backup
 
 - name: Configure Munin
   become: true
