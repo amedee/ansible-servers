@@ -1,0 +1,50 @@
+---
+- name: Allow munin-node to read files in home directories
+  become: true
+  community.general.ini_file:
+    path: /lib/systemd/system/munin-node.service
+    section: Service
+    option: ProtectHome
+    value: read-only
+    ignore_spaces: true
+    no_extra_spaces: true
+    owner: root
+    mode: u=rw,go=r
+  notify: Reload systemd
+
+- name: Add duplicity plugin
+  become: true
+  ansible.builtin.copy:
+    src: etc/munin/plugins/backup_size
+    dest: /etc/munin/plugins/backup_size
+    owner: root
+    mode: u=rwx,go=rx
+  notify: Restart munin-node
+
+- name: Add duplicity plugin configuration
+  become: true
+  ansible.builtin.copy:
+    src: etc/munin/plugin-conf.d/backup_size
+    dest: /etc/munin/plugin-conf.d/backup_size
+    owner: root
+    mode: u=rw,go=r
+  notify: Restart munin-node
+
+- name: Add munin host configurations
+  become: true
+  ansible.builtin.copy:
+    src: etc/munin/munin-conf.d/
+    dest: /etc/munin/munin-conf.d/
+    owner: root
+    mode: u=rw,go=r
+  notify: Restart munin
+
+- name: Remove duplicate munin host configuration
+  become: true
+  community.general.ini_file:
+    path: /etc/munin/munin.conf
+    section: box.vangasse.eu
+    state: absent
+    owner: root
+    mode: u=rw,go=r
+  notify: Restart munin
