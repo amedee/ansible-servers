@@ -5,6 +5,17 @@
     state: present
     pkg: "{{ mailinabox_apt_packages }}"
 
+- name: Create directories
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    mode: u=rwx,go=rx
+  loop:
+    - /home/user-data/backup
+    - /home/user-data/dns
+
 - name: Copy custom DNS settings
   become: true
   ansible.builtin.copy:
@@ -43,7 +54,7 @@
         src: etc/munin/plugins/backup_size
         dest: /etc/munin/plugins/backup_size
         owner: root
-        mode: u=rwx,go=r
+        mode: u=rwx,go=rx
       notify: Restart munin-node
 
     - name: Add duplicity plugin configuration

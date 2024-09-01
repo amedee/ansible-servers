@@ -1,0 +1,14 @@
+---
+- name: Backup
+  block:
+    - name: Check if backup script exists
+      ansible.builtin.stat:
+        path: /root/mailinabox/management/backup.py
+      register: backup
+
+    - name: Run backup script
+      when: backup.stat.exists
+      become: true
+      ansible.builtin.command:
+        cmd: /root/mailinabox/management/backup.py
+      changed_when: true

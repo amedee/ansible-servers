@@ -64,10 +64,11 @@
     loop_var: wp_plugin
 
 - name: Create directory /tmp/wp-content
+  become: true
   ansible.builtin.file:
     path: /tmp/wp-content
     state: directory
-    mode: u=rwx,go=rx
+    mode: a=rwx
 
 - name: Get WordPress uploads from S3
   amazon.aws.s3_object:
