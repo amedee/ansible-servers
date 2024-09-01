@@ -16,12 +16,10 @@
 
 - name: Reboot
   when: reboot_required_file.stat.exists
-  become: true
   ansible.builtin.reboot:
     reboot_timeout: 3600
 
 - name: Restart munin-node
-  become: true
   ansible.builtin.service:
     name: munin-node
     state: restarted

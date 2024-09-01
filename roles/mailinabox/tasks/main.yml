@@ -1,12 +1,10 @@
 ---
 - name: Install APT packages
-  become: true
   ansible.builtin.apt:
     state: present
     pkg: "{{ mailinabox_apt_packages }}"
 
 - name: Create directories
-  become: true
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -17,7 +15,6 @@
     - /home/user-data/dns
 
 - name: Copy custom DNS settings
-  become: true
   ansible.builtin.copy:
     src: home/user-data/dns/custom.yaml
     dest: /home/user-data/dns/custom.yaml
@@ -26,7 +23,6 @@
   notify: DNS update
 
 - name: Configure duplicity
-  become: true
   ansible.builtin.template:
     src: home/user-data/backup/custom.yaml.j2
     dest: /home/user-data/backup/custom.yaml
@@ -38,7 +34,6 @@
   ansible.builtin.include_tasks: tasks/munin.yml
 
 - name: Copy /etc files
-  become: true
   ansible.builtin.copy:
     src: etc/
     dest: /etc/

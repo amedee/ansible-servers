@@ -1,6 +1,5 @@
 ---
 - name: Allow munin-node to read files in home directories
-  become: true
   community.general.ini_file:
     path: /lib/systemd/system/munin-node.service
     section: Service
@@ -13,7 +12,6 @@
   notify: Reload systemd
 
 - name: Add duplicity plugin
-  become: true
   ansible.builtin.copy:
     src: etc/munin/plugins/backup_size
     dest: /etc/munin/plugins/backup_size
@@ -22,7 +20,6 @@
   notify: Restart munin-node
 
 - name: Add duplicity plugin configuration
-  become: true
   ansible.builtin.copy:
     src: etc/munin/plugin-conf.d/backup_size
     dest: /etc/munin/plugin-conf.d/backup_size
@@ -31,7 +28,6 @@
   notify: Restart munin-node
 
 - name: Add munin host configurations
-  become: true
   ansible.builtin.copy:
     src: etc/munin/munin-conf.d/
     dest: /etc/munin/munin-conf.d/
@@ -40,7 +36,6 @@
   notify: Restart munin
 
 - name: Remove duplicate munin host configuration
-  become: true
   community.general.ini_file:
     path: /etc/munin/munin.conf
     section: box.vangasse.eu

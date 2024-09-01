@@ -1,6 +1,5 @@
 ---
 - name: Install and upgrade software
-  become: true
   block:
     - name: Update apt cache
       ansible.builtin.apt:
@@ -39,7 +38,6 @@
     name: "{{ hostname }}"
 
 - name: Configure Munin
-  become: true
   block:
     - name: Add mailinabox IP address to munin-node.conf
       ansible.builtin.lineinfile:
@@ -58,7 +56,6 @@
       notify: Restart munin-node
 
 - name: Copy etc files
-  become: true
   ansible.builtin.copy:
     src: etc/
     dest: /etc/

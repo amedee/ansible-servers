@@ -1,6 +1,5 @@
 ---
 - name: Extract WordPress uploads on the remote machine
-  become: true
   ansible.builtin.unarchive:
     remote_src: true
     src: /tmp/wp-content/uploads.tar.xz
