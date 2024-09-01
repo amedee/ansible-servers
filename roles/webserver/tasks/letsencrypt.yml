@@ -27,7 +27,6 @@
   notify: Restart nginx
 
 - name: Uninstall apt Certbot (old version)
-  become: true
   ansible.builtin.apt:
     name:
       - apache2
@@ -37,7 +36,6 @@
   notify: Restart nginx
 
 - name: Install snap Certbot (new version)
-  become: true
   community.general.snap:
     name: certbot
     classic: true

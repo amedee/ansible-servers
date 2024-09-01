@@ -1,12 +1,10 @@
 ---
 - name: Install APT packages
-  become: true
   ansible.builtin.apt:
     state: present
     pkg: "{{ mailserver_apt_packages }}"
 
 - name: Copy etc files
-  become: true
   ansible.builtin.copy:
     src: etc/
     dest: /etc/
@@ -18,7 +16,6 @@
     - Restart Rsyslog
 
 - name: Create /etc/postfix/sasl/sasl_passwd from template
-  become: true
   ansible.builtin.template:
     src: etc/postfix/sasl/sasl_passwd.j2
     dest: /etc/postfix/sasl/sasl_passwd
@@ -27,7 +24,6 @@
   notify: Update Postfix hashtables
 
 - name: Configure Postfix
-  become: true
   ansible.builtin.lineinfile:
     path: /etc/postfix/main.cf
     create: true

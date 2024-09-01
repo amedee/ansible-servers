@@ -64,7 +64,6 @@
     loop_var: wp_plugin
 
 - name: Create directory /tmp/wp-content
-  become: true
   ansible.builtin.file:
     path: /tmp/wp-content
     state: directory

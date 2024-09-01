@@ -8,7 +8,6 @@
 
     - name: Run backup script
       when: backup.stat.exists
-      become: true
       ansible.builtin.command:
         cmd: /root/mailinabox/management/backup.py
       changed_when: true

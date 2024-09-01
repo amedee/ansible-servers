@@ -1,6 +1,5 @@
 ---
 - name: "Create database '{{ blog_wp_db_name }}'"
-  become: true
   community.mysql.mysql_db:
     name: "{{ blog_wp_db_name }}"
     state: present
@@ -8,7 +7,6 @@
     login_unix_socket: /run/mysqld/mysqld.sock
 
 - name: "Create database user '{{ blog_wp_db_user }}'"
-  become: true
   community.mysql.mysql_user:
     name: "{{ blog_wp_db_user }}"
     password: "{{ blog_wp_db_password }}"
@@ -40,7 +38,6 @@
 
 - name: Import database dump
   when: wp_posts.rowcount | first | int == 0
-  become: true
   community.mysql.mysql_db:
     name: "{{ blog_wp_db_name }}"
     state: import

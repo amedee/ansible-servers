@@ -1,12 +1,10 @@
 ---
 - name: Install APT packages
-  become: true
   ansible.builtin.apt:
     state: present
     pkg: "{{ webserver_apt_packages }}"
 
 - name: Copy website config files
-  become: true
   ansible.builtin.copy:
     src: etc/nginx/
     dest: /etc/nginx/
@@ -16,14 +14,12 @@
   notify: Restart nginx
 
 - name: Delete DigitalOcean website config
-  become: true
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/digitalocean
     state: absent
   notify: Restart nginx
 
 - name: Create a symbolic link
-  become: true
   ansible.builtin.file:
     src: /etc/nginx/sites-available/amedee.be
     dest: /etc/nginx/sites-enabled/default
@@ -32,7 +28,6 @@
   notify: Restart nginx
 
 - name: "Check existence of webserver directory {{ webserver_directory }}"
-  become: true
   ansible.builtin.file:
     path: "{{ webserver_directory }}"
     state: directory
@@ -44,7 +39,6 @@
   ansible.builtin.import_tasks: letsencrypt.yml
 
 - name: Configure Redis
-  become: true
   ansible.builtin.lineinfile:
     path: /etc/redis/redis.conf
     create: true

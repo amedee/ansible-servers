@@ -6,7 +6,6 @@
   ansible.builtin.include_tasks: tasks/backup.yml
 
 - name: Restart munin
-  become: true
   ansible.builtin.service:
     name: munin
     state: restarted
@@ -17,7 +16,6 @@
   notify: Restart munin-node
 
 - name: Restart munin-node
-  become: true
   ansible.builtin.service:
     name: munin-node
     state: restarted

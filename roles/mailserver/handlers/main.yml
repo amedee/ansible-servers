@@ -1,6 +1,5 @@
 ---
 - name: Update Postfix hashtables
-  become: true
   ansible.builtin.command:
     chdir: /etc/postfix/sasl
     cmd: postmap sasl_passwd
@@ -9,13 +8,11 @@
   notify: Restart Postfix
 
 - name: Restart Postfix
-  become: true
   ansible.builtin.service:
     name: postfix
     state: restarted
 
 - name: Restart Rsyslog
-  become: true
   ansible.builtin.service:
     name: rsyslog
     state: restarted

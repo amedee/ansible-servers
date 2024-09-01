@@ -6,7 +6,6 @@
 
 - name: Download WP-CLI
   when: not wpcli.stat.exists
-  become: true
   ansible.builtin.get_url:
     url: "{{ blog_wpcli_url }}" # checkov:skip=Checkov_CKV2_ANSIBLE_2:The URL in the variable uses HTTPS
     dest: "{{ blog_wpcli_path }}"
@@ -31,7 +30,6 @@
 
 - name: Update WP-CLI
   when: not "Success" in wp_cli_checkupdate.stdout
-  become: true
   ansible.builtin.command:
     cmd: >
       wp cli update
