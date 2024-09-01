@@ -1,0 +1,14 @@
+---
+- name: DNS update
+  block:
+    - name: Check if DNS update script exists
+      ansible.builtin.stat:
+        path: /root/mailinabox/tools/dns_update
+      register: dns_update
+
+    - name: Run DNS update script
+      when: dns_update.stat.exists
+      become: true
+      ansible.builtin.command:
+        cmd: /root/mailinabox/tools/dns_update --force
+      changed_when: true

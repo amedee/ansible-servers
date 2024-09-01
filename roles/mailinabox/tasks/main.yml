@@ -1,4 +1,22 @@
 ---
+- name: Install APT packages
+  become: true
+  ansible.builtin.apt:
+    state: present
+    pkg: "{{ mailinabox_apt_packages }}"
+
+- name: Create directories
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    mode: u=rwx,go=rx
+  loop:
+    - /home/user-data/backup
+    - /home/user-data/dns
+    - /root/mailinabox/management/
+
 - name: Copy custom DNS settings
   become: true
   ansible.builtin.copy:
@@ -11,19 +29,10 @@
 - name: Configure duplicity
   become: true
   block:
-    - name: Uninstall snap version of duplicity
-      community.general.snap:
-        name: duplicity
-        state: absent
-
-    - name: Install apt version of duplicity
-      ansible.builtin.apt:
-        name: duplicity=3.0.2-ppa202408091359~ubuntu22.04.1
-
-    - name: Prevent duplicity from being upgraded
+    - name: Allow duplicity to be upgraded
       ansible.builtin.dpkg_selections:
         name: duplicity
-        selection: hold
+        selection: install
 
     - name: Create backup config from template
       ansible.builtin.template:
@@ -53,7 +62,7 @@
         src: etc/munin/plugins/backup_size
         dest: /etc/munin/plugins/backup_size
         owner: root
-        mode: u=rwx,go=r
+        mode: u=rwx,go=rx
       notify: Restart munin-node
 
     - name: Add duplicity plugin configuration

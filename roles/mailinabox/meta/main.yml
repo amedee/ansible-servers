@@ -1,3 +1,4 @@
 ---
 dependencies:
+  - role: debops.debops.apt_preferences
   - role: mailserver

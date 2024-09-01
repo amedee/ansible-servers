@@ -1,0 +1,7 @@
+---
+apt_preferences__list:
+  - package: 'duplicity'
+    reason: |-
+      Duplicity version 3.0.1 has a bug and we don't want it installed
+    version: '3.0.1'
+    priority: '99'

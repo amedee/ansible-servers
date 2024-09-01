@@ -21,4 +21,7 @@ all:
     blogs:
       hosts:
         ${HOSTNAME}:
+    mailservers:
+      hosts:
+        ${HOSTNAME}:
 EOF

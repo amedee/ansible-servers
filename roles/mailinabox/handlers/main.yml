@@ -1,15 +1,9 @@
 ---
 - name: DNS update
-  become: true
-  ansible.builtin.command:
-    cmd: /root/mailinabox/tools/dns_update --force
-  changed_when: true
+  ansible.builtin.include_tasks: tasks/dns_update.yml
 
 - name: Perform backup
-  become: true
-  ansible.builtin.command:
-    cmd: /root/mailinabox/management/backup.py
-  changed_when: true
+  ansible.builtin.include_tasks: tasks/backup.yml
 
 - name: Restart munin
   become: true
