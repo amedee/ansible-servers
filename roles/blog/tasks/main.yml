@@ -1,7 +1,4 @@
 ---
-- name: Install WP-CLI
-  ansible.builtin.import_tasks: wpcli.yml
-
 - name: Create WordPress MySQL database and user
   ansible.builtin.import_tasks: wordpress_db.yml
 
