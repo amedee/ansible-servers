@@ -3,3 +3,7 @@ dependencies:
   - role: mailserver
   - role: dbserver
   - role: webserver
+  - role: debops.debops.keyring
+    keyring__dependent_gpg_keys:
+      - id: 63AF7AA15067C05616FDDD88A3A2E8F226F0BC06
+  - role: debops.debops.wpcli
