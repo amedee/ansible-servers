@@ -1,7 +1,4 @@
 ---
-blog_wpcli_path: /usr/local/bin/wp
-blog_wpcli_url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-
 blog_wp_db_name: wordpress
 blog_wp_db_user: wordpress
 blog_wp_db_host: localhost
