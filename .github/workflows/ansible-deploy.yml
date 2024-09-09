@@ -17,6 +17,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   ansible-lint:
@@ -37,6 +38,9 @@ jobs:
       matrix:
         host: [box.vangasse.eu, amedee.be]
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+
       - name: Checkout code
         uses: actions/checkout@v4
 
