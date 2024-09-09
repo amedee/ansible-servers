@@ -68,3 +68,10 @@ jobs:
           path: ~/.ansible/ansible.log
           compression-level: 9
           overwrite: true
+
+      - name: checkrun-timechart
+        uses: urcomputeringpal/checkrun-timechart-action@9de4251d7983342ccf09b84ed921326887571853 # v0.0.8
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          SUMMARY: "true"
