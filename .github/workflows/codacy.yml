@@ -4,6 +4,10 @@ name: Codacy Security Scan
 on:
   pull_request:
   push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
   schedule:
     - cron: '19 8 * * 2'
   workflow_call:
