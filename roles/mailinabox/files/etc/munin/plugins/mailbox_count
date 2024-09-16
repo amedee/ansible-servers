@@ -1,0 +1,57 @@
+#!/bin/sh
+
+output_config() {
+    cat <<'EOM'
+inbox.label Inbox
+archive.label Archive
+drafts.label Drafts
+sent.label Sent
+spam.label Spam
+trash.label Trash
+graph_args --base 1000 --lower-limit 0
+graph_scale no
+graph_category email
+graph_info Number of emails in each folder
+graph_title Emails
+graph_vlabel Emails
+EOM
+}
+
+output_values() {
+    printf "inbox.value %d\n"   "$(number_of_emails Inbox)"
+    printf "archive.value %d\n" "$(number_of_emails Archive)"
+    printf "drafts.value %d\n"  "$(number_of_emails Drafts)"
+    printf "sent.value %d\n"    "$(number_of_emails Sent)"
+    printf "spam.value %d\n"    "$(number_of_emails Spam)"
+    printf "trash.value %d\n"   "$(number_of_emails Trash)"
+}
+
+number_of_emails() {
+    /usr/bin/doveadm search -A mailbox "$1" | wc --lines
+}
+
+output_usage() {
+    printf >&2 "%s - munin plugin to graph number of emails\n" "${0##*/}"
+    printf >&2 "Usage: %s [config]\n" "${0##*/}"
+}
+
+case $# in
+    0)
+        output_values
+        ;;
+    1)
+        case $1 in
+            config)
+                output_config
+                ;;
+            *)
+                output_usage
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        output_usage
+        exit 1
+        ;;
+esac
