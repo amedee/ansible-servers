@@ -4,25 +4,25 @@
     path: /lib/systemd/system/munin-node.service
     section: Service
     option: ProtectHome
-    value: read-only
+    value: false
     ignore_spaces: true
     no_extra_spaces: true
     owner: root
     mode: u=rw,go=r
   notify: Reload systemd
 
-- name: Add duplicity plugin
+- name: Add munin plugins
   ansible.builtin.copy:
-    src: etc/munin/plugins/backup_size
-    dest: /etc/munin/plugins/backup_size
+    src: etc/munin/plugins/
+    dest: /etc/munin/plugins/
     owner: root
     mode: u=rwx,go=rx
   notify: Restart munin-node
 
-- name: Add duplicity plugin configuration
+- name: Add munin plugin configurations
   ansible.builtin.copy:
-    src: etc/munin/plugin-conf.d/backup_size
-    dest: /etc/munin/plugin-conf.d/backup_size
+    src: etc/munin/plugin-conf.d/
+    dest: /etc/munin/plugin-conf.d/
     owner: root
     mode: u=rw,go=r
   notify: Restart munin-node
