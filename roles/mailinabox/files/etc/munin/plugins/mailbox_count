@@ -27,7 +27,8 @@ output_values() {
 }
 
 number_of_emails() {
-    /usr/bin/doveadm search -A mailbox "$1" | wc --lines
+    # shellcheck disable=SC2154
+    /usr/bin/doveadm -f tab mailbox status -u "$mailbox_user" messages "$1" | tail --lines=1 | cut --fields=2
 }
 
 output_usage() {
