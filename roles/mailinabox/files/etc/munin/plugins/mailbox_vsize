@@ -1,0 +1,58 @@
+#!/bin/sh
+
+output_config() {
+    cat <<'EOM'
+inbox.label Inbox
+archive.label Archive
+drafts.label Drafts
+sent.label Sent
+spam.label Spam
+trash.label Trash
+graph_args --base 1024 --lower-limit 0
+graph_scale yes
+graph_category email
+graph_info Size of each folder
+graph_title Size of each folder
+graph_vlabel Size
+EOM
+}
+
+output_values() {
+    printf "inbox.value %d\n"   "$(mailbox_vsize Inbox)"
+    printf "archive.value %d\n" "$(mailbox_vsize Archive)"
+    printf "drafts.value %d\n"  "$(mailbox_vsize Drafts)"
+    printf "sent.value %d\n"    "$(mailbox_vsize Sent)"
+    printf "spam.value %d\n"    "$(mailbox_vsize Spam)"
+    printf "trash.value %d\n"   "$(mailbox_vsize Trash)"
+}
+
+mailbox_vsize() {
+    # shellcheck disable=SC2154
+    /usr/bin/doveadm -f tab mailbox status -u "$mailbox_user" vsize "$1" | tail --lines=1 | cut --fields=2
+}
+
+output_usage() {
+    printf >&2 "%s - munin plugin to graph size of mailboxes\n" "${0##*/}"
+    printf >&2 "Usage: %s [config]\n" "${0##*/}"
+}
+
+case $# in
+    0)
+        output_values
+        ;;
+    1)
+        case $1 in
+            config)
+                output_config
+                ;;
+            *)
+                output_usage
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        output_usage
+        exit 1
+        ;;
+esac
