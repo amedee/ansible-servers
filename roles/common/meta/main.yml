@@ -1,0 +1,3 @@
+---
+dependencies:
+  - role: debops.debops.unattended_upgrades
