@@ -1,3 +1,5 @@
 ---
 dependencies:
+  - role: geerlingguy.swap
+    swap_file_size_mb: '4096'
   - role: debops.debops.unattended_upgrades
