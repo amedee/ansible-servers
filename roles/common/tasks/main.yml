@@ -48,17 +48,18 @@
         mode: u=rw,go=r
       notify: Restart munin-node
 
+    - name: Copy munin plugin config files
+      ansible.builtin.copy:
+        src: etc/munin/plugin-conf.d/
+        dest: /etc/munin/plugin-conf.d/
+        owner: root
+        mode: u=rw,go=r
+        directory_mode: u=rwx,go=rx
+      notify: Restart munin-node
+
     - name: Allow access to port 4949
       community.general.ufw:
         rule: allow
         port: 4949
         src: 142.93.227.16
       notify: Restart munin-node
-
-- name: Copy etc files
-  ansible.builtin.copy:
-    src: etc/
-    dest: /etc/
-    owner: root
-    mode: u=rwx,go=rX
-    directory_mode: u=rwx,go=rx
