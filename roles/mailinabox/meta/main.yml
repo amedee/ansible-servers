@@ -8,3 +8,22 @@ dependencies:
         version: '3.0.1'
         priority: '99'
   - role: mailserver
+  - role: debops.debops.cron
+    cron__jobs:
+      doveadm_expunge:
+        jobs:
+          - name: 'Expunge Trash'
+            special_time: 'daily'
+            job: '/usr/bin/expunge -A mailbox Trash before 30d'
+          - name: 'Expunge Spam'
+            special_time: 'daily'
+            job: '/usr/bin/expunge -A mailbox Spam before 60d'
+      extract_image_attachments:
+        name: 'Extract image attachments'
+        special_time: 'daily'
+        job: '/usr/local/bin/extract_image_attachments.sh'
+        custom_files:
+          - src: 'usr/local/bin/extract_image_attachments.sh'
+            dest: '/usr/local/bin/extract_image_attachments.sh'
+            owner: root
+            mode: u=rwx,go=rx

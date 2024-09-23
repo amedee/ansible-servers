@@ -14,6 +14,14 @@
     - /home/user-data/backup
     - /home/user-data/dns
 
+- name: Copy /etc/profile.d files
+  ansible.builtin.copy:
+    src: etc/profile.d/
+    dest: /etc/profile.d/
+    owner: root
+    mode: u=rwx,go=rx
+    directory_mode: u=rwx,go=rx
+
 - name: Copy custom DNS settings
   ansible.builtin.copy:
     src: home/user-data/dns/custom.yaml
@@ -32,11 +40,3 @@
 
 - name: Configure Munin
   ansible.builtin.include_tasks: tasks/munin.yml
-
-- name: Copy /etc files
-  ansible.builtin.copy:
-    src: etc/
-    dest: /etc/
-    owner: root
-    mode: u=rwX,go=rX
-    directory_mode: u=rwx,go=rx
