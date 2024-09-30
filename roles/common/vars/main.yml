@@ -4,6 +4,7 @@ common_apt_packages:
   - mc
   - munin-node
   - ncdu
+  - nmap
 
 common_snap_packages:
   - yq
