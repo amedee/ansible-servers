@@ -10,15 +10,15 @@ webserver_apt_packages:
   - php
   - php-curl
   - php-fpm
-  - php-imagick
+  - php8.3-imagick
   - php-intl
   - php-json
   - php-mbstring
   - php-mysql
-  - php-redis
-  - php-ssh2
+  - php8.3-redis
+  - php8.3-ssh2
   - php-xml
-  - php-xmlrpc
+  - php8.3-xmlrpc
   - php-zip
   - redis-server
 
