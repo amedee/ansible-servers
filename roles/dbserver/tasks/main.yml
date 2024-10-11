@@ -4,10 +4,6 @@
     state: present
     pkg: "{{ dbserver_apt_packages }}"
 
-- name: Install Python packages
-  ansible.builtin.pip:
-    name: "{{ dbserver_python_packages }}"
-
 - name: Disable binary logging in MySQL
   community.general.ini_file:
     path: /etc/mysql/mysql.conf.d/mysqld.cnf
