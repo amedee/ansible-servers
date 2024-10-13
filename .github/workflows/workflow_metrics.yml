@@ -13,4 +13,5 @@ jobs:
     steps:
       - uses: yykamei/github-workflows-metrics@501fe7142d5bfc909b0b9e2a8cb4ec4135b8e507 # v0.3.5
         with:
+          only: ansible-deploy.yml
           status: success
