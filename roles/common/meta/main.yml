@@ -7,6 +7,7 @@ dependencies:
         name: 'Hardlink with hadori'
         special_time: 'monthly'
         job: '/usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt'
+  - role: debops.debops.etckeeper
   - role: debops.debops.unattended_upgrades
   - role: geerlingguy.swap
     swap_file_size_mb: '4096'
