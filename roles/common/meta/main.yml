@@ -1,5 +1,6 @@
 ---
 dependencies:
+  - role: debops.debops.etckeeper
   - role: debops.debops.apt_listchanges
   - role: debops.debops.cron
     cron__jobs:
