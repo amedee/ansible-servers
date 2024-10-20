@@ -1,6 +1,9 @@
 ---
+common_locale: en_US.UTF-8
+
 common_apt_packages:
   - hadori
+  - localepurge
   - mc
   - munin-node
   - ncdu
