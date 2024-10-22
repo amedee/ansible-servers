@@ -1,4 +1,23 @@
 ---
+- name: Copy APT files
+  ansible.builtin.copy:
+    src: etc/apt/
+    dest: /etc/apt/
+    owner: root
+    mode: u=rw,go=r
+    directory_mode: u=rwx,go=rx
+  register: copy_result
+
+- name: Update APT cache
+  when: copy_result.changed # noqa: no-handler
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 86400 # One day
+  register: result
+  retries: 3
+  delay: 60
+  until: result is not failed
+
 - name: Install APT packages
   ansible.builtin.apt:
     state: present
