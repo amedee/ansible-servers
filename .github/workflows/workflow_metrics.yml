@@ -11,7 +11,7 @@ jobs:
   metrics:
     runs-on: ubuntu-latest
     steps:
-      - uses: yykamei/github-workflows-metrics@501fe7142d5bfc909b0b9e2a8cb4ec4135b8e507 # v0.3.5
+      - uses: yykamei/github-workflows-metrics@369e7ccc2b7fa9bc27f79e7e0c36fb95db25379e # v0.3.6
         with:
           only: ansible-deploy.yml
           status: success
