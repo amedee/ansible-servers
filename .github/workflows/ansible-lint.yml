@@ -25,4 +25,4 @@ jobs:
 
       - name: Run ansible-lint
         id: ansible-lint
-        uses: ansible/ansible-lint@3b5bee19c2102ea35bc8619795a72c5c73797fc7 # v24
+        uses: ansible/ansible-lint@44be233dbd6a8a6d8f3c5297c318ed4ed4644c32 # v24
