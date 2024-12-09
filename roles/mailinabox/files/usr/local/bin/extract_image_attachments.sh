@@ -15,9 +15,9 @@ mkdir --parents "$SAVED_ATTACHMENTS" || exit 1
 cd "$ATTACHMENTS_DIR" || exit
 
 (
-    grep --files-with-matches --recursive --null --regexp='Content-Type: image' "$MAILDIR" \
+    grep --files-with-matches --recursive --null --extended-regexp --regexp='Content-Type: (image|video)' "$MAILDIR" \
         | xargs --null --max-args=1 munpack
 ) &>/dev/null
 rm --force ./*.desc*
 fdupes --hardlinks --noempty --order=name --delete --noprompt --quiet .
-rsync --archive --ignore-missing-args ./*.jpeg* ./*.jpg* ./*.png* "$SAVED_ATTACHMENTS"
+rsync --archive --ignore-missing-args ./*.jpeg* ./*.jpg* ./*.png* ./*.mp4* "$SAVED_ATTACHMENTS"
