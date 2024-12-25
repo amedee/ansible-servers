@@ -30,14 +30,10 @@
       delay: 60
       until: result is not failed
 
-    - name: Remove apport
+    - name: Remove unneeded APT packages
       ansible.builtin.apt:
-        name: apport
         state: absent
-
-    - name: Upgrade all packages
-      ansible.builtin.apt:
-        upgrade: dist
+        pkg: "{{ common_apt_packages_uninstall }}"
       notify:
         - APT autoclean
         - APT autoremove
@@ -47,7 +43,18 @@
       ansible.builtin.apt:
         state: present
         pkg: "{{ common_apt_packages }}"
-      notify: Check if reboot required
+      notify:
+        - APT autoclean
+        - APT autoremove
+        - Check if reboot required
+
+    - name: Upgrade all packages
+      ansible.builtin.apt:
+        upgrade: dist
+      notify:
+        - APT autoclean
+        - APT autoremove
+        - Check if reboot required
 
     - name: Install snap packages
       community.general.snap:

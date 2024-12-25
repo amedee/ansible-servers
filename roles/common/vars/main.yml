@@ -9,6 +9,10 @@ common_apt_packages:
   - ncdu
   - nmap
 
+common_apt_packages_uninstall:
+  - apport
+  - mecab-utils
+
 common_snap_packages:
   - yq
 
