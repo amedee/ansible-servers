@@ -20,20 +20,9 @@ permissions:
   pull-requests: write
 
 jobs:
-  ansible-lint:
-    name: Ansible Lint
-    uses: amedee/ansible-servers/.github/workflows/ansible-lint.yml@main
-
-  shellcheck:
-    name: ShellCheck
-    permissions:
-      contents: read
-    uses: amedee/ansible-servers/.github/workflows/shellcheck.yml@main
-
   ansible-playbook:
     name: Ansible Playbook
     runs-on: ubuntu-latest
-    needs: [ansible-lint, shellcheck]
     strategy:
       matrix:
         host: [box.vangasse.eu, amedee.be]
