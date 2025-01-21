@@ -19,3 +19,9 @@
   ansible.builtin.service:
     name: munin-node
     state: restarted
+
+- name: Reload UFW
+  ansible.builtin.command: ufw reload
+  ignore_errors: true
+  register: ufw_reload_output
+  changed_when: ufw_reload_output.rc != 0
