@@ -1,12 +1,15 @@
 ---
 name: GitHub Workflows Metrics
+
 on:
   workflow_dispatch:
   schedule:
     - cron: "30 10 * * *"
+
 permissions:
   actions: read
   issues: write
+
 jobs:
   metrics:
     runs-on: ubuntu-latest
