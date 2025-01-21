@@ -1,0 +1,57 @@
+---
+- name: Ensure UFW is installed
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+
+- name: Ensure UFW is enabled
+  ansible.builtin.command: ufw enable
+  when: ansible_facts['os_family'] == "Debian"
+  ignore_errors: true
+  register: ufw_enable_output
+  changed_when: ufw_enable_output.rc != 0
+
+- name: Add NAT rule to before.rules
+  ansible.builtin.blockinfile:
+    path: /etc/ufw/before.rules
+    backup: true
+    insertafter: '^COMMIT'
+    block: |
+      *nat
+      :POSTROUTING ACCEPT [0:0]
+      # Redirect known Google IP ranges (aspmx.l.google.com) for SMTP traffic to localhost
+      -A OUTPUT -p tcp -d 64.18.0.0/20      --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 64.233.160.0/19   --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 66.102.0.0/20     --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 66.249.80.0/20    --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 72.14.192.0/18    --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 74.125.0.0/16     --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 108.177.8.0/21    --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 108.177.96.0/19   --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 142.250.27.0/24   --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 142.250.102.24/29 --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 172.217.0.0/19    --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 173.194.0.0/16    --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 207.126.144.0/20  --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 209.85.128.0/17   --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 216.58.192.0/19   --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      -A OUTPUT -p tcp -d 216.239.32.0/19   --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      COMMIT
+
+- name: Ensure DEFAULT_FORWARD_POLICY is set to ACCEPT
+  ansible.builtin.lineinfile:
+    path: /etc/default/ufw
+    regexp: '^DEFAULT_FORWARD_POLICY='
+    line: 'DEFAULT_FORWARD_POLICY="ACCEPT"'
+
+- name: Ensure IP_FORWARD is set to yes
+  ansible.builtin.lineinfile:
+    path: /etc/default/ufw
+    regexp: '^IP_FORWARD='
+    line: 'IP_FORWARD="yes"'
+
+- name: Reload UFW
+  ansible.builtin.command: ufw reload
+  ignore_errors: true
+  register: ufw_reload_output
+  changed_when: ufw_reload_output.rc != 0
