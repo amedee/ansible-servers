@@ -1,0 +1,42 @@
+---
+- name: Ensure UFW is installed
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+
+- name: Ensure UFW is enabled
+  ansible.builtin.command: ufw enable
+  when: ansible_facts['os_family'] == "Debian"
+  ignore_errors: true
+  register: ufw_enable_output
+  changed_when: ufw_enable_output.rc != 0
+
+- name: Add NAT rule to before.rules
+  ansible.builtin.blockinfile:
+    path: /etc/ufw/before.rules
+    backup: true
+    insertafter: '^COMMIT'
+    block: |
+      # Redirect aspmx.l.google.com (IP range 142.250.102.24/29) to 127.0.0.1:25
+      *nat
+      :POSTROUTING ACCEPT [0:0]
+      -A OUTPUT -p tcp -d 142.250.0.0/16 --dport 25 -j DNAT --to-destination 127.0.0.1:25
+      COMMIT
+
+- name: Ensure DEFAULT_FORWARD_POLICY is set to ACCEPT
+  ansible.builtin.lineinfile:
+    path: /etc/default/ufw
+    regexp: '^DEFAULT_FORWARD_POLICY='
+    line: 'DEFAULT_FORWARD_POLICY="ACCEPT"'
+
+- name: Ensure IP_FORWARD is set to yes
+  ansible.builtin.lineinfile:
+    path: /etc/default/ufw
+    regexp: '^IP_FORWARD='
+    line: 'IP_FORWARD="yes"'
+
+- name: Reload UFW
+  ansible.builtin.command: ufw reload
+  ignore_errors: true
+  register: ufw_reload_output
+  changed_when: ufw_reload_output.rc != 0
