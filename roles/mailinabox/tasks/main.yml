@@ -40,3 +40,6 @@
 
 - name: Configure Munin
   ansible.builtin.include_tasks: tasks/munin.yml
+
+- name: Configure UFW to redirect traffic
+  ansible.builtin.include_tasks: tasks/configure_ufw_redirection.yml
