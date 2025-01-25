@@ -1,13 +1,13 @@
 ---
-- name: Backup
-  block:
-    - name: Check if backup script exists
-      ansible.builtin.stat:
-        path: /root/mailinabox/management/backup.py
-      register: backup
+- name: Ensure duplicity is installed
+  ansible.builtin.apt:
+    name: duplicity
+    state: present
 
-    - name: Run backup script
-      when: backup.stat.exists
-      ansible.builtin.command:
-        cmd: /root/mailinabox/management/backup.py
-      changed_when: true
+- name: Configure duplicity
+  ansible.builtin.template:
+    src: home/user-data/backup/custom.yaml.j2
+    dest: /home/user-data/backup/custom.yaml
+    owner: root
+    mode: u=rw,go=r
+  notify: Perform backup
