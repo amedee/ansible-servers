@@ -4,15 +4,6 @@
     state: present
     pkg: "{{ mailinabox_apt_packages }}"
 
-- name: Create directories
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    owner: root
-    mode: u=rwx,go=rx
-  loop:
-    - /home/user-data/dns
-
 - name: Copy /etc/profile.d files
   ansible.builtin.copy:
     src: etc/profile.d/
@@ -21,13 +12,8 @@
     mode: u=rwx,go=rx
     directory_mode: u=rwx,go=rx
 
-- name: Copy custom DNS settings
-  ansible.builtin.copy:
-    src: home/user-data/dns/custom.yaml
-    dest: /home/user-data/dns/custom.yaml
-    owner: root
-    mode: u=rw,go=r
-  notify: DNS update
+- name: Configure DNS
+  ansible.builtin.include_tasks: tasks/dns.yml
 
 - name: Configure Munin
   ansible.builtin.include_tasks: tasks/munin.yml
