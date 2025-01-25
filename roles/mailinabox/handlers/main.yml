@@ -2,9 +2,6 @@
 - name: DNS update
   ansible.builtin.include_tasks: tasks/dns_update.yml
 
-- name: Perform backup
-  ansible.builtin.include_tasks: tasks/backup.yml
-
 - name: Restart munin
   ansible.builtin.service:
     name: munin
@@ -19,3 +16,8 @@
   ansible.builtin.service:
     name: munin-node
     state: restarted
+
+- name: Perform backup
+  ansible.builtin.command:
+    cmd: /root/mailinabox/management/backup.py
+  changed_when: true
