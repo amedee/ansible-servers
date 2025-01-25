@@ -6,6 +6,11 @@ on:
   push:
     branches:
       - '!main'
+    paths:
+      - '**'
+      - '!README.md'
+      - '!.github/**'
+      - '.github/workflows/ansible-lint.yml'
   workflow_call:
   workflow_dispatch:
 
