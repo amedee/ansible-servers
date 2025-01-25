@@ -1,6 +1,8 @@
 ---
 - name: DNS update
-  ansible.builtin.include_tasks: tasks/dns_update.yml
+  ansible.builtin.command:
+    cmd: /root/mailinabox/tools/dns_update --force
+  changed_when: true
 
 - name: Restart munin
   ansible.builtin.service:
