@@ -11,7 +11,6 @@
     owner: root
     mode: u=rwx,go=rx
   loop:
-    - /home/user-data/backup
     - /home/user-data/dns
 
 - name: Copy /etc/profile.d files
@@ -30,13 +29,8 @@
     mode: u=rw,go=r
   notify: DNS update
 
-- name: Configure duplicity
-  ansible.builtin.template:
-    src: home/user-data/backup/custom.yaml.j2
-    dest: /home/user-data/backup/custom.yaml
-    owner: root
-    mode: u=rw,go=r
-  notify: Perform backup
+- name: Configure Backup
+  ansible.builtin.include_tasks: tasks/backup.yml
 
 - name: Configure Munin
   ansible.builtin.include_tasks: tasks/munin.yml
