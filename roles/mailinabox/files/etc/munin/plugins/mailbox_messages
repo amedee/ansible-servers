@@ -28,7 +28,9 @@ output_values() {
 
 number_of_messages() {
     # shellcheck disable=SC2154
-    /usr/bin/doveadm -f tab mailbox status -u "$mailbox_user" messages "$1" | tail --lines=1 | cut --fields=2
+    /usr/bin/doveadm -f tab mailbox status -u "$mailbox_user" messages "$1" \
+        | tail --lines=1 \
+        | cut --fields=2
 }
 
 output_usage() {
@@ -37,22 +39,22 @@ output_usage() {
 }
 
 case $# in
-    0)
-        output_values
-        ;;
-    1)
-        case $1 in
-            config)
-                output_config
-                ;;
-            *)
-                output_usage
-                exit 1
-                ;;
-        esac
+0)
+    output_values
+    ;;
+1)
+    case $1 in
+    config)
+        output_config
         ;;
     *)
         output_usage
         exit 1
         ;;
+    esac
+    ;;
+*)
+    output_usage
+    exit 1
+    ;;
 esac
