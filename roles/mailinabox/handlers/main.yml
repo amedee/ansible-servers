@@ -4,11 +4,6 @@
     cmd: /root/mailinabox/tools/dns_update --force
   changed_when: true
 
-- name: Restart munin
-  ansible.builtin.service:
-    name: munin
-    state: restarted
-
 - name: Reload systemd
   ansible.builtin.systemd_service:
     daemon_reload: true
@@ -17,6 +12,11 @@
 - name: Restart munin-node
   ansible.builtin.service:
     name: munin-node
+    state: restarted
+
+- name: Restart munin
+  ansible.builtin.service:
+    name: munin
     state: restarted
 
 - name: Perform backup

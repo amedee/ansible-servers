@@ -1,5 +1,4 @@
 [DigitalOcean]
-# send alerts to the following address
 contacts admin
-contact.admin.command mail -s "Munin notification ${var:host}" administrator@box.vangasse.eu
+contact.admin.command mail -s "Munin notification ${var:host}" amedee@vangasse.eu
 contact.admin.always_send warning critical
