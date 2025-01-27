@@ -7,4 +7,4 @@
 profile: production
 
 exclude_paths:
-  - roles/geerlingguy.swap/
+  - '**/roles/geerlingguy.swap/'
