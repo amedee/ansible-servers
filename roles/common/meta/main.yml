@@ -3,6 +3,12 @@ dependencies:
   - role: geerlingguy.swap
     swap_file_size_mb: '4096'
   - role: debops.debops.etckeeper
+    etckeeper__gitignore:
+      - name: 'alternatives'
+      - name: 'apparmor.d'
+      - name: 'fonts'
+      - name: 'ssl'
+      - name: 'systemd'
   - role: debops.debops.etc_aliases
     etc_aliases__recipients:
       - root: 'amedee@vangasse.eu'
