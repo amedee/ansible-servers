@@ -4,15 +4,22 @@
     state: present
     pkg: "{{ mailserver_apt_packages }}"
 
-- name: Copy etc/postfix files
+- name: Copy Postfix checks files
   ansible.builtin.copy:
-    src: etc/postfix/
-    dest: /etc/postfix/
+    src: etc/postfix/checks/
+    dest: /etc/postfix/checks/
     owner: root
     mode: u=rw,go=r
     directory_mode: u=rwx,go=rx
   notify:
     - Restart Postfix
+
+- name: Create directory /etc/postfix/sasl/
+  ansible.builtin.file:
+    path: /etc/postfix/sasl/
+    state: directory
+    owner: root
+    mode: u=rwx,go=rx
 
 - name: Create /etc/postfix/sasl/sasl_passwd from template
   ansible.builtin.template:
