@@ -20,3 +20,19 @@ dependencies:
         special_time: 'monthly'
         job: '/usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt'
   - role: debops.debops.unattended_upgrades
+  - role: geerlingguy.munin-node
+    munin_node_allowed_ips:
+      - '^127\.0\.0\.1$'
+      - '^::1$'
+      - '^142\.93\.227\.16$'
+    munin_node_config: {
+      "df*": {
+        "env.warning": "92",
+        "env.critical": "98",
+        "env.exclude": "none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs cgroup_root devtmpfs tmpfs",
+        "env.exclude_re": "^/dev/shm ^/run"
+      },
+      "diskstats*": {
+        "env.exclude": "loop"
+      }
+    }
