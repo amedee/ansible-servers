@@ -5,7 +5,6 @@ common_apt_packages:
   - hadori
   - localepurge
   - mc
-  - munin-node
   - ncdu
   - nmap
 

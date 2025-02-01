@@ -72,29 +72,8 @@
   ansible.builtin.hostname:
     name: "{{ hostname }}"
 
-- name: Configure Munin
-  block:
-    - name: Add mailinabox IP address to munin-node.conf
-      ansible.builtin.lineinfile:
-        path: /etc/munin/munin-node.conf
-        line: allow ^142\.93\.227\.16$
-        insertafter: "^allow .*"
-        owner: root
-        mode: u=rw,go=r
-      notify: Restart munin-node
-
-    - name: Copy munin plugin config files
-      ansible.builtin.copy:
-        src: etc/munin/plugin-conf.d/
-        dest: /etc/munin/plugin-conf.d/
-        owner: root
-        mode: u=rw,go=r
-        directory_mode: u=rwx,go=rx
-      notify: Restart munin-node
-
-    - name: Allow access to port 4949
-      community.general.ufw:
-        rule: allow
-        port: 4949
-        src: 142.93.227.16
-      notify: Restart munin-node
+- name: Allow Munin access to port 4949
+  community.general.ufw:
+    rule: allow
+    port: 4949
+    src: 142.93.227.16
