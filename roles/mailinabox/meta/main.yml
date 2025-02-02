@@ -27,3 +27,21 @@ dependencies:
             dest: '/usr/local/bin/extract_image_attachments.sh'
             owner: root
             mode: u=rwx,go=rx
+  - role: geerlingguy.munin-node
+    munin_node_allowed_ips:
+      - '^127\.0\.0\.1$'
+      - '^::1$'
+      - '^142\.93\.227\.16$'
+    munin_node_config: {
+      "backup_size": {
+        "user": "root"
+      },
+      "mailbox_*": {
+        "user": "root",
+        "env.mailbox_user": "amedee@vangasse.eu"
+      }
+    }
+    munin_node_install_plugins:
+      - src: files/etc/munin/plugins/backup_size
+      - src: files/etc/munin/plugins/mailbox_messages
+      - src: files/etc/munin/plugins/mailbox_size
