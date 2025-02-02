@@ -3,7 +3,6 @@
   ansible.builtin.apt:
     state: present
     pkg:
-      - munin-node
       - munin
 
 - name: Allow munin-node to read files in home directories
@@ -17,22 +16,6 @@
     owner: root
     mode: u=rw,go=r
   notify: Reload systemd
-
-- name: Add munin plugins
-  ansible.builtin.copy:
-    src: etc/munin/plugins/
-    dest: /etc/munin/plugins/
-    owner: root
-    mode: u=rwx,go=rx
-  notify: Restart munin-node
-
-- name: Add munin plugin configurations
-  ansible.builtin.copy:
-    src: etc/munin/plugin-conf.d/
-    dest: /etc/munin/plugin-conf.d/
-    owner: root
-    mode: u=rw,go=r
-  notify: Restart munin-node
 
 - name: Add munin host configurations
   ansible.builtin.copy:
