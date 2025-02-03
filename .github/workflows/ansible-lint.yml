@@ -4,8 +4,6 @@ name: Ansible Lint
 on:
   pull_request:
   push:
-    branches:
-      - '!main'
     paths:
       - '**'
       - '!README.md'
