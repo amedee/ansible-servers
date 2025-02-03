@@ -2,10 +2,7 @@
 name: Codacy Security Scan
 
 on:
-  pull_request:
   push:
-    branches:
-      - '!main'
     paths:
       - '**'
       - '!README.md'
