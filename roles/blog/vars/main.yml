@@ -1,10 +1,7 @@
 ---
-dbserver_apt_packages:
+blog_apt_packages:
   - mysql-client
   - python3-mysqldb
-  - python3-pip
-  - python3-boto3
-  - python3-packaging
 
 blog_wp_db_name: wordpress
 blog_wp_db_user: wordpress

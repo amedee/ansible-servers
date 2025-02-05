@@ -8,3 +8,4 @@ dependencies:
         priority: '-1'
         reason: |-
           I don't want a RC version of PHP
+  - role: aws
