@@ -1,8 +1,0 @@
----
-dbserver_apt_packages:
-  - mysql-client
-  - mysql-server
-  - python3-mysqldb
-  - python3-pip
-  - python3-boto3
-  - python3-packaging
