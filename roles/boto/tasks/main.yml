@@ -2,4 +2,4 @@
 - name: Install APT packages
   ansible.builtin.apt:
     state: present
-    pkg: "{{ aws_apt_packages }}"
+    pkg: "{{ boto_apt_packages }}"
