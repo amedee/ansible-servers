@@ -48,7 +48,7 @@ jobs:
         run: mkdir --parents ~/.ssh/controlmasters
 
       - name: Deploy changes to servers
-        uses: dawidd6/action-ansible-playbook@c97d71562fcba83cc1ea0602d5a77013427f7571 # v2.8.0
+        uses: dawidd6/action-ansible-playbook@a4133a9690f77b38c8227021ed497fc1267635d5 # v3
         with:
           playbook: playbooks/site.yml
           key: ${{secrets.SSH_PRIVATE_KEY}}
