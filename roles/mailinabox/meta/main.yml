@@ -36,6 +36,15 @@ dependencies:
       "backup_size": {
         "user": "root"
       },
+      "df": {
+        "env.exclude": "none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs cgroup_root devtmpfs tmpfs"
+      },
+      "df_inode": {
+        "env.exclude": "none unknown iso9660 squashfs udf romfs ramfs vfat debugfs nilfs2 rootfs tmpfs"
+      },
+      "diskstats": {
+        "env.include_only": "vd"
+      },
       "mailbox_*": {
         "user": "root",
         "env.mailbox_user": "amedee@vangasse.eu"
