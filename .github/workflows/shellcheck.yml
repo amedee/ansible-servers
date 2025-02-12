@@ -5,8 +5,9 @@ on:
   push:
     paths:
       - '**'
-      - '!README.md'
-      - '!.github/**'
+      - '!**.cfg'
+      - '!**.md'
+      - '!**.yml'
       - '.github/workflows/shellcheck.yml'
   workflow_call:
   workflow_dispatch:
