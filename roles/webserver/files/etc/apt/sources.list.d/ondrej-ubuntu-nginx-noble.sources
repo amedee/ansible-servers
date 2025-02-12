@@ -1,5 +1,0 @@
-Types: deb
-URIs: https://ppa.launchpadcontent.net/ondrej/nginx/ubuntu/
-Suites: noble
-Components: main
-Signed-By: /etc/apt/keyrings/ppa-ondrej.gpg
