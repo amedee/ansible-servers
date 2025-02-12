@@ -4,8 +4,9 @@ name: Ansible Lint
 on:
   push:
     paths:
-      - '**'
-      - '!README.md'
+      - '**.cfg'
+      - '**.j2'
+      - '**.yml'
       - '!.github/**'
       - '.github/workflows/ansible-lint.yml'
   workflow_call:
