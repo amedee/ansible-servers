@@ -1,11 +1,29 @@
 ---
-- name: Ensure no other apt process is running
-  ansible.builtin.shell: |
-    while fuser /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lock >/dev/null 2>&1; do
-      echo "Waiting for other apt processes to finish..."
-      sleep 10
-    done
-  changed_when: false
+- name: Ensure apt list lock is released
+  ansible.builtin.wait_for:
+    path: /var/lib/apt/lists/lock
+    state: absent
+    timeout: 300
+  register: apt_lock
+
+- name: Ensure dpkg lock is released
+  ansible.builtin.wait_for:
+    path: /var/lib/dpkg/lock
+    state: absent
+    timeout: 300
+  register: dpkg_lock
+
+- name: Ensure dpkg frontend lock is released
+  ansible.builtin.wait_for:
+    path: /var/lib/dpkg/lock-frontend
+    state: absent
+    timeout: 300
+  register: dpkg_frontend_lock
+
+- name: Fail if locks were not released in time
+  ansible.builtin.fail:
+    msg: "APT locks were not released in time."
+  when: apt_lock.failed or dpkg_lock.failed or dpkg_frontend_lock.failed
 
 - name: Update apt cache
   ansible.builtin.apt:
