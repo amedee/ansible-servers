@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Run ShellCheck
         # yamllint disable-line rule:line-length
-        uses: azohra/shell-linter@6bbeaa868df09c34ddc008e6030cfe89c03394a1  # v0.6.0
+        uses: azohra/shell-linter@30a9cf3f6cf25c08fc98f10d7dc4167f7b5c0c00  # v0.8.0
         with:
           # yamllint disable-line rule:line-length
           exclude-paths: "Vagrantfile,LICENSE,.github/CODEOWNERS,roles/*/files/etc/munin/*-conf.d"
