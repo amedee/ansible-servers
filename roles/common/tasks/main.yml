@@ -10,7 +10,7 @@
 - name: Update apt cache
   ansible.builtin.apt:
     update_cache: true
-    cache_valid_time: 86400 # One day
+    cache_valid_time: 86400  # One day
   register: result
   retries: 3
   delay: 60

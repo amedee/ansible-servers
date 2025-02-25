@@ -37,9 +37,11 @@ dependencies:
         "user": "root"
       },
       "df": {
+        # yamllint disable-line rule:line-length
         "env.exclude": "none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs cgroup_root devtmpfs tmpfs"
       },
       "df_inode": {
+        # yamllint disable-line rule:line-length
         "env.exclude": "none unknown iso9660 squashfs udf romfs ramfs vfat debugfs nilfs2 rootfs tmpfs"
       },
       "diskstats": {

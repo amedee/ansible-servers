@@ -13,6 +13,7 @@ webserver_deb822_repositories:
       components: [main]
       signed_by: "{{ webserver_ondrej_signature }}"
 
+# yamllint disable-line rule:line-length
 webserver_ondrej_signature: "http://ppa.launchpad.net/ondrej/php/ubuntu/dists/noble/Release.gpg"
 
 webserver_apt_packages:
@@ -56,5 +57,7 @@ webserver_redis_password: !vault |
   38393965306561363762333962626365303063346362353663363636366563633632383165326335
   3863
 webserver_redis_settings:
-  - { regexp: '^(# )?supervised ', line: 'supervised systemd'}
-  - { regexp: '^(# )?requirepass', line: "requirepass {{ webserver_redis_password }}"}
+  - regexp: '^(# )?supervised '
+    line: 'supervised systemd'
+  - regexp: '^(# )?requirepass'
+    line: "requirepass {{ webserver_redis_password }}"

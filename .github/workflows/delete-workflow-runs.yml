@@ -1,7 +1,7 @@
 ---
 name: Delete old workflow runs
 
-on:
+on:  # yamllint disable-line rule:truthy
   schedule:
     - cron: '0 0 1 * *'
   workflow_dispatch:
@@ -18,4 +18,5 @@ jobs:
       contents: read
     steps:
       - name: Delete workflow runs
-        uses: Mattraks/delete-workflow-runs@39f0bbed25d76b34de5594dceab824811479e5de # v2.0.6
+        # yamllint disable-line rule:line-length
+        uses: Mattraks/delete-workflow-runs@39f0bbed25d76b34de5594dceab824811479e5de  # v2.0.6
