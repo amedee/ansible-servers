@@ -33,4 +33,4 @@ jobs:
       - name: Run ansible-lint
         id: ansible-lint
         # yamllint disable-line rule:line-length
-        uses: ansible/ansible-lint@9cf49a01ac6b34f45aab16f0bbac1196fcd681e5  # v24
+        uses: ansible/ansible-lint@49ded6a7e4f3acf6b1eb4b3aa2796d84b5faa63a  # v25.1.3
