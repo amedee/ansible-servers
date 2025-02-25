@@ -1,11 +1,9 @@
 ---
-- name: Ensure no other apt process is running
+- name: Wait for APT locks to be released using flock
   ansible.builtin.shell: |
-    while fuser /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lock >/dev/null 2>&1; do
-      echo "Waiting for other apt processes to finish..."
-      sleep 10
-    done
+    flock --wait 300 /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lock true
   changed_when: false
+  failed_when: false
 
 - name: Update apt cache
   ansible.builtin.apt:
