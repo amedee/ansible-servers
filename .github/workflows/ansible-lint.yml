@@ -1,7 +1,7 @@
 ---
 name: Ansible Lint
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
     paths:
       - '**.cfg'
@@ -32,4 +32,5 @@ jobs:
 
       - name: Run ansible-lint
         id: ansible-lint
-        uses: ansible/ansible-lint@9cf49a01ac6b34f45aab16f0bbac1196fcd681e5 # v24
+        # yamllint disable-line rule:line-length
+        uses: ansible/ansible-lint@9cf49a01ac6b34f45aab16f0bbac1196fcd681e5  # v24

@@ -1,0 +1,31 @@
+---
+name: Yaml Lint
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    paths:
+      - '**.yaml'
+      - '**.yml'
+      - '.config/.yamllint'
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lintAllTheThings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: yaml-lint
+        # yamllint disable-line rule:line-length
+        uses: ibiqlik/action-yamllint@2576378a8e339169678f9939646ee3ee325e845c  # v3.1.1
+        with:
+          config_data: .config/.yamllint
+      - run: echo ${{ steps.yaml-lint.outputs.logfile }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: yamllint-logfile
+          path: ${{ steps.yaml-lint.outputs.logfile }}

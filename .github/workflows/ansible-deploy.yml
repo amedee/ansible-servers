@@ -1,7 +1,7 @@
 ---
 name: Deploy to Production
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
     branches:
       - main
@@ -31,7 +31,8 @@ jobs:
         host: [box.vangasse.eu, amedee.be]
     steps:
       - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@94c3c3d9567a0205de6da68a76c428ce4e769af1 # v2.0.0
+        # yamllint disable-line rule:line-length
+        uses: catchpoint/workflow-telemetry-action@94c3c3d9567a0205de6da68a76c428ce4e769af1  # v2.0.0
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -48,7 +49,8 @@ jobs:
         run: mkdir --parents ~/.ssh/controlmasters
 
       - name: Deploy changes to servers
-        uses: dawidd6/action-ansible-playbook@a4133a9690f77b38c8227021ed497fc1267635d5 # v3
+        # yamllint disable-line rule:line-length
+        uses: dawidd6/action-ansible-playbook@a4133a9690f77b38c8227021ed497fc1267635d5  # v3
         with:
           playbook: playbooks/site.yml
           key: ${{secrets.SSH_PRIVATE_KEY}}
@@ -66,7 +68,8 @@ jobs:
           overwrite: true
 
       - name: checkrun-timechart
-        uses: urcomputeringpal/checkrun-timechart-action@9de4251d7983342ccf09b84ed921326887571853 # v0.0.8
+        # yamllint disable-line rule:line-length
+        uses: urcomputeringpal/checkrun-timechart-action@9de4251d7983342ccf09b84ed921326887571853  # v0.0.8
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:

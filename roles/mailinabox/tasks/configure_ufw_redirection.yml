@@ -19,7 +19,7 @@
     block: |
       *nat
       :POSTROUTING ACCEPT [0:0]
-      # Redirect known Google IP ranges (aspmx.l.google.com) for SMTP traffic to localhost
+      # Redirect outgoing SMTP traffic (port 25) to localhost
       -A OUTPUT -p tcp --dport 25 -j DNAT --to-destination 127.0.0.1:25
       COMMIT
 

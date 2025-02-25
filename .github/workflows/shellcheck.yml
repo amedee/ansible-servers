@@ -1,7 +1,7 @@
 ---
 name: ShellCheck
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
     paths:
       - '**'
@@ -27,6 +27,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Run ShellCheck
-        uses: azohra/shell-linter@6bbeaa868df09c34ddc008e6030cfe89c03394a1 # v0.6.0
+        # yamllint disable-line rule:line-length
+        uses: azohra/shell-linter@6bbeaa868df09c34ddc008e6030cfe89c03394a1  # v0.6.0
         with:
+          # yamllint disable-line rule:line-length
           exclude-paths: "Vagrantfile,LICENSE,.github/CODEOWNERS,roles/*/files/etc/munin/*-conf.d"
