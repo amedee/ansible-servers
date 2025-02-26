@@ -1,7 +1,14 @@
 ---
 - name: Wait for APT locks to be released using flock
-  ansible.builtin.shell: |
-    flock --wait 300 /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lock true
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/flock
+      - --wait
+      - '300'
+      - /var/lib/apt/lists/lock
+      - /var/lib/dpkg/lock
+      - /var/lib/dpkg/lock-frontend
+      - 'true'
   changed_when: false
   failed_when: false
 

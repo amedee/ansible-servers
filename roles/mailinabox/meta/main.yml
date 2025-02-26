@@ -3,9 +3,9 @@ dependencies:
   - role: mailserver
   - role: debops.debops.apt_preferences
     apt_preferences__list:
-      - package: 'duplicity'
-        version: '3.0.1'
-        priority: '-1'
+      - package: duplicity
+        version: 3.0.1
+        priority: -1
         reason: |-
           Duplicity version 3.0.1 has a bug and I don't want it installed
   - role: geerlingguy.munin-node
@@ -13,30 +13,24 @@ dependencies:
       - '^127\.0\.0\.1$'
       - '^::1$'
       - '^142\.93\.227\.16$'
-    munin_node_config: {
-      "backup_size": {
-        "user": "root"
-      },
-      "df": {
+    munin_node_config:
+      backup_size:
+        user: root
+      df:
         # yamllint disable-line rule:line-length
-        "env.exclude": "none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs cgroup_root devtmpfs tmpfs"
-      },
-      "df_inode": {
+        env.exclude: 'none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs cgroup_root devtmpfs tmpfs'
+      df_inode:
         # yamllint disable-line rule:line-length
-        "env.exclude": "none unknown iso9660 squashfs udf romfs ramfs vfat debugfs nilfs2 rootfs tmpfs"
-      },
-      "diskstats": {
-        "env.include_only": "vd"
-      },
-      "mailbox_*": {
-        "user": "root",
-        "env.mailbox_user": "amedee@vangasse.eu"
-      }
-    }
+        env.exclude: 'none unknown iso9660 squashfs udf romfs ramfs vfat debugfs nilfs2 rootfs tmpfs'
+      diskstats:
+        env.include_only: vd
+      'mailbox_*':
+        user: root
+        env.mailbox_user: 'amedee@vangasse.eu'
     munin_node_install_plugins:
-      - src: "etc/munin/plugins/backup_size"
-      - src: "etc/munin/plugins/mailbox_messages"
-      - src: "etc/munin/plugins/mailbox_vsize"
+      - src: etc/munin/plugins/backup_size
+      - src: etc/munin/plugins/mailbox_messages
+      - src: etc/munin/plugins/mailbox_vsize
     munin_node_plugins:
       - name: backup_size
       - name: mailbox_messages
