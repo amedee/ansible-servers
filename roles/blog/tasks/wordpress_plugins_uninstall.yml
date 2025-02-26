@@ -3,10 +3,12 @@
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
-    cmd: >
-      wp plugin is-installed
-        {{ wp_plugin }}
-        --path={{ webserver_directory }}
+    argv:
+      - wp
+      - plugin
+      - is-installed
+      - "{{ wp_plugin }}"
+      - "--path={{ webserver_directory }}"
   changed_when: false
   failed_when: false
   register: wp_plugin_is_installed
@@ -16,8 +18,10 @@
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
-    cmd: >
-      wp plugin uninstall
-        {{ wp_plugin }}
-        --path={{ webserver_directory }}
+    argv:
+      - wp
+      - plugin
+      - uninstall
+      - "{{ wp_plugin }}"
+      - "--path={{ webserver_directory }}"
   changed_when: true

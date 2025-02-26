@@ -9,9 +9,11 @@
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
-    cmd: >
-      wp core download
-        --path={{ webserver_directory }}
+    argv:
+      - wp
+      - core
+      - download
+      - "--path={{ webserver_directory }}"
   register: wp_core_download
   changed_when: true
 
@@ -25,13 +27,15 @@
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
-    cmd: >
-      wp config create
-        --dbname={{ blog_wp_db_name }}
-        --dbuser={{ blog_wp_db_user }}
-        --dbpass={{ blog_wp_db_password }}
-        --dbhost={{ blog_wp_db_host }}
-        --path={{ webserver_directory }}
+    argv:
+      - wp
+      - config
+      - create
+      - "--dbname={{ blog_wp_db_name }}"
+      - "--dbuser={{ blog_wp_db_user }}"
+      - "--dbpass={{ blog_wp_db_password }}"
+      - "--dbhost={{ blog_wp_db_host }}"
+      - "--path={{ webserver_directory }}"
   register: wp_core_download
   changed_when: true
 

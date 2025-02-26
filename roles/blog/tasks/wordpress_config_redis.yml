@@ -3,10 +3,12 @@
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
-    cmd: >
-      wp config get
-        {{ wp_config_redis.name }}
-        --path={{ webserver_directory }}
+    argv:
+      - wp
+      - config
+      - get
+      - "{{ wp_config_redis.name }}"
+      - "--path={{ webserver_directory }}"
   changed_when: false
   failed_when: false
   register: wp_config
@@ -16,10 +18,12 @@
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
-    cmd: >
-      wp config set
-        {{ wp_config_redis.name }}
-        {{ wp_config_redis.value }}
-        --path={{ webserver_directory }}
+    argv:
+      - wp
+      - config
+      - set
+      - "{{ wp_config_redis.name }}"
+      - "{{ wp_config_redis.value }}"
+      - "--path={{ webserver_directory }}"
   changed_when: true
   failed_when: false
