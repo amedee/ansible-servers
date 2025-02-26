@@ -1,0 +1,26 @@
+---
+name: Validate Configs
+
+on:  # yamllint disable-line rule:truthy
+  push:
+  workflow_call:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: validate-configs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run validate-configs
+        # yamllint disable-line rule:line-length
+        uses: kehoecj/validate-configs-action@55242af1509991b2b18e2cf120eb4083a33e5c4b  # v4.0.1

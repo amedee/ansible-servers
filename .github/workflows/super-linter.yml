@@ -1,0 +1,43 @@
+---
+name: Super-linter
+
+on:  # yamllint disable-line rule:truthy
+  push:
+  workflow_call:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: read
+  # To report GitHub Actions status checks
+  statuses: write
+
+jobs:
+  lint:
+    name: Super-linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # super-linter needs the full git history to get the
+          # list of files that changed across commits
+          fetch-depth: 0
+
+      - name: Install Ansible Galaxy collections
+        run: ansible-galaxy install -r requirements.yml
+
+      - name: Run Super-linter
+        # yamllint disable-line rule:line-length
+        uses: super-linter/super-linter/slim@85f7611e0f7b53c8573cca84aa0ed4344f6f6a4d  # v7.2.1
+        env:
+          # Set the root directory for Ansible to the top-level of the DEFAULT_WORKSPACE.
+          ANSIBLE_DIRECTORY: .
+          # To report GitHub Actions status checks
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IGNORE_GITIGNORED_FILES: true
+          LINTER_RULES_PATH: .config
