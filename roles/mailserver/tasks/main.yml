@@ -35,7 +35,7 @@
     create: true
     owner: root
     mode: u=rw,go=r
-    regexp: "{{ item.regexp }}"
+    regexp: "^{{ item.regexp }}"
     line: "{{ item.line }}"
   loop: "{{ mailserver_postfix_settings }}"
   notify: Restart Postfix

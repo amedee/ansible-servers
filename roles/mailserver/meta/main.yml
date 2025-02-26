@@ -5,10 +5,10 @@ dependencies:
     logrotate__options: |
       su root adm
     logrotate__config:
-      - filename: 'postfix'
+      - filename: postfix
         logs:
-          - '/var/log/mail.log'
-          - '/var/log/mail.err'
+          - /var/log/mail.log
+          - /var/log/mail.err
         options: |
           monthly
           rotate 24
