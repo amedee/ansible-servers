@@ -1,12 +1,8 @@
 ---
-name: Yaml Lint
+name: Validate Configs
 
 on:  # yamllint disable-line rule:truthy
   push:
-    paths:
-      - '**.yaml'
-      - '**.yml'
-      - '.config/.yamllint'
   workflow_call:
   workflow_dispatch:
 
@@ -19,14 +15,12 @@ permissions:
 
 jobs:
   lint:
-    name: yamllint
+    name: validate-configs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run yamllint
+      - name: Run validate-configs
         # yamllint disable-line rule:line-length
-        uses: ibiqlik/action-yamllint@2576378a8e339169678f9939646ee3ee325e845c  # v3.1.1
-        with:
-          config_data: .config/.yamllint
+        uses: kehoecj/validate-configs-action@55242af1509991b2b18e2cf120eb4083a33e5c4b  # v4.0.1
