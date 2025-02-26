@@ -75,3 +75,11 @@
     rule: allow
     port: 4949
     src: 142.93.227.16
+
+- name: Create cron job for hadori
+  ansible.builtin.cron:
+    cron_file: hadori
+    job: '/usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt'
+    name: 'Hardlink with hadori'
+    special_time: monthly
+    user: root

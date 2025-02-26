@@ -13,12 +13,6 @@ dependencies:
     etc_aliases__recipients:
       - root: 'amedee@vangasse.eu'
   - role: debops.debops.apt_listchanges
-  - role: debops.debops.cron
-    cron__jobs:
-      hadori:
-        name: 'Hardlink with hadori'
-        special_time: 'monthly'
-        job: '/usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt'
   - role: debops.debops.unattended_upgrades
   - role: geerlingguy.munin-node
     munin_node_allowed_ips:

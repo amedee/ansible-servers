@@ -23,3 +23,6 @@
 
 - name: Configure Backup
   ansible.builtin.include_tasks: tasks/backup.yml
+
+- name: Configure cron jobs
+  ansible.builtin.include_tasks: tasks/cron.yml
