@@ -22,56 +22,10 @@
   until: result is not failed
 
 - name: Configure locale
-  block:
-    - name: Ensure locale exists
-      community.general.locale_gen:
-        name: "{{ common_locale }}"
-        state: present
-
-    - name: Install localepurge packages
-      ansible.builtin.apt:
-        state: present
-        pkg: localepurge
-
-    - name: Edit localepurge config file
-      ansible.builtin.lineinfile:
-        path: /etc/locale.nopurge
-        create: true
-        line: "{{ common_locale }}"
-        owner: root
-        mode: u=rw,go=r
+  ansible.builtin.import_tasks: locale.yml
 
 - name: Install and upgrade software
-  block:
-    - name: Remove unneeded APT packages
-      ansible.builtin.apt:
-        state: absent
-        pkg: "{{ common_apt_packages_uninstall }}"
-      notify:
-        - APT autoclean
-        - APT autoremove
-        - Check if reboot required
-
-    - name: Install APT packages
-      ansible.builtin.apt:
-        state: present
-        pkg: "{{ common_apt_packages }}"
-      notify:
-        - APT autoclean
-        - APT autoremove
-        - Check if reboot required
-
-    - name: Upgrade all packages
-      ansible.builtin.apt:
-        upgrade: dist
-      notify:
-        - APT autoclean
-        - APT autoremove
-        - Check if reboot required
-
-    - name: Install snap packages
-      community.general.snap:
-        name: "{{ common_snap_packages }}"
+  ansible.builtin.import_tasks: install_software.yml
 
 - name: Set hostname
   ansible.builtin.hostname:

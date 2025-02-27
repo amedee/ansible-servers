@@ -1,0 +1,30 @@
+---
+- name: Remove unneeded APT packages
+  ansible.builtin.apt:
+    state: absent
+    pkg: "{{ common_apt_packages_uninstall }}"
+  notify:
+    - APT autoclean
+    - APT autoremove
+    - Check if reboot required
+
+- name: Install APT packages
+  ansible.builtin.apt:
+    state: present
+    pkg: "{{ common_apt_packages }}"
+  notify:
+    - APT autoclean
+    - APT autoremove
+    - Check if reboot required
+
+- name: Upgrade all packages
+  ansible.builtin.apt:
+    upgrade: dist
+  notify:
+    - APT autoclean
+    - APT autoremove
+    - Check if reboot required
+
+- name: Install snap packages
+  community.general.snap:
+    name: "{{ common_snap_packages }}"

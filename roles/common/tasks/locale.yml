@@ -1,0 +1,18 @@
+---
+- name: Ensure locale exists
+  community.general.locale_gen:
+    name: "{{ common_locale }}"
+    state: present
+
+- name: Install localepurge packages
+  ansible.builtin.apt:
+    state: present
+    pkg: localepurge
+
+- name: Edit localepurge config file
+  ansible.builtin.lineinfile:
+    path: /etc/locale.nopurge
+    create: true
+    line: "{{ common_locale }}"
+    owner: root
+    mode: u=rw,go=r
