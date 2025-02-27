@@ -28,9 +28,9 @@ dependencies:
         user: root
         env.mailbox_user: 'amedee@vangasse.eu'
     munin_node_install_plugins:
-      - src: etc/munin/plugins/backup_size
-      - src: etc/munin/plugins/mailbox_messages
-      - src: etc/munin/plugins/mailbox_vsize
+      - src: usr/share/munin/plugins/backup_size
+      - src: usr/share/munin/plugins/mailbox_messages
+      - src: usr/share/munin/plugins/mailbox_vsize
     munin_node_plugins:
       - name: backup_size
       - name: mailbox_messages
