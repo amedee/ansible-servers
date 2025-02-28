@@ -4,6 +4,5 @@
 *.xz
 .idea/
 .vagrant/
-roles/geerlingguy.munin-node/
-roles/geerlingguy.swap/
-roles/rolehippie.swap/
+roles/geerlingguy.*/
+roles/rolehippie.*/
