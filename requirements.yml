@@ -2,8 +2,8 @@
 roles:
   - name: geerlingguy.munin-node
     version: 1.4.0
-  - name: geerlingguy.swap
-    version: 1.2.0
+  - name: rolehippie.swap
+    version: v2.0.0
 
 collections:
   - name: amazon.aws
@@ -11,7 +11,7 @@ collections:
   - name: ansible.posix
     version: 2.0.0
   - name: community.general
-    version: 10.3.0
+    version: 10.4.0
   - name: community.mysql
     version: 3.12.0
   - name: debops.debops
