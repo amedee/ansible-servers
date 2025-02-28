@@ -1,0 +1,4 @@
+---
+skip_path roles/geerlingguy.munin-node
+skip_path roles/geerlingguy.swap
+skip_path roles/rolehippie.swap
