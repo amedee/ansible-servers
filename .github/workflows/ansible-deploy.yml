@@ -7,7 +7,10 @@ on:  # yamllint disable-line rule:truthy
       - main
     paths:
       - '**'
+      - '!.gitignore'
+      - '!.pre-commit-config.yaml'
       - '!README.md'
+      - '!.config/**'
       - '!.github/**'
       - '.github/workflows/ansible-deploy.yml'
   schedule:
