@@ -6,3 +6,4 @@
 .vagrant/
 roles/geerlingguy.munin-node/
 roles/geerlingguy.swap/
+roles/rolehippie.swap/
