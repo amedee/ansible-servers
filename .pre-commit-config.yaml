@@ -12,6 +12,7 @@ repos:
       rev: v24.7.0
       hooks:
           - id: ansible-lint
+            args: ['-c', '.github/linters/.ansible-lint.yml']
     - repo: https://github.com/semaphor-dk/dansabel
       rev: 1.4.0
       hooks:
