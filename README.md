@@ -19,11 +19,11 @@ ansible-playbook playbooks/site.yml
   [Web Archive of securitysage.com][securitysage].
   Last retrieval date: 6 January 2007.
 
-[amedee.be]:    https://amedee.be
+[amedee.be]: https://amedee.be
 [box.vangasse.eu]: https://box.vangasse.eu
 [lemp droplet]: https://do.co/2GOFe5J#start
-[mailinabox]:   https://mailinabox.email/
-[badge]:        https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml/badge.svg
-[deployment]:   https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml
+[mailinabox]: https://mailinabox.email/
+[badge]: https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml/badge.svg
+[deployment]: https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml
 [checks files]: roles/mailserver/files/etc/postfix/checks
 [securitysage]: https://web.archive.org/web/20070106001401/http://www.securitysage.com:80/guides/postfix_uce.html

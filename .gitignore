@@ -4,5 +4,8 @@
 *.xz
 .idea/
 .vagrant/
+node_modules/
+package-lock.json
+package.json
 roles/geerlingguy.*/
 roles/rolehippie.*/
