@@ -10,7 +10,7 @@ HOSTNAME="ubuntu-${UBUNTU_VERSION}"
 # Create the inventory file
 INVENTORY="/vagrant/inventory/staging"
 mkdir --parents "${INVENTORY}"
-cat <<EOF > "${INVENTORY}/hosts.yml"
+cat <<EOF >"${INVENTORY}/hosts.yml"
 ---
 all:
   hosts:
