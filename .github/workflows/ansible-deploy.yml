@@ -32,6 +32,9 @@ jobs:
     strategy:
       matrix:
         host: [box.vangasse.eu, amedee.be]
+    env:
+      ANSIBLE_CONFIG: ansible.cfg
+      ANSIBLE_STDOUT_CALLBACK: yaml
     steps:
       - name: Collect Workflow Telemetry
         # yamllint disable-line rule:line-length
@@ -39,11 +42,6 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set environment variables
-        run: |
-            echo "ANSIBLE_CONFIG=ansible.cfg" >> $GITHUB_ENV
-            echo "ANSIBLE_STDOUT_CALLBACK=yaml" >> $GITHUB_ENV
 
       - name: Install Ansible Galaxy collections
         run: ansible-galaxy install -r requirements.yml
