@@ -28,9 +28,6 @@ jobs:
           # list of files that changed across commits
           fetch-depth: 0
 
-      - name: Install Ansible Galaxy collections
-        run: ansible-galaxy install -r requirements.yml
-
       - name: Run Super-linter
         # yamllint disable-line rule:line-length
         uses: super-linter/super-linter/slim@85f7611e0f7b53c8573cca84aa0ed4344f6f6a4d # v7.2.1
