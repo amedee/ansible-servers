@@ -1,7 +1,7 @@
 ---
 name: Super-linter
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   push:
   workflow_call:
   workflow_dispatch:
@@ -33,7 +33,7 @@ jobs:
 
       - name: Run Super-linter
         # yamllint disable-line rule:line-length
-        uses: super-linter/super-linter/slim@85f7611e0f7b53c8573cca84aa0ed4344f6f6a4d  # v7.2.1
+        uses: super-linter/super-linter/slim@85f7611e0f7b53c8573cca84aa0ed4344f6f6a4d # v7.2.1
         env:
           # Set the root directory for Ansible to the top-level of the DEFAULT_WORKSPACE.
           ANSIBLE_DIRECTORY: .

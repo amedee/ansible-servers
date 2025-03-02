@@ -15,7 +15,7 @@
   ansible.builtin.blockinfile:
     path: /etc/ufw/before.rules
     backup: true
-    insertafter: '^COMMIT'
+    insertafter: "^COMMIT"
     block: |
       *nat
       :POSTROUTING ACCEPT [0:0]
@@ -26,13 +26,13 @@
 - name: Ensure DEFAULT_FORWARD_POLICY is set to ACCEPT
   ansible.builtin.lineinfile:
     path: /etc/default/ufw
-    regexp: '^DEFAULT_FORWARD_POLICY='
+    regexp: "^DEFAULT_FORWARD_POLICY="
     line: 'DEFAULT_FORWARD_POLICY="ACCEPT"'
 
 - name: Ensure IP_FORWARD is set to yes
   ansible.builtin.lineinfile:
     path: /etc/default/ufw
-    regexp: '^IP_FORWARD='
+    regexp: "^IP_FORWARD="
     line: 'IP_FORWARD="yes"'
 
 - name: Reload UFW

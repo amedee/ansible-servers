@@ -7,6 +7,6 @@
 profile: production
 
 exclude_paths:
-  - '**/roles/geerlingguy.munin-node/'
-  - '**/roles/geerlingguy.swap/'
-  - '**/roles/rolehippie.swap/'
+  - "**/roles/geerlingguy.munin-node/"
+  - "**/roles/geerlingguy.swap/"
+  - "**/roles/rolehippie.swap/"

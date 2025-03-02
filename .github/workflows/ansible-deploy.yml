@@ -1,20 +1,20 @@
 ---
 name: Deploy to Production
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   push:
     branches:
       - main
     paths:
-      - '**'
-      - '!.gitignore'
-      - '!.pre-commit-config.yaml'
-      - '!README.md'
-      - '!.config/**'
-      - '!.github/**'
-      - '.github/workflows/ansible-deploy.yml'
+      - "**"
+      - "!.gitignore"
+      - "!.pre-commit-config.yaml"
+      - "!README.md"
+      - "!.config/**"
+      - "!.github/**"
+      - ".github/workflows/ansible-deploy.yml"
   schedule:
-    - cron: '10 3 * * SAT'
+    - cron: "10 3 * * SAT"
   workflow_dispatch:
 
 concurrency:
@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Collect Workflow Telemetry
         # yamllint disable-line rule:line-length
-        uses: catchpoint/workflow-telemetry-action@94c3c3d9567a0205de6da68a76c428ce4e769af1  # v2.0.0
+        uses: catchpoint/workflow-telemetry-action@94c3c3d9567a0205de6da68a76c428ce4e769af1 # v2.0.0
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
 
       - name: Deploy changes to servers
         # yamllint disable-line rule:line-length
-        uses: dawidd6/action-ansible-playbook@a4133a9690f77b38c8227021ed497fc1267635d5  # v3
+        uses: dawidd6/action-ansible-playbook@a4133a9690f77b38c8227021ed497fc1267635d5 # v3
         with:
           playbook: playbooks/site.yml
           key: ${{secrets.SSH_PRIVATE_KEY}}
@@ -71,7 +71,7 @@ jobs:
 
       - name: checkrun-timechart
         # yamllint disable-line rule:line-length
-        uses: urcomputeringpal/checkrun-timechart-action@9de4251d7983342ccf09b84ed921326887571853  # v0.0.8
+        uses: urcomputeringpal/checkrun-timechart-action@9de4251d7983342ccf09b84ed921326887571853 # v0.0.8
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:

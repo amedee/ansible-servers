@@ -4,7 +4,7 @@ dependencies:
   - role: debops.debops.apt_preferences
     apt_preferences__list:
       - package: php
-        version: '*rc'
+        version: "*rc"
         priority: -1
         reason: |-
           I don't want a RC version of PHP

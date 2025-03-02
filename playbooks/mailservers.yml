@@ -1,6 +1,6 @@
 ---
 - name: Configure mail servers
   hosts: mailservers
-  strategy: ansible.builtin.free  # noqa: run-once[play]
+  strategy: ansible.builtin.free # noqa: run-once[play]
   roles:
     - mailinabox

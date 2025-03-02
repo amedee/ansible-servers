@@ -1,7 +1,7 @@
 ---
 name: GitHub Workflows Metrics
 
-on:  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
   schedule:
     - cron: "30 10 * * SAT"
   workflow_dispatch:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # yamllint disable-line rule:line-length
-      - uses: yykamei/github-workflows-metrics@88ef4f78069ed673198c4da371b099d24bffabca  # v0.3.7
+      - uses: yykamei/github-workflows-metrics@88ef4f78069ed673198c4da371b099d24bffabca # v0.3.7
         with:
           only: ansible-deploy.yml
           status: success

@@ -4,18 +4,18 @@
     argv:
       - /usr/bin/flock
       - --wait
-      - '300'
+      - "300"
       - /var/lib/apt/lists/lock
       - /var/lib/dpkg/lock
       - /var/lib/dpkg/lock-frontend
-      - 'true'
+      - "true"
   changed_when: false
   failed_when: false
 
 - name: Update apt cache
   ansible.builtin.apt:
     update_cache: true
-    cache_valid_time: 86400  # One day
+    cache_valid_time: 86400 # One day
   register: result
   retries: 3
   delay: 60
@@ -40,7 +40,7 @@
 - name: Create cron job for hadori
   ansible.builtin.cron:
     cron_file: hadori
-    job: '/usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt'
-    name: 'Hardlink with hadori'
+    job: "/usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt"
+    name: "Hardlink with hadori"
     special_time: monthly
     user: root

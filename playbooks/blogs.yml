@@ -1,6 +1,6 @@
 ---
 - name: Configure WordPress blogs
   hosts: blogs
-  strategy: ansible.builtin.free  # noqa: run-once[play]
+  strategy: ansible.builtin.free # noqa: run-once[play]
   roles:
     - blog

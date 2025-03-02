@@ -11,22 +11,22 @@ dependencies:
   - role: geerlingguy.munin-node
     munin_node_allowed_ips:
       - '^127\.0\.0\.1$'
-      - '^::1$'
+      - "^::1$"
       - '^142\.93\.227\.16$'
     munin_node_config:
       backup_size:
         user: root
       df:
         # yamllint disable-line rule:line-length
-        env.exclude: 'none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs cgroup_root devtmpfs tmpfs'
+        env.exclude: "none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs cgroup_root devtmpfs tmpfs"
       df_inode:
         # yamllint disable-line rule:line-length
-        env.exclude: 'none unknown iso9660 squashfs udf romfs ramfs vfat debugfs nilfs2 rootfs tmpfs'
+        env.exclude: "none unknown iso9660 squashfs udf romfs ramfs vfat debugfs nilfs2 rootfs tmpfs"
       diskstats:
         env.include_only: vd
-      'mailbox_*':
+      "mailbox_*":
         user: root
-        env.mailbox_user: 'amedee@vangasse.eu'
+        env.mailbox_user: "amedee@vangasse.eu"
     munin_node_install_plugins:
       - src: usr/share/munin/plugins/backup_size
       - src: usr/share/munin/plugins/mailbox_messages

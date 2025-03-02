@@ -2,19 +2,19 @@
 webserver_deb822_repositories:
   - name: ondrej-ubuntu-nginx-noble
     repo:
-      uris: 'https://ppa.launchpadcontent.net/ondrej/nginx/ubuntu/'
+      uris: "https://ppa.launchpadcontent.net/ondrej/nginx/ubuntu/"
       suites: [noble]
       components: [main]
       signed_by: "{{ webserver_ondrej_signature }}"
   - name: ondrej-ubuntu-php-noble
     repo:
-      uris: 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+      uris: "https://ppa.launchpadcontent.net/ondrej/php/ubuntu/"
       suites: [noble]
       components: [main]
       signed_by: "{{ webserver_ondrej_signature }}"
 
 # yamllint disable-line rule:line-length
-webserver_ondrej_signature: 'http://ppa.launchpad.net/ondrej/php/ubuntu/dists/noble/Release.gpg'
+webserver_ondrej_signature: "http://ppa.launchpad.net/ondrej/php/ubuntu/dists/noble/Release.gpg"
 
 webserver_apt_packages:
   - curl
@@ -57,7 +57,7 @@ webserver_redis_password: !vault |
   38393965306561363762333962626365303063346362353663363636366563633632383165326335
   3863
 webserver_redis_settings:
-  - regexp: '^(# )?supervised '
-    line: 'supervised systemd'
-  - regexp: '^(# )?requirepass'
+  - regexp: "^(# )?supervised "
+    line: "supervised systemd"
+  - regexp: "^(# )?requirepass"
     line: "requirepass {{ webserver_redis_password }}"
