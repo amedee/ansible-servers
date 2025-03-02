@@ -1,7 +1,12 @@
 ---
 dependencies:
+  - role: common
   - role: mailserver
-  - role: dbserver
+  - role: debops.debops.mariadb_server
+    mariadb_server__options:
+      - section: mysqld
+        options:
+          - name: disable_log_bin
   - role: webserver
   - role: boto
   - role: debops.debops.keyring
