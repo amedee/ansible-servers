@@ -7,11 +7,8 @@ on: # yamllint disable-line rule:truthy
       - main
     paths:
       - "**"
-      - "!.gitignore"
-      - "!.pre-commit-config.yaml"
-      - "!README.md"
-      - "!.config/**"
-      - "!.github/**"
+      - "!*.md"
+      - "!.**"
       - ".github/workflows/ansible-deploy.yml"
   schedule:
     - cron: "10 3 * * SAT"
