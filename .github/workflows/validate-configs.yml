@@ -3,6 +3,9 @@ name: Validate Configs
 
 on: # yamllint disable-line rule:truthy
   push:
+    paths:
+      - "**"
+      - "!*.md"
   workflow_call:
   workflow_dispatch:
 
