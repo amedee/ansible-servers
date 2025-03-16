@@ -14,6 +14,7 @@ ansible-playbook playbooks/site.yml
 [![Deployment Status][deployment-badge]][deployment-status]
 [![Codacy Badge][codacy-badge]][codacy-grade]
 [![Super-Linter][superlinter-badge]][superlinter-status]
+[![License: MIT][license-badge]][license-link]
 
 ## References
 
@@ -31,5 +32,7 @@ ansible-playbook playbooks/site.yml
 [codacy-grade]: https://app.codacy.com/gh/amedee/ansible-servers/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
 [superlinter-badge]: https://github.com/amedee/ansible-servers/actions/workflows/super-linter.yml/badge.svg
 [superlinter-status]: https://github.com/marketplace/actions/super-linter
+[license-badge]: https://img.shields.io/badge/License-MIT-yellow.svg
+[license-link]: https://opensource.org/licenses/MIT
 [checks files]: roles/mailserver/files/etc/postfix/checks
 [securitysage]: https://web.archive.org/web/20070106001401/http://www.securitysage.com:80/guides/postfix_uce.html
