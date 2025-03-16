@@ -1,5 +1,7 @@
 # ansible-servers
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8cf3e9412f24435eb670a6633c3d5378)](https://app.codacy.com/gh/amedee/ansible-servers?utm_source=github.com&utm_medium=referral&utm_content=amedee/ansible-servers&utm_campaign=Badge_Grade)
+
 Ansible playbooks to configure my servers:
 
 - [amedee.be]: based on DigitalOcean's [1-Click LEMP Droplet][lemp droplet]
