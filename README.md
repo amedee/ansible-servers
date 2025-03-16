@@ -11,7 +11,8 @@ Deploy with
 ansible-playbook playbooks/site.yml
 ```
 
-[![Deployment Status][badge]][deployment]
+[![Deployment Status][deployment-badge]][deployment-status]
+[![Codacy Badge][codacy-badge]][codacy-grade]
 
 ## References
 
@@ -23,7 +24,9 @@ ansible-playbook playbooks/site.yml
 [box.vangasse.eu]: https://box.vangasse.eu
 [lemp droplet]: https://do.co/2GOFe5J#start
 [mailinabox]: https://mailinabox.email/
-[badge]: https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml/badge.svg
-[deployment]: https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml
+[deployment-badge]: https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml/badge.svg
+[deployment-status]: https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml
+[codacy-badge]: https://app.codacy.com/project/badge/Grade/14aefeb38e4e4313a524d732264dc9fc
+[codacy-grade]: https://app.codacy.com/gh/amedee/ansible-servers/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
 [checks files]: roles/mailserver/files/etc/postfix/checks
 [securitysage]: https://web.archive.org/web/20070106001401/http://www.securitysage.com:80/guides/postfix_uce.html
