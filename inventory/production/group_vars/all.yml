@@ -7,3 +7,4 @@ ansible_ssh_common_args: >-
   -o ControlPersist=10m
   -o ForwardAgent=yes
   -o StrictHostKeyChecking=accept-new
+hold_grub_packages: false
