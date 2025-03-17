@@ -1,4 +1,11 @@
 ---
+- name: Create custom DNS directory
+  ansible.builtin.file:
+    path: /home/user-data/dns
+    state: directory
+    owner: root
+    mode: u=rw,go=r
+
 - name: Copy custom DNS settings
   ansible.builtin.copy:
     src: home/user-data/dns/custom.yaml
