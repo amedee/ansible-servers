@@ -4,6 +4,13 @@
     name: duplicity
     state: present
 
+- name: Create duplicity config directory
+  ansible.builtin.file:
+    path: /home/user-data/backup
+    state: directory
+    owner: root
+    mode: u=rw,go=r
+
 - name: Configure duplicity
   ansible.builtin.template:
     src: home/user-data/backup/custom.yaml.j2
