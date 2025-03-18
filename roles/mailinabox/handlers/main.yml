@@ -3,6 +3,7 @@
   ansible.builtin.command:
     cmd: /root/mailinabox/tools/dns_update --force
   changed_when: true
+  when: dns_update.stat.exists
 
 - name: Reload systemd
   ansible.builtin.systemd_service:
@@ -23,3 +24,4 @@
   ansible.builtin.command:
     cmd: /root/mailinabox/management/backup.py
   changed_when: true
+  when: backup_py.stat.exists

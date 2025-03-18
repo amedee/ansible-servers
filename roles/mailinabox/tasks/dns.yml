@@ -6,6 +6,11 @@
     owner: root
     mode: u=rw,go=r
 
+- name: Check if dns_update exists
+  ansible.builtin.stat:
+    path: /root/mailinabox/tools/dns_update
+  register: dns_update
+
 - name: Copy custom DNS settings
   ansible.builtin.copy:
     src: home/user-data/dns/custom.yaml

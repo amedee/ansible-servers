@@ -11,6 +11,11 @@
     owner: root
     mode: u=rw,go=r
 
+- name: Check if backup.py exists
+  ansible.builtin.stat:
+    path: /root/mailinabox/management/backup.py
+  register: backup_py
+
 - name: Configure duplicity
   ansible.builtin.template:
     src: home/user-data/backup/custom.yaml.j2
