@@ -12,11 +12,8 @@ Vagrant.configure(2) do |config|
     vb.memory = 2048
     vb.linked_clone = true
   end
-  config.vm.provision 'shell', inline: <<-SHELL
-    parted --fix --script /dev/sda resizepart 3 100%
-    pvresize /dev/sda3
-    lvresize -rl +100%FREE /dev/ubuntu-vg/ubuntu-lv
-  SHELL
+  config.vm.provision 'shell', path: 'resize_disk.sh'
+
   script = 'inventory/staging/get_inventory.sh'
   config.vm.provision 'shell', path: script, run: 'always'
 end
