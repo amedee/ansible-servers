@@ -1,0 +1,143 @@
+---
+name: Delete Closed Issues
+
+on: # yamllint disable-line rule:truthy
+  schedule:
+    - cron: "0 0 2 * *" # Runs at midnight UTC on the second day of the month
+  workflow_dispatch: # Allow manual execution
+    inputs:
+      dry_run:
+        description: "Enable dry run mode (preview deletions, no actual delete)"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      days_to_keep:
+        description: "Number of days to retain closed issues"
+        required: false
+        default: "90"
+        type: string
+      min_issues_to_keep:
+        description: "Minimum number of closed issues to keep"
+        required: false
+        default: "10"
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  issues: write # ✅ Required to delete issues
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install --yes gh
+
+      - name: Authenticate with GitHub CLI
+        run: gh auth login --with-token <<< "${{ secrets.GH_FINEGRAINED_PAT }}"
+
+      - name: Delete old closed issues
+        env:
+          GH_TOKEN: ${{ secrets.GH_FINEGRAINED_PAT }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          DAYS_TO_KEEP: ${{ inputs.days_to_keep || '30' }}
+          MIN_ISSUES_TO_KEEP: ${{ inputs.min_issues_to_keep || '6' }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Delete old closed issues
+          # Setting threshold date
+          NOW=$(date -u +%s)
+          THRESHOLD_DATE=$(date -u -d "${DAYS_TO_KEEP} days ago" +%s)
+          echo "Only consider issues older than ${THRESHOLD_DATE}"
+
+          echo "::group::Checking GitHub API Rate Limits..."
+          RATE_LIMIT=$(gh api /rate_limit --jq '.rate.remaining')
+          echo "Remaining API requests: ${RATE_LIMIT}"
+          if [[ "${RATE_LIMIT}" -lt 10 ]]; then
+            echo "⚠️ Low API limit detected. Sleeping for a while..."
+            sleep 60
+          fi
+          echo "::endgroup::"
+
+          echo "Fetching ALL closed issues from ${REPO}..."
+          PAGE=1
+          PER_PAGE=100
+          CLOSED_ISSUES="[]"
+
+          # Fetch issues with pagination
+          while true; do
+            ISSUES=$(gh api "repos/${REPO}/issues?state=closed&per_page=${PER_PAGE}&page=${PAGE}" \
+              --jq '[.[] | select(.pull_request | not) | {number, closed_at}]')
+
+            # If no issues are returned, break the loop
+            if [[ "${ISSUES}" == "[]" ]]; then
+              break
+            fi
+
+            # Append issues to the list
+            CLOSED_ISSUES=$(echo "${CLOSED_ISSUES}" "${ISSUES}" | jq -s 'add')
+
+            # Check if we have less than PER_PAGE issues, signaling the end of pagination
+            if [[ $(echo "${ISSUES}" | jq length) -lt ${PER_PAGE} ]]; then
+              break
+            fi
+
+            PAGE=$((PAGE + 1))
+          done
+
+          if [ "${CLOSED_ISSUES}" = "[]" ]; then
+            echo "✅ No closed issues found. Exiting."
+            exit 0
+          fi
+
+          # Retain at least MIN_ISSUES_TO_KEEP and those within the retention period
+          ISSUES_TO_DELETE=$(echo "${CLOSED_ISSUES}" | jq -r \
+            --argjson now "${NOW}" --argjson limit "${MIN_ISSUES_TO_KEEP}" --argjson threshold "${THRESHOLD_DATE}" '
+              .[:-(if length < $limit then 0 else $limit end)]
+              | map(select(
+                  (.closed_at | type == "string") and
+                  ((.closed_at | fromdateiso8601) < $threshold)
+                ))
+              | .[].number
+            ' || echo "")
+
+          if [ -z "${ISSUES_TO_DELETE}" ]; then
+            echo "✅ No issues to delete. Exiting."
+            exit 0
+          fi
+
+          echo "::group::Issues to delete:"
+          echo "${ISSUES_TO_DELETE}"
+          echo "::endgroup::"
+
+          if [ "${DRY_RUN}" = "true" ]; then
+            echo "🛑 DRY RUN ENABLED: Issues will NOT be deleted."
+            exit 0
+          fi
+
+          echo "⏳ Deleting issues..."
+          echo "${ISSUES_TO_DELETE}" | xargs -I {} -P 5 gh issue delete "{}" --repo "${REPO}" --yes
+
+          DELETED_COUNT=$(echo "${ISSUES_TO_DELETE}" | wc -l)
+          REMAINING_ISSUES=$(gh issue list --repo "${REPO}" --state closed --limit 100 | wc -l)
+
+          echo "::group::✅ Issue cleanup completed!"
+          echo "📌 Deleted Issues: ${DELETED_COUNT}"
+          echo "📌 Remaining Closed Issues: ${REMAINING_ISSUES}"
+          echo "::endgroup::"
+
+          {
+            echo "### 🗑️ GitHub Issue Cleanup Summary"
+            echo "- **Deleted Issues**: ${DELETED_COUNT}"
+            echo "- **Remaining Closed Issues**: ${REMAINING_ISSUES}"
+          } >> "$GITHUB_STEP_SUMMARY"
