@@ -8,7 +8,9 @@ on: # yamllint disable-line rule:truthy
     paths:
       - "**"
       - "!*.md"
+      - "!*.sh"
       - "!.**"
+      - "!Vagrantfile"
       - ".github/workflows/ansible-deploy.yml"
   schedule:
     - cron: "10 3 * * SAT"
