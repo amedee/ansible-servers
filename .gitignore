@@ -3,6 +3,7 @@
 *.sql
 *.xz
 .idea/
+.logs/
 .vagrant/
 node_modules/
 package-lock.json
