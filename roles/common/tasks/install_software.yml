@@ -5,6 +5,7 @@
 
 - name: Hold all "grub-" packages (only in staging)
   ansible.builtin.command: "apt-mark hold {{ item }}"
+  # yamllint disable-line rule:line-length
   with_items: "{{ ansible_facts.packages.keys() | select('match', '^grub-') | list }}"
   when:
     - hold_grub_packages | default(false)

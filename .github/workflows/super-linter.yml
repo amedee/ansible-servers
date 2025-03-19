@@ -32,9 +32,7 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: super-linter/super-linter/slim@4e8a7c2bf106c4c766c816b35ec612638dc9b6b2 # v7.3.0
         env:
-          # Set the root directory for Ansible to the top-level of the DEFAULT_WORKSPACE.
           ANSIBLE_DIRECTORY: .
-          # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_GIT_COMMITLINT: false

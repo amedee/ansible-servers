@@ -76,6 +76,7 @@ jobs:
 
           # Fetch issues with pagination
           while true; do
+            # yamllint disable-line rule:line-length
             ISSUES=$(gh api "repos/${REPO}/issues?state=closed&per_page=${PER_PAGE}&page=${PAGE}" \
               --jq '[.[] | select(.pull_request | not) | {number, closed_at}]')
 
@@ -87,7 +88,8 @@ jobs:
             # Append issues to the list
             CLOSED_ISSUES=$(echo "${CLOSED_ISSUES}" "${ISSUES}" | jq -s 'add')
 
-            # Check if we have less than PER_PAGE issues, signaling the end of pagination
+            # Check if we have less than PER_PAGE issues,
+            # signaling the end of pagination
             if [[ $(echo "${ISSUES}" | jq length) -lt ${PER_PAGE} ]]; then
               break
             fi
@@ -100,9 +102,12 @@ jobs:
             exit 0
           fi
 
-          # Retain at least MIN_ISSUES_TO_KEEP and those within the retention period
+          # Retain at least MIN_ISSUES_TO_KEEP
+          # and those within the retention period
           ISSUES_TO_DELETE=$(echo "${CLOSED_ISSUES}" | jq -r \
-            --argjson now "${NOW}" --argjson limit "${MIN_ISSUES_TO_KEEP}" --argjson threshold "${THRESHOLD_DATE}" '
+            --argjson now "${NOW}" \
+            --argjson limit "${MIN_ISSUES_TO_KEEP}" \
+            --argjson threshold "${THRESHOLD_DATE}" '
               .[:-(if length < $limit then 0 else $limit end)]
               | map(select(
                   (.closed_at | type == "string") and
@@ -126,9 +131,11 @@ jobs:
           fi
 
           echo "⏳ Deleting issues..."
-          echo "${ISSUES_TO_DELETE}" | xargs -I {} -P 5 gh issue delete "{}" --repo "${REPO}" --yes
+          echo "${ISSUES_TO_DELETE}" \
+            | xargs -I {} -P 5 gh issue delete "{}" --repo "${REPO}" --yes
 
           DELETED_COUNT=$(echo "${ISSUES_TO_DELETE}" | wc -l)
+          # yamllint disable-line rule:line-length
           REMAINING_ISSUES=$(gh issue list --repo "${REPO}" --state closed --limit 100 | wc -l)
 
           echo "::group::✅ Issue cleanup completed!"
