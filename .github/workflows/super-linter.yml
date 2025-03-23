@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
   packages: read
   # To report GitHub Actions status checks
   statuses: write
@@ -36,3 +36,26 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_GIT_COMMITLINT: false
+          FIX_YAML_PRETTIER: true
+
+      # Check the PR diff using the current branch and the base branch of the PR
+      - uses: GrantBirki/git-diff-action@f65a78c343ee50737aebbe653e35f3067752c7b3 # v2.8.0
+        name: git-diff-action
+        id: git-diff-action
+        with:
+          base_branch: origin/${{ github.head_ref || github.ref_name }}
+          json_diff_file_output: diff.json
+          raw_diff_file_output: diff.txt
+          file_output_only: true
+
+      # Print the diff in JSON format
+      - name: print json diff
+        env:
+          DIFF: ${{ steps.git-diff-action.outputs.json-diff-path }}
+        run: cat "$DIFF"
+
+      # Print the diff in raw git format
+      - name: print raw diff
+        env:
+          DIFF: ${{ steps.git-diff-action.outputs.raw-diff-path }}
+        run: cat "$DIFF"
