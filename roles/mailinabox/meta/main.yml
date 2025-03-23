@@ -8,25 +8,46 @@ dependencies:
         priority: -1
         reason: |-
           Duplicity version 3.0.1 has a bug and I don't want it installed
+  - role: debops.debops.cron
+    cron__jobs:
+      doveadm_expunge:
+        jobs:
+          - name: Expunge Trash
+            special_time: daily
+            job: /usr/bin/doveadm expunge -A mailbox Trash before 30d
+          - name: Expunge Spam
+            special_time: daily
+            job: /usr/bin/doveadm expunge -A mailbox Spam before 30d
+      extract_image_attachments:
+        name: Extract image attachments
+        special_time: daily
+        job: /usr/local/bin/extract_image_attachments.sh
+        custom_files:
+          - src: usr/local/bin/extract_image_attachments.sh
+            dest: /usr/local/bin/extract_image_attachments.sh
+            owner: root
+            mode: "u=rwx,go=rx"
   - role: geerlingguy.munin-node
     munin_node_allowed_ips:
-      - '^127\.0\.0\.1$'
+      - ^127\.0\.0\.1$
       - "^::1$"
-      - '^142\.93\.227\.16$'
+      - ^142\.93\.227\.16$
     munin_node_config:
       backup_size:
         user: root
       df:
-        # yamllint disable-line rule:line-length
-        env.exclude: "none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs cgroup_root devtmpfs tmpfs"
+        env.exclude: >-
+          none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs tmpfs
+          cgroup_root devtmpfs
       df_inode:
-        # yamllint disable-line rule:line-length
-        env.exclude: "none unknown iso9660 squashfs udf romfs ramfs vfat debugfs nilfs2 rootfs tmpfs"
+        env.exclude: >-
+          none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs tmpfs
+          nilfs2 vfat
       diskstats:
         env.include_only: vd
       "mailbox_*":
         user: root
-        env.mailbox_user: "amedee@vangasse.eu"
+        env.mailbox_user: amedee@vangasse.eu
     munin_node_install_plugins:
       - src: usr/share/munin/plugins/backup_size
       - src: usr/share/munin/plugins/mailbox_messages
