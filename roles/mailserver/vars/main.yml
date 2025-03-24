@@ -1,7 +1,9 @@
 ---
 mailserver_apt_packages:
+  - mutt
   - postfix
   - postfix-pcre
+  - procmail
 
 mailserver_postfix_settings:
   - regexp: body_checks
