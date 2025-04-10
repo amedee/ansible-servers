@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-        
+
       - name: 'Gource Action'
         uses: nbprojekt/gource-action@57256d303c5a9a5e72ed92ba13e3e83c5ec8b257 # v1.3.0
 
