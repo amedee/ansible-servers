@@ -83,6 +83,11 @@ jobs:
       - name: Make a video of the repository history
         if: ${{ steps.skip-check.outputs.skip_job != 'true' }}
         uses: nbprojekt/gource-action@57256d303c5a9a5e72ed92ba13e3e83c5ec8b257 # v1.3.0
+        with:
+          avatars_auto_fetch: true
+          gource_auto_skip_seconds: 1
+          gource_seconds_per_day: 0.3
+          gource_title: Ansible Servers – Evolution
 
       - name: Upload video
         if: ${{ steps.skip-check.outputs.skip_job != 'true' }}
