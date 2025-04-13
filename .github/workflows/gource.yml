@@ -1,5 +1,5 @@
 ---
-name: Gource Action
+name: Gource
 on:
   push:
     branches:
@@ -14,19 +14,78 @@ permissions:
   contents: read
 
 jobs:
-  action:
+  gource:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 'Checkout'
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 'Gource Action'
+      - name: Check if gource.yml was changed
+        id: gource-changed
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q '^\.github/workflows/gource\.yml$'; then
+            echo "gource_yml_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "gource_yml_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check last successful run time
+        id: last-run
+        run: |
+          # Get the raw JSON of the latest runs
+          LAST_RUN_JSON=$(gh run list \
+            --limit 5 \
+            --workflow "${{ github.workflow }}" \
+            --branch main \
+            --json status,conclusion,createdAt \
+            --jq '.')
+
+          # Extract the last successful run's timestamp
+          # yamllint disable-line rule:line-length
+          LAST_RUN=$(echo "$LAST_RUN_JSON" | jq -r '[.[] | select(.status == "completed" and .conclusion == "success")] | .[0].createdAt')
+
+          echo "Last successful run: $LAST_RUN"
+
+          if [ -z "$LAST_RUN" ]; then
+            echo "No previous successful run found."
+            echo "run_job=true" >> "$GITHUB_OUTPUT"
+          else
+            LAST_TS=$(date --date="$LAST_RUN" +%s)
+            NOW_TS=$(date +%s)
+            (( DIFF=NOW_TS-LAST_TS ))
+            echo "Time difference in seconds: $DIFF"
+
+            if [ "$DIFF" -gt $((60*60*24*7)) ]; then
+              echo "More than 1 week ago."
+              echo "run_job=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "Less than 1 week ago."
+              echo "run_job=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set skip flag if job should be skipped
+        id: skip-check
+        run: |
+          if [ "${{ steps.last-run.outputs.run_job }}" == "false" ] && \
+             [ "${{ steps.gource-changed.outputs.gource_yml_changed }}" == "false" ]; then
+            echo "Skipping run: less than 1 week and gource.yml unchanged."
+            echo "skip_job=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip_job=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Make a video of the repository history
+        if: ${{ steps.skip-check.outputs.skip_job != 'true' }}
         uses: nbprojekt/gource-action@57256d303c5a9a5e72ed92ba13e3e83c5ec8b257 # v1.3.0
 
-      - name: 'Upload gource video'
+      - name: Upload video
+        if: ${{ steps.skip-check.outputs.skip_job != 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: Gource
