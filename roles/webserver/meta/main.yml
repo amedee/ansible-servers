@@ -8,4 +8,18 @@ dependencies:
         priority: -1
         reason: |-
           I don't want a RC version of PHP
+  - role: debops.debops.php
+    php__packages:
+      - curl
+      - fpm
+      - imagick
+      - intl
+      - json
+      - mbstring
+      - mysql
+      - redis
+      - ssh2
+      - xml
+      - xmlrpc
+      - zip
   - role: boto

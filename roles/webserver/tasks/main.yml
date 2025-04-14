@@ -1,13 +1,4 @@
 ---
-- name: Add ondrej repositories
-  ansible.builtin.deb822_repository:
-    name: "{{ item.name }}"
-    uris: "{{ item.repo.uris }}"
-    suites: "{{ item.repo.suites }}"
-    components: "{{ item.repo.components }}"
-    signed_by: "{{ item.repo.signed_by }}"
-  loop: "{{ webserver_deb822_repositories }}"
-
 - name: Install APT packages
   ansible.builtin.apt:
     update_cache: true

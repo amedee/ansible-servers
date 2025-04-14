@@ -2,5 +2,16 @@
 - name: Configure WordPress blogs
   hosts: blogs
   strategy: ansible.builtin.free # noqa: run-once[play]
+
+  pre_tasks:
+    - name: Prepare php environment
+      ansible.builtin.import_role:
+        name: debops.debops.php
+        tasks_from: main_env
+      tags:
+        - 'role::php'
+        - 'role::php:env'
+        - 'role::logrotate'
+
   roles:
     - blog

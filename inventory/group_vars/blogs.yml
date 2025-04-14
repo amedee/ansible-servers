@@ -1,2 +1,4 @@
 ---
 dbserver_wp_db_host: localhost
+php__version: '8.3'
+php__sury: true
