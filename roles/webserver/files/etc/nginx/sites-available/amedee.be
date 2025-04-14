@@ -30,8 +30,8 @@ server {
 
     # Static Files Caching
     location ~* \.(css|gif|ico|jpeg|jpg|js|png|svg|woff|woff2|eot|ttf|otf)$ {
-        expires 30d;
-        add_header Cache-Control "public";
+        expires 1y;
+        add_header Cache-Control "public, max-age=31536000, immutable";
         log_not_found off;
         try_files $uri =404;
     }
