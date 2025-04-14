@@ -1,7 +1,5 @@
 ---
 dependencies:
-  - role: rolehippie.swap
-    swap_size: 4096
   - role: debops.debops.etckeeper
     etckeeper__gitignore:
       - name: alternatives
@@ -9,6 +7,8 @@ dependencies:
       - name: fonts
       - name: ssl
       - name: systemd
+  - role: rolehippie.swap
+    swap_size: 4096
   - role: debops.debops.etc_aliases
     etc_aliases__recipients:
       - root: amedee@vangasse.eu
