@@ -1,5 +1,5 @@
 ---
-ansible_python_interpreter: /usr/bin/python3
+ansible_user: root
 ansible_ssh_common_args: >-
   -C
   -o ControlMaster=auto

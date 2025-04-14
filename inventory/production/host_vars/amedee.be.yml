@@ -1,4 +1,2 @@
 ---
-ansible_user: root
-dbserver_wp_db_host: localhost
 hostname: amedee.be
