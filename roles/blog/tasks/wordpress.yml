@@ -1,4 +1,12 @@
 ---
+- name: Create wp-cli cache directory
+  ansible.builtin.file:
+    path: /var/www/.wp-cli/cache
+    state: directory
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_user }}"
+    mode: u=rwx,g=rwx,o=
+
 - name: Check if wp-config-sample.php exists
   ansible.builtin.stat:
     path: "{{ webserver_directory }}/wp-config-sample.php"
