@@ -1,16 +1,40 @@
 ---
-- name: Wait for APT locks to be released using flock
-  ansible.builtin.command:
-    argv:
-      - /usr/bin/flock
-      - --wait
-      - "300"
-      - /var/lib/apt/lists/lock
-      - /var/lib/dpkg/lock
-      - /var/lib/dpkg/lock-frontend
-      - "true"
+- name: Check if APT lock files exist
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - /var/lib/apt/lists/lock
+    - /var/lib/dpkg/lock
+    - /var/lib/dpkg/lock-frontend
+  register: lock_files_stat
+
+- name: Wait for APT lock files to be released
+  ansible.builtin.shell: |
+    ! lsof "{{ item }}"
+  loop: >
+    {{
+      lock_files_stat.results |
+      selectattr('stat.exists', 'equalto', true) |
+      map(attribute='stat.path') |
+      list
+    }}
+  register: result
   changed_when: false
-  failed_when: false
+  until: result.rc == 0
+  retries: 300
+  delay: 1
+  failed_when: result.rc != 0
+
+- name: Print which lock files are still in use (if any)
+  ansible.builtin.debug:
+    msg: "Lock file still in use: {{ item.item }}"
+  loop: >
+    {{
+      result.results |
+      selectattr('rc', '!=', 0) |
+      list
+    }}
+  when: result is failed
 
 - name: Update apt cache
   ansible.builtin.apt:
