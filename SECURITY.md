@@ -6,4 +6,4 @@ Only the latest commit in [main](https://github.com/amedee/ansible-servers) is s
 
 ## Reporting a Vulnerability
 
-Send me an [email](vulnerability@amedee.be).
+Send me an [email](mailto:vulnerability@amedee.be).
