@@ -12,6 +12,8 @@ s1._domainkey.amedee.be:
   CNAME: s1.domainkey.u44990685.wl186.sendgrid.net.
 s2._domainkey.amedee.be:
   CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
+_atproto.amedee.be:
+  TXT: did=did:plc:ii5acpyq5qnlybvcqutuhbk5
 
 em980.vangasse.eu:
   CNAME: u44990685.wl186.sendgrid.net.
