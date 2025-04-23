@@ -91,9 +91,65 @@ jobs:
           gource_seconds_per_day: 0.3
           gource_title: Ansible Servers – Evolution
 
-      - name: Upload video
+      - name: Prepare and upload gource video and thumbnail to S3
+        id: gource-upload
         if: ${{ steps.skip-check.outputs.skip_job != 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: Gource
-          path: ./gource/gource.mp4
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          set -e
+
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          ORIG_VIDEO=./gource/gource.mp4
+          VIDEO=./gource/gource-$COMMIT_HASH.mp4
+          THUMB=./gource/gource-$COMMIT_HASH.gif
+
+          mv "$ORIG_VIDEO" "$VIDEO"
+
+          echo "Generating thumbnail..."
+          sudo apt-get update && sudo apt-get install -y ffmpeg
+          ffmpeg -y -i "$VIDEO" \
+            -filter_complex "[0:v]select='not(mod(n,60))',setpts=0.1*PTS,fps=10,scale=320:-1:flags=lanczos" \
+            -vsync vfr "$THUMB"
+
+          BUCKET=gource-by-amedee
+          REGION=us-east-1
+          KEY_BASE=gource-$COMMIT_HASH
+          VIDEO_KEY=$KEY_BASE.mp4
+          THUMB_KEY=$KEY_BASE.gif
+
+          echo "Uploading video..."
+          aws s3 cp "$VIDEO" "s3://$BUCKET/$VIDEO_KEY" \
+            --content-type video/mp4
+          aws s3api copy-object \
+            --bucket "$BUCKET" \
+            --copy-source "$BUCKET/$VIDEO_KEY" \
+            --key gource-latest.mp4 \
+            --content-type video/mp4
+
+          echo "Uploading thumbnail..."
+          aws s3 cp "$THUMB" "s3://$BUCKET/$THUMB_KEY" \
+            --content-type image/gif
+          aws s3api copy-object \
+            --bucket "$BUCKET" \
+            --copy-source "$BUCKET/$THUMB_KEY" \
+            --key gource-latest.gif \
+            --content-type image/gif
+
+          VIDEO_URL="https://$BUCKET.s3.$REGION.amazonaws.com/$VIDEO_KEY"
+          THUMB_URL="https://$BUCKET.s3.$REGION.amazonaws.com/$THUMB_KEY"
+
+          FILE_SIZE=$(du -h "$VIDEO" | cut -f1)
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+
+          {
+            echo "### 📽️ Gource Video Upload Summary"
+            echo ""
+            echo "![Preview]($THUMB_URL)"
+            echo ""
+            echo "- **Public URL:** [Click to view video]($VIDEO_URL)"
+            echo "- **File size:** $FILE_SIZE"
+            echo "- **Commit:** \`$COMMIT_HASH\` – $COMMIT_MSG"
+          } >> "$GITHUB_STEP_SUMMARY"

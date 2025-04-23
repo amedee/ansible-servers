@@ -17,6 +17,12 @@ ansible-playbook playbooks/site.yml
 [![CodeFactor][codefactor-badge]][codefactor-status]
 [![License: MIT][license-badge]][license-link]
 
+## 🔍 Repository History
+
+[![Gource thumbnail][gource-thumbnail]][gource-video]
+
+> Click to watch a timelapse of this repository’s evolution.
+
 ## References
 
 - The Postfix [checks files][checks files] are retrieved from the
@@ -39,3 +45,5 @@ ansible-playbook playbooks/site.yml
 [license-link]: https://opensource.org/licenses/MIT
 [checks files]: roles/mailserver/files/etc/postfix/checks
 [securitysage]: https://web.archive.org/web/20070106001401/http://www.securitysage.com:80/guides/postfix_uce.html
+[gource-thumbnail]: https://gource-by-amedee.s3.amazonaws.com/gource-latest.gif
+[gource-video]: https://gource-by-amedee.s3.amazonaws.com/gource-latest.mp4
