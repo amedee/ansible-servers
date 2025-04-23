@@ -52,19 +52,20 @@ jobs:
           if [ -z "$LAST_RUN" ]; then
             echo "No previous successful run found."
             echo "run_job=true" >> "$GITHUB_OUTPUT"
-          else
-            LAST_TS=$(date --date="$LAST_RUN" +%s)
-            NOW_TS=$(date +%s)
-            (( DIFF=NOW_TS-LAST_TS ))
-            echo "Time difference in seconds: $DIFF"
+            exit 0
+          fi
 
-            if [ "$DIFF" -gt $((60*60*24*7)) ]; then
-              echo "More than 1 week ago."
-              echo "run_job=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "Less than 1 week ago."
-              echo "run_job=false" >> "$GITHUB_OUTPUT"
-            fi
+          LAST_TS=$(date --date="$LAST_RUN" +%s)
+          NOW_TS=$(date +%s)
+          (( DIFF=NOW_TS-LAST_TS ))
+          echo "Time difference in seconds: $DIFF"
+
+          if [ "$DIFF" -gt $((60*60*24)) ]; then
+            echo "More than 1 day ago."
+            echo "run_job=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Less than 1 day ago."
+            echo "run_job=false" >> "$GITHUB_OUTPUT"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -76,9 +77,10 @@ jobs:
              [ "${{ steps.gource-changed.outputs.gource_yml_changed }}" == "false" ]; then
             echo "Skipping run: less than 1 week and gource.yml unchanged."
             echo "skip_job=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip_job=false" >> "$GITHUB_OUTPUT"
+            exit 78
           fi
+
+          echo "skip_job=false" >> "$GITHUB_OUTPUT"
 
       - name: Make a video of the repository history
         if: ${{ steps.skip-check.outputs.skip_job != 'true' }}
