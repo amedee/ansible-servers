@@ -91,6 +91,12 @@ jobs:
           gource_seconds_per_day: 0.3
           gource_title: Ansible Servers – Evolution
 
+      - name: Install ffmpeg
+        if: ${{ steps.skip-check.outputs.skip_job != 'true' }}
+        uses: FedericoCarboni/setup-ffmpeg@37062fbf7149fc5578d6c57e08aed62458b375d6 # v3.1
+        with:
+          ffmpeg-version: release
+
       - name: Prepare and upload gource video and thumbnail to S3
         id: gource-upload
         if: ${{ steps.skip-check.outputs.skip_job != 'true' }}
@@ -109,7 +115,6 @@ jobs:
           mv "$ORIG_VIDEO" "$VIDEO"
 
           echo "Generating thumbnail..."
-          sudo apt-get update && sudo apt-get install -y ffmpeg
           ffmpeg -y -i "$VIDEO" \
             -filter_complex "[0:v]select='not(mod(n,60))',setpts=0.1*PTS,fps=10,scale=320:-1:flags=lanczos" \
             -vsync vfr "$THUMB"
