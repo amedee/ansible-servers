@@ -23,18 +23,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if gource.yml was changed
-        id: gource-changed
+      - name: Check if Gource video should be generated
+        id: gource-check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Check if gource.yml was changed
           if git diff --name-only HEAD^ HEAD | grep -q '^\.github/workflows/gource\.yml$'; then
-            echo "gource_yml_changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "gource_yml_changed=false" >> "$GITHUB_OUTPUT"
+            echo "gource.yml was changed, making a new video."
+            echo "run_job=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
-      - name: Check last successful run time
-        id: last-run
-        run: |
           # Get the raw JSON of the latest runs
           LAST_RUN_JSON=$(gh run list \
             --limit 5 \
@@ -50,7 +50,7 @@ jobs:
           echo "Last successful run: $LAST_RUN"
 
           if [ -z "$LAST_RUN" ]; then
-            echo "No previous successful run found."
+            echo "No previous successful run found, making a new video."
             echo "run_job=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -61,29 +61,17 @@ jobs:
           echo "Time difference in seconds: $DIFF"
 
           if [ "$DIFF" -gt $((60*60*24)) ]; then
-            echo "More than 1 day ago."
+            echo "Last video was more than 1 day ago, making a new video."
             echo "run_job=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "Less than 1 day ago."
-            echo "run_job=false" >> "$GITHUB_OUTPUT"
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set skip flag if job should be skipped
-        id: skip-check
-        run: |
-          if [ "${{ steps.last-run.outputs.run_job }}" == "false" ] && \
-             [ "${{ steps.gource-changed.outputs.gource_yml_changed }}" == "false" ]; then
-            echo "Skipping run: less than 1 week and gource.yml unchanged."
-            echo "skip_job=true" >> "$GITHUB_OUTPUT"
-            exit 78
+            exit 0
           fi
 
-          echo "skip_job=false" >> "$GITHUB_OUTPUT"
+          echo "Last video was less than 1 day ago, not running Gource."
+          echo "run_job=false" >> "$GITHUB_OUTPUT"
+          exit 78
 
       - name: Make a video of the repository history
-        if: ${{ steps.skip-check.outputs.skip_job != 'true' }}
+        if: ${{ steps.gource-check.outputs.run_job == 'true' }}
         uses: nbprojekt/gource-action@57256d303c5a9a5e72ed92ba13e3e83c5ec8b257 # v1.3.0
         with:
           avatars_auto_fetch: true
@@ -92,14 +80,14 @@ jobs:
           gource_title: Ansible Servers – Evolution
 
       - name: Install ffmpeg
-        if: ${{ steps.skip-check.outputs.skip_job != 'true' }}
+        if: ${{ steps.gource-check.outputs.run_job == 'true' }}
         uses: FedericoCarboni/setup-ffmpeg@37062fbf7149fc5578d6c57e08aed62458b375d6 # v3.1
         with:
           ffmpeg-version: release
 
       - name: Prepare and upload gource video and thumbnail to S3
         id: gource-upload
-        if: ${{ steps.skip-check.outputs.skip_job != 'true' }}
+        if: ${{ steps.gource-check.outputs.run_job == 'true' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
