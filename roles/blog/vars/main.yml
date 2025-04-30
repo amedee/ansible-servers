@@ -17,6 +17,7 @@ blog_wp_db_password: !vault |
 blog_wp_themes_install:
   - neve
 blog_wp_plugins_install:
+  - activitypub
   - akismet
   - google-site-kit
   - health-check
