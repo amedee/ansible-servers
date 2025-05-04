@@ -100,57 +100,52 @@ jobs:
         if: ${{ steps.gource-check.outputs.run_job == 'true' }}
         uses: AnimMouse/setup-ffmpeg@27e66fd2fe1d643b73a7c5cb105f3b4116bfb8db # v1.2.1
 
-      - name: Prepare and upload gource video and thumbnail to S3
+      - name: Generate thumbnail
+        if: ${{ steps.gource-check.outputs.run_job == 'true' }}
+        run: |
+          echo "Generating thumbnail..."
+          ffmpeg -y -i "./gource/gource.mp4" \
+            -filter_complex "[0:v]select='not(mod(n,60))',setpts=0.1*PTS,fps=10,scale=320:-1:flags=lanczos" \
+            -vsync vfr "./gource/gource.gif"
+
+      - name: Upload video to S3
         if: ${{ steps.gource-check.outputs.run_job == 'true' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
         run: |
-          set -e
-
-          COMMIT_HASH=$(git rev-parse --short HEAD)
-          COMMIT_DATE=$(git log -1 --format=%cd --date=short)
-          ORIG_VIDEO=./gource/gource.mp4
-          VIDEO=./gource/gource-$COMMIT_HASH.mp4
-          THUMB=./gource/gource-$COMMIT_HASH.gif
-
-          mv "$ORIG_VIDEO" "$VIDEO"
-
-          echo "Generating thumbnail..."
-          ffmpeg -y -i "$VIDEO" \
-            -filter_complex "[0:v]select='not(mod(n,60))',setpts=0.1*PTS,fps=10,scale=320:-1:flags=lanczos" \
-            -vsync vfr "$THUMB"
-
-          BUCKET=gource-by-amedee
-          REGION=us-east-1
-          KEY_BASE=gource-$COMMIT_HASH
-          VIDEO_KEY=$KEY_BASE.mp4
-          THUMB_KEY=$KEY_BASE.gif
-
           echo "Uploading video..."
-          aws s3 cp "$VIDEO" "s3://$BUCKET/$VIDEO_KEY" \
-            --content-type video/mp4
-          aws s3api copy-object \
-            --bucket "$BUCKET" \
-            --copy-source "$BUCKET/$VIDEO_KEY" \
-            --key gource-latest.mp4 \
-            --content-type video/mp4
+          VIDEO="./gource/gource.mp4"
+          BUCKET=gource-by-amedee
+          VIDEO_KEY=gource-${{ github.sha }}.mp4
 
+          aws s3 cp "$VIDEO" "s3://$BUCKET/$VIDEO_KEY" --content-type video/mp4
+          aws s3api copy-object --bucket "$BUCKET" --copy-source "$BUCKET/$VIDEO_KEY" --key gource-latest.mp4 --content-type video/mp4
+
+      - name: Upload thumbnail to S3
+        if: ${{ steps.gource-check.outputs.run_job == 'true' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
           echo "Uploading thumbnail..."
-          aws s3 cp "$THUMB" "s3://$BUCKET/$THUMB_KEY" \
-            --content-type image/gif
-          aws s3api copy-object \
-            --bucket "$BUCKET" \
-            --copy-source "$BUCKET/$THUMB_KEY" \
-            --key gource-latest.gif \
-            --content-type image/gif
+          THUMB="./gource/gource.gif"
+          BUCKET=gource-by-amedee
+          THUMB_KEY=gource-${{ github.sha }}.gif
 
-          VIDEO_URL="https://$BUCKET.s3.$REGION.amazonaws.com/$VIDEO_KEY"
-          THUMB_URL="https://$BUCKET.s3.$REGION.amazonaws.com/$THUMB_KEY"
+          aws s3 cp "$THUMB" "s3://$BUCKET/$THUMB_KEY" --content-type image/gif
+          aws s3api copy-object --bucket "$BUCKET" --copy-source "$BUCKET/$THUMB_KEY" --key gource-latest.gif --content-type image/gif
 
-          FILE_SIZE=$(du -h "$VIDEO" | cut -f1)
+      - name: Create Upload Summary
+        if: ${{ steps.gource-check.outputs.run_job == 'true' }}
+        run: |
+          VIDEO_URL="https://gource-by-amedee.s3.us-east-1.amazonaws.com/gource-${{ github.sha }}.mp4"
+          THUMB_URL="https://gource-by-amedee.s3.us-east-1.amazonaws.com/gource-${{ github.sha }}.gif"
+          FILE_SIZE=$(du -h "./gource/gource.mp4" | cut -f1)
           COMMIT_MSG=$(git log -1 --pretty=%s)
+          COMMIT_DATE=$(git log -1 --format=%cd --date=short)
 
           {
             echo "### 📽️ Gource Video Upload Summary"
@@ -159,7 +154,7 @@ jobs:
             echo ""
             echo "- **Public URL:** [Click to view video]($VIDEO_URL)"
             echo "- **File size:** $FILE_SIZE"
-            echo "- **Commit:** \`$COMMIT_HASH\` – $COMMIT_MSG"
+            echo "- **Commit:** \`${{ github.sha }}\` – $COMMIT_MSG"
             echo "- **Commit date:** $COMMIT_DATE"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -168,11 +163,11 @@ jobs:
         if: ${{ steps.gource-check.outputs.run_job == 'true' }}
         with:
           name: gource-assets
-          path: ./gource/gource-*.{mp4,gif}
+          path: ./gource/gource.{mp4,gif}
           retention-days: 7
 
       - name: Clean up temporary files
         if: ${{ steps.gource-check.outputs.run_job == 'true' }}
         run: |
           echo "Cleaning up temporary files..."
-          rm -f ./gource/gource-*.{mp4,gif}
+          rm -f ./gource/gource.{mp4,gif}
