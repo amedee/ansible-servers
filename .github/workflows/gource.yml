@@ -81,9 +81,7 @@ jobs:
 
       - name: Install ffmpeg
         if: ${{ steps.gource-check.outputs.run_job == 'true' }}
-        uses: FedericoCarboni/setup-ffmpeg@37062fbf7149fc5578d6c57e08aed62458b375d6 # v3.1
-        with:
-          ffmpeg-version: release
+        uses: AnimMouse/setup-ffmpeg@27e66fd2fe1d643b73a7c5cb105f3b4116bfb8db # v1.2.1
 
       - name: Prepare and upload gource video and thumbnail to S3
         id: gource-upload
