@@ -12,6 +12,11 @@ on:
       - 'playbooks/**'
       - 'roles/**'
   workflow_dispatch:
+    inputs:
+      skip_interval_hours:
+        description: 'Skip interval in hours (default 24 hours)'
+        required: false
+        default: 24
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -38,6 +43,8 @@ jobs:
           script: |
             const path = '.github/workflows/gource.yml';
             const workflowFile = path;
+            const skipIntervalHours = parseInt('${{ github.event.inputs.skip_interval_hours }}') || 24;
+            const skipIntervalSeconds = skipIntervalHours * 60 * 60;
 
             const runs = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
@@ -73,11 +80,11 @@ jobs:
               const lastTime = new Date(successfulRun.created_at);
               const diff = (now - lastTime) / 1000;
               core.info(`Last successful run was ${Math.round(diff)} seconds ago.`);
-              if (diff > 60 * 60 * 24) {
-                core.info('More than 1 day ago, will generate video.');
+              if (diff > skipIntervalSeconds) {
+                core.info(`More than ${skipIntervalHours} hours ago, will generate video.`);
                 runJob = true;
               } else {
-                core.info('Less than 1 day ago, will skip generation.');
+                core.info(`Less than ${skipIntervalHours} hours ago, will skip generation.`);
               }
             }
 
