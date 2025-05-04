@@ -25,50 +25,55 @@ jobs:
 
       - name: Check if Gource video should be generated
         id: gource-check
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Check if gource.yml was changed
-          if git diff --name-only HEAD^ HEAD | grep -q '^\.github/workflows/gource\.yml$'; then
-            echo "gource.yml was changed, making a new video."
-            echo "run_job=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const path = '.github/workflows/gource.yml';
+            const workflowFile = path;
 
-          # Get the raw JSON of the latest runs
-          LAST_RUN_JSON=$(gh run list \
-            --limit 5 \
-            --workflow "${{ github.workflow }}" \
-            --branch main \
-            --json status,conclusion,createdAt \
-            --jq '.')
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: workflowFile,
+              branch: 'main',
+              per_page: 10
+            });
 
-          # Extract the last successful run's timestamp
-          # yamllint disable-line rule:line-length
-          LAST_RUN=$(echo "$LAST_RUN_JSON" | jq -r '[.[] | select(.status == "completed" and .conclusion == "success")] | .[0].createdAt')
+            const successfulRun = runs.data.workflow_runs.find(run =>
+              run.status === 'completed' && run.conclusion === 'success'
+            );
 
-          echo "Last successful run: $LAST_RUN"
+            const now = new Date();
+            let runJob = false;
 
-          if [ -z "$LAST_RUN" ]; then
-            echo "No previous successful run found, making a new video."
-            echo "run_job=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+            // Check if the workflow file was changed in the last commit
+            const { data: lastCommit } = await github.rest.repos.getCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha
+            });
 
-          LAST_TS=$(date --date="$LAST_RUN" +%s)
-          NOW_TS=$(date +%s)
-          (( DIFF=NOW_TS-LAST_TS ))
-          echo "Time difference in seconds: $DIFF"
+            const fileChanged = lastCommit.files.some(f => f.filename === path);
 
-          if [ "$DIFF" -gt $((60*60*24)) ]; then
-            echo "Last video was more than 1 day ago, making a new video."
-            echo "run_job=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+            if (fileChanged) {
+              core.info(`${path} was changed, will generate video.`);
+              runJob = true;
+            } else if (!successfulRun) {
+              core.info('No successful run found, will generate video.');
+              runJob = true;
+            } else {
+              const lastTime = new Date(successfulRun.created_at);
+              const diff = (now - lastTime) / 1000;
+              core.info(`Last successful run was ${Math.round(diff)} seconds ago.`);
+              if (diff > 60 * 60 * 24) {
+                core.info('More than 1 day ago, will generate video.');
+                runJob = true;
+              } else {
+                core.info('Less than 1 day ago, will skip generation.');
+              }
+            }
 
-          echo "Last video was less than 1 day ago, not running Gource."
-          echo "run_job=false" >> "$GITHUB_OUTPUT"
-          exit 78
+            core.setOutput('run_job', runJob.toString());
 
       - name: Make a video of the repository history
         if: ${{ steps.gource-check.outputs.run_job == 'true' }}
