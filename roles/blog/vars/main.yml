@@ -19,12 +19,12 @@ blog_wp_themes_install:
 blog_wp_plugins_install:
   - activitypub
   - akismet
+  - better-robots-txt
   - google-site-kit
   - health-check
   - jetpack
   - jetpack-boost
   - jetpack-protect
-  - pc-robotstxt
   - performance-lab
   - plugin-report
   - redirection
