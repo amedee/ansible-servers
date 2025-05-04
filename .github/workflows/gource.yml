@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '.github/workflows/gource.yml'
+      - 'ansible.cfg'
+      - 'requirements.yml'
+      - 'inventory/**'
+      - 'playbooks/**'
+      - 'roles/**'
   workflow_dispatch:
 
 concurrency:
