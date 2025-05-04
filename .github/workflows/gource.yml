@@ -110,6 +110,7 @@ jobs:
           set -e
 
           COMMIT_HASH=$(git rev-parse --short HEAD)
+          COMMIT_DATE=$(git log -1 --format=%cd --date=short)
           ORIG_VIDEO=./gource/gource.mp4
           VIDEO=./gource/gource-$COMMIT_HASH.mp4
           THUMB=./gource/gource-$COMMIT_HASH.gif
@@ -159,6 +160,7 @@ jobs:
             echo "- **Public URL:** [Click to view video]($VIDEO_URL)"
             echo "- **File size:** $FILE_SIZE"
             echo "- **Commit:** \`$COMMIT_HASH\` – $COMMIT_MSG"
+            echo "- **Commit date:** $COMMIT_DATE"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Use Artifact Upload as a Backup
