@@ -170,3 +170,9 @@ jobs:
           name: gource-assets
           path: ./gource/gource-*.{mp4,gif}
           retention-days: 7
+
+      - name: Clean up temporary files
+        if: ${{ steps.gource-check.outputs.run_job == 'true' }}
+        run: |
+          echo "Cleaning up temporary files..."
+          rm -f ./gource/gource-*.{mp4,gif}
