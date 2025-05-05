@@ -29,12 +29,12 @@ server {
         access_log off;
         log_not_found off;
     }
-    location = /robots.txt {
-        access_log off;
-        allow all;
-        log_not_found off;
-        try_files $uri /?robots=1;
-    }
+#     location = /robots.txt {
+#         access_log off;
+#         allow all;
+#         log_not_found off;
+#         try_files $uri /?robots=1;
+#     }
 
     # Static Files Caching
     location ~* \.(css|gif|ico|jpeg|jpg|js|png|svg|woff|woff2|eot|ttf|otf)$ {
