@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # yamllint disable-line rule:line-length
-      - uses: yykamei/github-workflows-metrics@0c0cb7721f9efdbe90c47d861931ab92e6015b6c # v0.3.9
+      - uses: yykamei/github-workflows-metrics@ea0a2bd9067e387839a98a82cb66af77b2270d00 # v0.3.10
         with:
           only: ansible-deploy.yml
           status: success
