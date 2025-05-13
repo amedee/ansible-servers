@@ -51,8 +51,9 @@ dependencies:
     munin_node_install_plugins:
       - src: usr/share/munin/plugins/backup_size
       - src: usr/share/munin/plugins/mailbox_messages
-      - src: usr/share/munin/plugins/mailbox_vsize
+      - src: usr/share/munin/plugins/mailbox_vsize.py
     munin_node_plugins:
       - name: backup_size
       - name: mailbox_messages
       - name: mailbox_vsize
+        plugin: mailbox_vsize.py
