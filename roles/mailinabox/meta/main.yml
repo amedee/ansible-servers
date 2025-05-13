@@ -50,10 +50,11 @@ dependencies:
         env.mailbox_user: amedee@vangasse.eu
     munin_node_install_plugins:
       - src: usr/share/munin/plugins/backup_size
-      - src: usr/share/munin/plugins/mailbox_messages
+      - src: usr/share/munin/plugins/mailbox_messages.py
       - src: usr/share/munin/plugins/mailbox_vsize.py
     munin_node_plugins:
       - name: backup_size
       - name: mailbox_messages
+        plugin: mailbox_messages.py
       - name: mailbox_vsize
         plugin: mailbox_vsize.py
