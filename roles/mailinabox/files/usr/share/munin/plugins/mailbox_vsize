@@ -11,8 +11,8 @@ trash.label Trash
 graph_args --base 1024 --lower-limit 0
 graph_scale yes
 graph_category email
-graph_info Size of each folder
-graph_title Size of each folder
+graph_title Mail folder sizes (with subfolders)
+graph_info Size of each folder including subfolders
 graph_vlabel Size
 EOM
 }
@@ -27,14 +27,15 @@ output_values() {
 }
 
 mailbox_vsize() {
-	# shellcheck disable=SC2154
-	/usr/bin/doveadm -f tab mailbox status -u "$mailbox_user" vsize "$1" |
-		tail --lines=1 |
-		cut --fields=2
+	parent="$1"
+	doveadm mailbox list -u "$mailbox_user" |
+		awk -v f="$parent" '$1 == f || $1 ~ "^"f"\\."' |
+		xargs -r -I{} doveadm -f tab mailbox status -u "$mailbox_user" vsize '{}' |
+		awk '{sum += $2} END {print sum}'
 }
 
 output_usage() {
-	printf >&2 "%s - munin plugin to graph size of mailboxes\n" "${0##*/}"
+	printf >&2 "%s - munin plugin to graph size of mailboxes (with subfolders)\n" "${0##*/}"
 	printf >&2 "Usage: %s [config]\n" "${0##*/}"
 }
 
