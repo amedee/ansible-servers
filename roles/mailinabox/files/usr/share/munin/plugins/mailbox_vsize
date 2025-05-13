@@ -1,13 +1,25 @@
 #!/bin/sh
 
+# Detect top-level folders dynamically
+get_top_level_folders() {
+	doveadm mailbox list -u "$mailbox_user" |
+		cut -d. -f1 |
+		sort -u
+}
+
+# Capitalize first letter, lowercase the rest
+format_label() {
+	printf "%s" "$1" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}'
+}
+
 output_config() {
+  get_top_level_folders | while read -r folder; do
+    safe_name=$(echo "$folder" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '_')
+    label=$(format_label "$folder")
+    echo "${safe_name}.label $label"
+  done
+
 	cat <<'EOM'
-inbox.label Inbox
-archive.label Archive
-drafts.label Drafts
-sent.label Sent
-spam.label Spam
-trash.label Trash
 graph_args --base 1024 --lower-limit 0
 graph_scale yes
 graph_category email
@@ -18,12 +30,11 @@ EOM
 }
 
 output_values() {
-	printf "inbox.value %d\n" "$(mailbox_vsize Inbox)"
-	printf "archive.value %d\n" "$(mailbox_vsize Archive)"
-	printf "drafts.value %d\n" "$(mailbox_vsize Drafts)"
-	printf "sent.value %d\n" "$(mailbox_vsize Sent)"
-	printf "spam.value %d\n" "$(mailbox_vsize Spam)"
-	printf "trash.value %d\n" "$(mailbox_vsize Trash)"
+	get_top_level_folders | while read -r folder; do
+		safe_name=$(echo "$folder" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '_')
+		size=$(mailbox_vsize "$folder")
+		echo "${safe_name}.value $size"
+	done
 }
 
 mailbox_vsize() {
