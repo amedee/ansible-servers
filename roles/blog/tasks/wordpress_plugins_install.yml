@@ -27,7 +27,7 @@
       - "--path={{ webserver_directory }}"
   changed_when: true
 
-- name: Check the status of auto-updates for {{ wp_plugin }}
+- name: Check if auto-updates are disabled for {{ wp_plugin }}
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
@@ -38,12 +38,13 @@
       - status
       - "{{ wp_plugin }}"
       - "--path={{ webserver_directory }}"
+      - "--disabled-only"
+      - "--field=name"
   changed_when: false
-  failed_when: false
   register: wp_plugin_auto_updates
 
-- name: Enables the auto-updates for {{ wp_plugin }}
-  when: wp_plugin_auto_updates.rc | int != 0
+- name: Enable auto-updates if disabled for {{ wp_plugin }}
+  when: wp_plugin_auto_updates.stdout | trim == wp_plugin
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
