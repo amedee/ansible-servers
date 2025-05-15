@@ -35,116 +35,166 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install GitHub CLI
-        run: sudo apt-get install --yes gh
+      - name: Check GraphQL API Rate Limit
+        id: check_rate_limit
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const query = `
+              query {
+                rateLimit {
+                  limit
+                  cost
+                  remaining
+                  resetAt
+                }
+              }
+            `;
+            const result = await github.graphql(query);
+            const { limit, cost, remaining, resetAt } = result.rateLimit;
 
-      - name: Authenticate with GitHub CLI
-        run: gh auth login --with-token <<< "${{ secrets.GH_FINEGRAINED_PAT }}"
+            core.info(`GraphQL Rate Limit: ${remaining}/${limit} remaining`);
+            core.info(`Query Cost: ${cost}`);
+            core.info(`Rate Limit resets at: ${resetAt}`);
+            core.setOutput('remaining', remaining);
+
+      - name: Skip deletion due to low rate limit
+        if: steps.check_rate_limit.outputs.remaining != '' && steps.check_rate_limit.outputs.remaining < 10
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const summary = `### ⚠️ Skipped GitHub Issue Cleanup\n` +
+              `- **Reason**: GraphQL API rate limit too low.`;
+            core.info('⚠️ Skipping deletion: GraphQL API rate limit is too low.');
+            core.setOutput('summary', summary);
+            core.summary.addRaw(summary).write();
 
       - name: Delete old closed issues
+        if: steps.check_rate_limit.outputs.remaining != '' && steps.check_rate_limit.outputs.remaining >= 10
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         env:
-          GH_TOKEN: ${{ secrets.GH_FINEGRAINED_PAT }}
-          DRY_RUN: ${{ inputs.dry_run || 'false' }}
-          DAYS_TO_KEEP: ${{ inputs.days_to_keep || '30' }}
-          MIN_ISSUES_TO_KEEP: ${{ inputs.min_issues_to_keep || '6' }}
-          REPO: ${{ github.repository }}
-        run: |
-          # Delete old closed issues
-          # Setting threshold date
-          NOW=$(date -u +%s)
-          THRESHOLD_DATE=$(date -u -d "${DAYS_TO_KEEP} days ago" +%s)
-          echo "Only consider issues older than ${THRESHOLD_DATE}"
+          GITHUB_TOKEN: ${{ secrets.GH_FINEGRAINED_PAT }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          DAYS_TO_KEEP: ${{ inputs.days_to_keep }}
+          MIN_ISSUES_TO_KEEP: ${{ inputs.min_issues_to_keep }}
+        with:
+          script: |
+            const dryRun = process.env.DRY_RUN === 'true';
+            const daysToKeep = parseInt(process.env.DAYS_TO_KEEP || '90', 10);
+            const minIssuesToKeep = parseInt(process.env.MIN_ISSUES_TO_KEEP || '10', 10);
+            core.info(`🧪 raw input dry_run: ${process.env.DRY_RUN}`);
+            core.info(`🧪 raw input days_to_keep: ${process.env.DAYS_TO_KEEP}`);
+            core.info(`🧪 raw input min_issues_to_keep: ${process.env.MIN_ISSUES_TO_KEEP}`);
+            core.info(`🛠️ Config: dryRun=${dryRun}, daysToKeep=${daysToKeep}, minIssuesToKeep=${minIssuesToKeep}`);
 
-          echo "::group::Checking GitHub API Rate Limits..."
-          RATE_LIMIT=$(gh api /rate_limit --jq '.rate.remaining')
-          echo "Remaining API requests: ${RATE_LIMIT}"
-          if [[ "${RATE_LIMIT}" -lt 10 ]]; then
-            echo "⚠️ Low API limit detected. Sleeping for a while..."
-            sleep 60
-          fi
-          echo "::endgroup::"
+            const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+            const now = new Date();
+            const thresholdDate = new Date(now.getTime() - daysToKeep * 24 * 60 * 60 * 1000);
+            core.info(`📅 Threshold date for deletion: ${thresholdDate.toISOString()}`);
 
-          echo "Fetching ALL closed issues from ${REPO}..."
-          PAGE=1
-          PER_PAGE=100
-          CLOSED_ISSUES="[]"
+            async function getClosedIssues() {
+              let page = 1;
+              const perPage = 100;
+              let issues = [];
 
-          # Fetch issues with pagination
-          while true; do
-            # yamllint disable-line rule:line-length
-            ISSUES=$(gh api "repos/${REPO}/issues?state=closed&per_page=${PER_PAGE}&page=${PAGE}" \
-              --jq '[.[] | select(.pull_request | not) | {number, closed_at}]')
+              while (true) {
+                const response = await github.rest.issues.listForRepo({
+                  owner,
+                  repo,
+                  state: 'closed',
+                  per_page: perPage,
+                  page
+                });
 
-            # If no issues are returned, break the loop
-            if [[ "${ISSUES}" == "[]" ]]; then
-              break
-            fi
+                const pageIssues = response.data.filter(issue =>
+                  !issue.pull_request &&
+                  issue.labels.some(label => label.name === 'github-workflows-metrics')
+                );
 
-            # Append issues to the list
-            CLOSED_ISSUES=$(echo "${CLOSED_ISSUES}" "${ISSUES}" | jq -s 'add')
+                issues = issues.concat(pageIssues);
+                if (response.data.length < perPage) break;
+                page++;
+              }
 
-            # Check if we have less than PER_PAGE issues,
-            # signaling the end of pagination
-            if [[ $(echo "${ISSUES}" | jq length) -lt ${PER_PAGE} ]]; then
-              break
-            fi
+              return issues;
+            }
 
-            PAGE=$((PAGE + 1))
-          done
+            function selectIssuesToDelete(issues) {
+              return issues
+                .filter(issue => new Date(issue.closed_at) < thresholdDate)
+                .sort((a, b) => new Date(b.closed_at) - new Date(a.closed_at))
+                .slice(minIssuesToKeep)
+                .map(issue => ({ number: issue.number, node_id: issue.node_id }));
+            }
 
-          if [ "${CLOSED_ISSUES}" = "[]" ]; then
-            echo "✅ No closed issues found. Exiting."
-            exit 0
-          fi
+            async function deleteIssues(issues) {
+              for (const issue of issues) {
+                const mutation = `
+                  mutation {
+                    deleteIssue(input: {issueId: \"${issue.node_id}\" }) {
+                      repository {
+                        id
+                      }
+                    }
+                  }`;
 
-          # Retain at least MIN_ISSUES_TO_KEEP
-          # and those within the retention period
-          ISSUES_TO_DELETE=$(echo "${CLOSED_ISSUES}" | jq -r \
-            --argjson now "${NOW}" \
-            --argjson limit "${MIN_ISSUES_TO_KEEP}" \
-            --argjson threshold "${THRESHOLD_DATE}" '
-              .[:-(if length < $limit then 0 else $limit end)]
-              | map(select(
-                  (.closed_at | type == "string") and
-                  ((.closed_at | fromdateiso8601) < $threshold)
-                ))
-              | .[].number
-            ' || echo "")
+                try {
+                  await github.graphql(mutation);
+                  core.info(`🗑️ Deleted issue #${issue.number}`);
+                } catch (err) {
+                  core.warning(`Failed to delete issue #${issue.number}: ${err.message}`);
+                }
+              }
+            }
 
-          if [ -z "${ISSUES_TO_DELETE}" ]; then
-            echo "✅ No issues to delete. Exiting."
-            exit 0
-          fi
+            const issues = await getClosedIssues();
 
-          echo "::group::Issues to delete:"
-          echo "${ISSUES_TO_DELETE}"
-          echo "::endgroup::"
+            core.info(`📦 Total closed issues with label "github-workflows-metrics": ${issues.length}`);
 
-          if [ "${DRY_RUN}" = "true" ]; then
-            echo "🛑 DRY RUN ENABLED: Issues will NOT be deleted."
-            exit 0
-          fi
+            // 🔍 Log sample closed dates
+            if (issues.length > 0) {
+              core.startGroup('🔍 Sample issue closed dates:');
+              issues.slice(0, 5).forEach(issue =>
+                core.info(`#${issue.number} closed at ${issue.closed_at}`)
+              );
+              core.endGroup();
+            }
 
-          echo "⏳ Deleting issues..."
-          echo "${ISSUES_TO_DELETE}" \
-            | xargs -I {} -P 5 gh issue delete "{}" --repo "${REPO}" --yes
+            if (issues.length === 0) {
+              core.info('✅ No closed issues found.');
+              return;
+            }
 
-          DELETED_COUNT=$(echo "${ISSUES_TO_DELETE}" | wc -l)
-          # yamllint disable-line rule:line-length
-          REMAINING_ISSUES=$(gh issue list --repo "${REPO}" --state closed --limit 100 | wc -l)
+            const issuesToDelete = selectIssuesToDelete(issues);
 
-          echo "::group::✅ Issue cleanup completed!"
-          echo "📌 Deleted Issues: ${DELETED_COUNT}"
-          echo "📌 Remaining Closed Issues: ${REMAINING_ISSUES}"
-          echo "::endgroup::"
+            core.info(`🔍 Closed issues older than threshold: ${issues.filter(issue => new Date(issue.closed_at) < thresholdDate).length}`);
+            core.info(`🔍 Issues selected for deletion (after keeping ${minIssuesToKeep}): ${issuesToDelete.length}`);
 
-          {
-            echo "### 🗑️ GitHub Issue Cleanup Summary"
-            echo "- **Deleted Issues**: ${DELETED_COUNT}"
-            echo "- **Remaining Closed Issues**: ${REMAINING_ISSUES}"
-          } >> "$GITHUB_STEP_SUMMARY"
+            if (issuesToDelete.length === 0) {
+              core.info('✅ No issues to delete.');
+              return;
+            }
+
+            core.startGroup('Issues to delete:');
+            for (const issue of issuesToDelete) {
+              core.info(`#${issue.number}`);
+            }
+            core.endGroup();
+
+            if (dryRun) {
+              core.info('🛑 DRY RUN ENABLED: Issues will NOT be deleted.');
+              return;
+            }
+
+            await deleteIssues(issuesToDelete);
+
+            const summary = `### 🗑️ GitHub Issue Cleanup Summary\n` +
+              `- **Deleted Issues**: ${issuesToDelete.length}\n` +
+              `- **Remaining Closed Issues**: ${issues.length - issuesToDelete.length}`;
+
+            core.setOutput('summary', summary);
+            core.summary.addRaw(summary).write();
