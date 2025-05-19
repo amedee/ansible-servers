@@ -1,5 +1,6 @@
 ---
-name: Gource
+name: 📽️ Gource
+
 on:
   push:
     branches:
@@ -23,12 +24,15 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
-  gource:
+  generate-gource:
+    name: Generate Gource video and thumbnail
     runs-on: ubuntu-latest
+    outputs:
+      run_upload: ${{ steps.gource-check.outputs.run_job }}
 
     steps:
       - name: Checkout
@@ -62,7 +66,6 @@ jobs:
             const now = new Date();
             let runJob = false;
 
-            // Check if the workflow file was changed in the last commit
             const { data: lastCommit } = await github.rest.repos.getCommit({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -71,22 +74,8 @@ jobs:
 
             const fileChanged = lastCommit.files.some(f => f.filename === workflowPath);
 
-            if (fileChanged) {
-              core.info(`${workflowPath} was changed, will generate video.`);
+            if (fileChanged || !successfulRun || ((now - new Date(successfulRun.created_at)) / 1000 > skipIntervalSeconds)) {
               runJob = true;
-            } else if (!successfulRun) {
-              core.info('No successful run found, will generate video.');
-              runJob = true;
-            } else {
-              const lastTime = new Date(successfulRun.created_at);
-              const diff = (now - lastTime) / 1000;
-              core.info(`Last successful run was ${Math.round(diff)} seconds ago.`);
-              if (diff > skipIntervalSeconds) {
-                core.info(`More than ${skipIntervalHours} hours ago, will generate video.`);
-                runJob = true;
-              } else {
-                core.info(`Less than ${skipIntervalHours} hours ago, will skip generation.`);
-              }
             }
 
             core.setOutput('run_job', runJob.toString());
@@ -110,41 +99,81 @@ jobs:
             -filter_complex "[0:v]select='not(mod(n,60))',setpts=0.1*PTS,fps=10,scale=320:-1:flags=lanczos" \
             -vsync vfr "./gource/gource.gif"
 
-      - name: Upload video to S3
+      - name: Upload Gource artifacts
         if: ${{ steps.gource-check.outputs.run_job == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: gource-assets
+          path: ./gource/
+          retention-days: 7
+
+  upload-artifacts:
+    name: Upload artifacts to S3
+    if: needs.generate-gource.outputs.run_upload == 'true'
+    needs: generate-gource
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        artifact:
+          - { name: video, ext: mp4, mime: video/mp4 }
+          - { name: thumbnail, ext: gif, mime: image/gif }
+
+    steps:
+      - name: Download gource artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: gource-assets
+          path: ./gource
+
+      - name: Upload artifact to S3
         env:
+          BUCKET: gource-by-amedee
+          AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          BUCKET: ${{ secrets.S3_BUCKET }}
         run: |
-          echo "Uploading video..."
-          VIDEO="./gource/gource.mp4"
-          VIDEO_KEY=gource-${{ github.sha }}.mp4
+          ARTIFACT_NAME="${{ matrix.artifact.name }}"
+          EXT="${{ matrix.artifact.ext }}"
+          MIME="${{ matrix.artifact.mime }}"
 
-          aws s3 cp "$VIDEO" "s3://$BUCKET/$VIDEO_KEY" --content-type video/mp4
-          aws s3api copy-object --bucket "$BUCKET" --copy-source "$BUCKET/$VIDEO_KEY" --key gource-latest.mp4 --content-type video/mp4
+          echo "Uploading $ARTIFACT_NAME..."
 
-      - name: Upload thumbnail to S3
-        if: ${{ steps.gource-check.outputs.run_job == 'true' }}
+          FILE="./gource/gource.$EXT"
+          FILE_KEY="gource-${{ github.sha }}.$EXT"
+          LATEST_KEY="gource-latest.$EXT"
+
+          aws s3 cp "$FILE" "s3://$BUCKET/$FILE_KEY" --content-type "$MIME"
+          aws s3api copy-object \
+            --bucket "$BUCKET" \
+            --copy-source "$BUCKET/$FILE_KEY" \
+            --key "$LATEST_KEY" \
+            --content-type "$MIME"
+
+  generate-summary:
+    name: Gource video upload
+    needs:
+      - generate-gource
+      - upload-artifacts
+    runs-on: ubuntu-latest
+    if: needs.generate-gource.outputs.run_upload == 'true'
+
+    steps:
+      - name: Checkout commit (shallow)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Download gource artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: gource-assets
+          path: ./gource
+
+      - name: Generate Summary
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          BUCKET: ${{ secrets.S3_BUCKET }}
-        run: |
-          echo "Uploading thumbnail..."
-          THUMB="./gource/gource.gif"
-          THUMB_KEY=gource-${{ github.sha }}.gif
-
-          aws s3 cp "$THUMB" "s3://$BUCKET/$THUMB_KEY" --content-type image/gif
-          aws s3api copy-object --bucket "$BUCKET" --copy-source "$BUCKET/$THUMB_KEY" --key gource-latest.gif --content-type image/gif
-
-      - name: Create Upload Summary
-        if: ${{ steps.gource-check.outputs.run_job == 'true' }}
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          BUCKET: ${{ secrets.S3_BUCKET }}
+          BUCKET: gource-by-amedee
+          AWS_REGION: us-east-1
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VIDEO_URL="https://$BUCKET.s3.$AWS_REGION.amazonaws.com/gource-${{ github.sha }}.mp4"
           THUMB_URL="https://$BUCKET.s3.$AWS_REGION.amazonaws.com/gource-${{ github.sha }}.gif"
@@ -152,27 +181,17 @@ jobs:
           COMMIT_MSG=$(git log -1 --pretty=%s)
           COMMIT_DATE=$(git log -1 --format=%cd --date=short)
 
-          {
-            echo "### 📽️ Gource Video Upload Summary"
-            echo ""
-            echo "![Preview]($THUMB_URL)"
-            echo ""
-            echo "- **Public URL:** [Click to view video]($VIDEO_URL)"
-            echo "- **File size:** $FILE_SIZE"
-            echo "- **Commit:** \`${{ github.sha }}\` – $COMMIT_MSG"
-            echo "- **Commit date:** $COMMIT_DATE"
-          } >> "$GITHUB_STEP_SUMMARY"
+          SUMMARY="### 📽️ Gource video upload summary
 
-      - name: Use Artifact Upload as a Backup
-        uses: actions/upload-artifact@v4
-        if: ${{ steps.gource-check.outputs.run_job == 'true' }}
-        with:
-          name: gource-assets
-          path: ./gource/
-          retention-days: 7
+          ![Preview]($THUMB_URL)
 
-      - name: Clean up temporary files
-        if: ${{ steps.gource-check.outputs.run_job == 'true' }}
-        run: |
-          echo "Cleaning up temporary files..."
-          rm -f ./gource/gource.{mp4,gif}
+          - **Public URL:** [Click to view video]($VIDEO_URL)
+          - **File size:** $FILE_SIZE
+          - **Commit:** \`${{ github.sha }}\` – $COMMIT_MSG
+          - **Commit date:** $COMMIT_DATE
+          "
+
+          echo "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+
+          gh api repos/${{ github.repository }}/commits/${{ github.sha }}/comments \
+            --field body="$SUMMARY"
