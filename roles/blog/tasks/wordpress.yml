@@ -91,7 +91,15 @@
     access_key: "{{ common_aws_access_key }}"
     secret_key: "{{ common_aws_secret_key }}"
     region: us-east-1
-  notify: Extract WordPress uploads on the remote machine
+  register: s3_download
+
+- name: Extract WordPress uploads on the remote machine # noqa no-handler
+  when: s3_download.changed
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: /tmp/wp-content/uploads.tar.xz
+    dest: "{{ webserver_directory }}/wp-content/"
+    owner: "{{ webserver_user }}"
 
 - name: Configure Redis
   ansible.builtin.include_tasks:

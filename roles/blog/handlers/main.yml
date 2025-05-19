@@ -1,7 +1,0 @@
----
-- name: Extract WordPress uploads on the remote machine
-  ansible.builtin.unarchive:
-    remote_src: true
-    src: /tmp/wp-content/uploads.tar.xz
-    dest: "{{ webserver_directory }}/wp-content/"
-    owner: "{{ webserver_user }}"
