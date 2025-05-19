@@ -1,5 +1,5 @@
 ---
-name: Delete Closed Issues
+name: 🧹 Cleanup Closed Issues
 
 on: # yamllint disable-line rule:truthy
   schedule:

@@ -1,5 +1,5 @@
 ---
-name: Delete old workflow runs
+name: 🧹 Cleanup old workflow runs
 
 on: # yamllint disable-line rule:truthy
   schedule:
