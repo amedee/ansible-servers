@@ -1,0 +1,103 @@
+name: 🧹 Cleanup orphaned Gource files
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 0'  # Every Sunday at 03:00 UTC
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history needed for accurate SHA checks
+
+      - name: Install aws-sdk
+        run: npm install aws-sdk
+
+      - name: Delete orphaned Gource files
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        with:
+          script: |
+            const AWS = require('aws-sdk');
+            const { execSync } = require('child_process');
+            const fs = require('fs');
+
+            const s3 = new AWS.S3({
+              accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+              region: process.env.AWS_REGION
+            });
+
+            const listParams = { Bucket: process.env.S3_BUCKET };
+            const response = await s3.listObjectsV2(listParams).promise();
+            const allKeys = response.Contents.map(obj => obj.Key);
+
+            const orphanedSHAs = [];
+            let totalMp4Count = 0;
+
+            for (const key of allKeys) {
+              if (!key.endsWith('.mp4')) continue;
+              if (key === 'gource-latest.mp4') continue;
+
+              totalMp4Count++;
+
+              const match = key.match(/^gource-([0-9a-f]{7,})\.mp4$/);
+              if (!match) continue;
+
+              const sha = match[1];
+
+              let isValid = false;
+              try {
+                execSync(`git merge-base --is-ancestor ${sha} origin/main`);
+                isValid = true;
+              } catch {
+                isValid = false;
+              }
+
+              if (!isValid) {
+                orphanedSHAs.push(sha);
+              }
+            }
+
+            let deletedFiles = 0;
+
+            for (const sha of orphanedSHAs) {
+              for (const ext of ['mp4', 'gif']) {
+                const fileKey = `gource-${sha}.${ext}`;
+                try {
+                  await s3.deleteObject({
+                    Bucket: process.env.S3_BUCKET,
+                    Key: fileKey
+                  }).promise();
+                  console.log(`🗑 Deleted ${fileKey}`);
+                  deletedFiles++;
+                } catch (err) {
+                  console.warn(`⚠️ Failed to delete ${fileKey}: ${err.message}`);
+                }
+              }
+            }
+
+            const summary = [
+              `### 🧹 Gource Cleanup Summary`,
+              `- 📦 Total \`.mp4\` files (excluding latest): \`${totalMp4Count}\``,
+              `- 🚫 Orphaned SHAs found: \`${orphanedSHAs.length}\``,
+              `- 🗑 Total files deleted: \`${deletedFiles}\``
+            ].join('\n');
+
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);

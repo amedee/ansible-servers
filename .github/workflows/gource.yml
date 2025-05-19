@@ -115,11 +115,11 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          BUCKET: ${{ secrets.S3_BUCKET }}
         run: |
           echo "Uploading video..."
           VIDEO="./gource/gource.mp4"
-          BUCKET=gource-by-amedee
           VIDEO_KEY=gource-${{ github.sha }}.mp4
 
           aws s3 cp "$VIDEO" "s3://$BUCKET/$VIDEO_KEY" --content-type video/mp4
@@ -130,11 +130,11 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          BUCKET: ${{ secrets.S3_BUCKET }}
         run: |
           echo "Uploading thumbnail..."
           THUMB="./gource/gource.gif"
-          BUCKET=gource-by-amedee
           THUMB_KEY=gource-${{ github.sha }}.gif
 
           aws s3 cp "$THUMB" "s3://$BUCKET/$THUMB_KEY" --content-type image/gif
@@ -142,9 +142,12 @@ jobs:
 
       - name: Create Upload Summary
         if: ${{ steps.gource-check.outputs.run_job == 'true' }}
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          BUCKET: ${{ secrets.S3_BUCKET }}
         run: |
-          VIDEO_URL="https://gource-by-amedee.s3.us-east-1.amazonaws.com/gource-${{ github.sha }}.mp4"
-          THUMB_URL="https://gource-by-amedee.s3.us-east-1.amazonaws.com/gource-${{ github.sha }}.gif"
+          VIDEO_URL="https://$BUCKET.s3.$AWS_REGION.amazonaws.com/gource-${{ github.sha }}.mp4"
+          THUMB_URL="https://$BUCKET.s3.$AWS_REGION.amazonaws.com/gource-${{ github.sha }}.gif"
           FILE_SIZE=$(du -h "./gource/gource.mp4" | cut -f1)
           COMMIT_MSG=$(git log -1 --pretty=%s)
           COMMIT_DATE=$(git log -1 --format=%cd --date=short)
