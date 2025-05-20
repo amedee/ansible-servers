@@ -37,8 +37,8 @@ ansible-playbook playbooks/site.yml
 [deployment-status]: https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml
 [codacy-badge]: https://app.codacy.com/project/badge/Grade/14aefeb38e4e4313a524d732264dc9fc
 [codacy-grade]: https://app.codacy.com/gh/amedee/ansible-servers/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
-[superlinter-badge]: https://github.com/amedee/ansible-servers/actions/workflows/super-linter.yml/badge.svg
-[superlinter-status]: https://github.com/marketplace/actions/super-linter
+[superlinter-badge]: https://github.com/amedee/ansible-servers/actions/workflows/code-quality-super-linter.yml/badge.svg
+[superlinter-status]: https://github.com/marketplace/actions/code-quality-super-linter
 [codefactor-badge]: https://www.codefactor.io/repository/github/amedee/ansible-servers/badge
 [codefactor-status]: https://www.codefactor.io/repository/github/amedee/ansible-servers
 [license-badge]: https://img.shields.io/badge/License-MIT-yellow.svg
