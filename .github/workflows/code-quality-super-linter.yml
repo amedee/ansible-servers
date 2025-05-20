@@ -1,5 +1,5 @@
 ---
-name: Super-linter
+name: 🛠️ Code Quality — Super-Linter
 
 on: # yamllint disable-line rule:truthy
   push:

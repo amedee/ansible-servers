@@ -1,5 +1,5 @@
 ---
-name: Deploy to Production
+name: 🚀 Deploy to Production
 
 on: # yamllint disable-line rule:truthy
   push:
@@ -11,7 +11,7 @@ on: # yamllint disable-line rule:truthy
       - "!*.sh"
       - "!.**"
       - "!Vagrantfile"
-      - ".github/workflows/ansible-deploy.yml"
+      - ".github/workflows/deploy-production.yml"
   schedule:
     - cron: "10 3 * * SAT"
   workflow_dispatch:

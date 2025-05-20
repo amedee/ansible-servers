@@ -1,5 +1,5 @@
 ---
-name: Validate Configs
+name: 🛠️ Code Quality — Validate Configs
 
 on: # yamllint disable-line rule:truthy
   push:

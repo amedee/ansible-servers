@@ -1,12 +1,12 @@
 ---
-name: GitHub Workflows Metrics
+name: 📊 Workflow Metrics
 
 on: # yamllint disable-line rule:truthy
   push:
     branches:
       - main
     paths:
-      - ".github/workflows/workflow_metrics.yml"
+      - ".github/workflows/workflow-metrics.yml"
   schedule:
     - cron: "30 10 * * SAT"
   workflow_dispatch:
