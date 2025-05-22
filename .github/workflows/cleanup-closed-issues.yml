@@ -2,14 +2,26 @@
 name: 🧹 Cleanup Closed Issues
 
 on: # yamllint disable-line rule:truthy
-  schedule:
-    - cron: "0 0 2 * *" # Runs at midnight UTC on the second day of the month
+  workflow_call:
+    inputs:
+      dry_run:
+        required: true
+        type: boolean
+      days_to_keep:
+        required: true
+        type: string
+      min_issues_to_keep:
+        required: true
+        type: string
+    secrets:
+      GH_FINEGRAINED_PAT:
+        required: true
   workflow_dispatch: # Allow manual execution
     inputs:
       dry_run:
         description: "Enable dry run mode (preview deletions, no actual delete)"
         required: false
-        default: "true"
+        default: "false"
         type: choice
         options:
           - "true"
@@ -17,16 +29,16 @@ on: # yamllint disable-line rule:truthy
       days_to_keep:
         description: "Number of days to retain closed issues"
         required: false
-        default: "90"
+        default: "30"
         type: string
       min_issues_to_keep:
         description: "Minimum number of closed issues to keep"
         required: false
-        default: "10"
+        default: "6"
         type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: cleanup-closed-issue-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -37,21 +49,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Install GitHub CLI
         run: sudo apt-get install --yes gh
-
-      - name: Authenticate with GitHub CLI
-        run: gh auth login --with-token <<< "${{ secrets.GH_FINEGRAINED_PAT }}"
 
       - name: Delete old closed issues
         env:
           GH_TOKEN: ${{ secrets.GH_FINEGRAINED_PAT }}
-          DRY_RUN: ${{ inputs.dry_run || 'false' }}
-          DAYS_TO_KEEP: ${{ inputs.days_to_keep || '30' }}
-          MIN_ISSUES_TO_KEEP: ${{ inputs.min_issues_to_keep || '6' }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          DAYS_TO_KEEP: ${{ inputs.days_to_keep }}
+          MIN_ISSUES_TO_KEEP: ${{ inputs.min_issues_to_keep }}
           REPO: ${{ github.repository }}
         run: |
           # Delete old closed issues
@@ -70,32 +76,7 @@ jobs:
           echo "::endgroup::"
 
           echo "Fetching ALL closed issues from ${REPO}..."
-          PAGE=1
-          PER_PAGE=100
-          CLOSED_ISSUES="[]"
-
-          # Fetch issues with pagination
-          while true; do
-            # yamllint disable-line rule:line-length
-            ISSUES=$(gh api "repos/${REPO}/issues?state=closed&per_page=${PER_PAGE}&page=${PAGE}" \
-              --jq '[.[] | select(.pull_request | not) | {number, closed_at}]')
-
-            # If no issues are returned, break the loop
-            if [[ "${ISSUES}" == "[]" ]]; then
-              break
-            fi
-
-            # Append issues to the list
-            CLOSED_ISSUES=$(echo "${CLOSED_ISSUES}" "${ISSUES}" | jq -s 'add')
-
-            # Check if we have less than PER_PAGE issues,
-            # signaling the end of pagination
-            if [[ $(echo "${ISSUES}" | jq length) -lt ${PER_PAGE} ]]; then
-              break
-            fi
-
-            PAGE=$((PAGE + 1))
-          done
+          CLOSED_ISSUES=$(gh issue list --repo "${REPO}" --state closed --limit 1000 --json number,closedAt)
 
           if [ "${CLOSED_ISSUES}" = "[]" ]; then
             echo "✅ No closed issues found. Exiting."
@@ -110,8 +91,8 @@ jobs:
             --argjson threshold "${THRESHOLD_DATE}" '
               .[:-(if length < $limit then 0 else $limit end)]
               | map(select(
-                  (.closed_at | type == "string") and
-                  ((.closed_at | fromdateiso8601) < $threshold)
+                  (.closedAt | type == "string") and
+                  ((.closedAt | fromdateiso8601) < $threshold)
                 ))
               | .[].number
             ' || echo "")

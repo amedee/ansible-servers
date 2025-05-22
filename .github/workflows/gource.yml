@@ -2,16 +2,12 @@
 name: 📽️ Gource
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/gource.yml'
-      - 'ansible.cfg'
-      - 'requirements.yml'
-      - 'inventory/**'
-      - 'playbooks/**'
-      - 'roles/**'
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
   workflow_dispatch:
     inputs:
       skip_interval_hours:
@@ -20,7 +16,7 @@ on:
         default: 24
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: gource-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -125,12 +121,16 @@ jobs:
           name: gource-assets
           path: ./gource
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@b47578312673ae6fa5b5096b330d9fbac3d116df # v4.2.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
       - name: Upload artifact to S3
         env:
           BUCKET: gource-by-amedee
-          AWS_REGION: us-east-1
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           ARTIFACT_NAME="${{ matrix.artifact.name }}"
           EXT="${{ matrix.artifact.ext }}"

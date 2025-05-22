@@ -2,14 +2,12 @@
 name: 📊 Workflow Metrics
 
 on: # yamllint disable-line rule:truthy
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/workflow-metrics.yml"
-  schedule:
-    - cron: "30 10 * * SAT"
+  workflow_call:
   workflow_dispatch:
+
+concurrency:
+  group: workflow-metrics-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   actions: read
@@ -22,5 +20,5 @@ jobs:
       # yamllint disable-line rule:line-length
       - uses: yykamei/github-workflows-metrics@53485efd1847ab15f237b6dc9260fcf2e3addb78 # v0.3.11
         with:
-          only: ansible-deploy.yml
+          only: pipeline.yml
           status: success
