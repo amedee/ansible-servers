@@ -33,8 +33,8 @@ ansible-playbook playbooks/site.yml
 [box.vangasse.eu]: https://box.vangasse.eu
 [lemp droplet]: https://do.co/2GOFe5J#start
 [mailinabox]: https://mailinabox.email/
-[deployment-badge]: https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml/badge.svg
-[deployment-status]: https://github.com/amedee/ansible-servers/actions/workflows/ansible-deploy.yml
+[deployment-badge]: https://github.com/amedee/ansible-servers/actions/workflows/pipeline.yml/badge.svg
+[deployment-status]: https://github.com/amedee/ansible-servers/actions/workflows/pipeline.yml
 [codacy-badge]: https://app.codacy.com/project/badge/Grade/14aefeb38e4e4313a524d732264dc9fc
 [codacy-grade]: https://app.codacy.com/gh/amedee/ansible-servers/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
 [superlinter-badge]: https://github.com/amedee/ansible-servers/actions/workflows/code-quality-super-linter.yml/badge.svg

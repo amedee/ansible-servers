@@ -2,22 +2,25 @@
 name: 🚀 Deploy to Production
 
 on: # yamllint disable-line rule:truthy
-  push:
-    branches:
-      - main
-    paths:
-      - "**"
-      - "!*.md"
-      - "!*.sh"
-      - "!.**"
-      - "!Vagrantfile"
-      - ".github/workflows/deploy-production.yml"
-  schedule:
-    - cron: "10 3 * * SAT"
+  workflow_call:
+    inputs:
+      host:
+        required: true
+        type: string
+    secrets:
+      SSH_PRIVATE_KEY:
+        required: true
+      VAULT_PASSWORD:
+        required: true
   workflow_dispatch:
+    inputs:
+      host:
+        description: 'Target host (e.g. box.vangasse.eu)'
+        required: true
+        type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: deploy-production-${{ inputs.host }}-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -28,9 +31,6 @@ jobs:
   ansible-playbook:
     name: Ansible Playbook
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        host: [box.vangasse.eu, amedee.be]
     env:
       ANSIBLE_CONFIG: ansible.cfg
       ANSIBLE_STDOUT_CALLBACK: yaml
@@ -57,13 +57,13 @@ jobs:
           vault_password: ${{secrets.VAULT_PASSWORD}}
           options: |
             --inventory inventory/production
-            --limit ${{ matrix.host }}
+            --limit ${{ inputs.host }}
             -vvv
 
       - name: Archive Ansible log
         uses: actions/upload-artifact@v4
         with:
-          name: ansible-${{ matrix.host }}.log
+          name: ansible-${{ inputs.host }}.log
           path: ~/.ansible/ansible.log
           compression-level: 9
           overwrite: true
