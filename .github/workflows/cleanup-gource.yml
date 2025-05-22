@@ -2,12 +2,16 @@
 name: 🧹 Cleanup orphaned Gource files
 
 on:
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
   workflow_dispatch:
-  schedule:
-    - cron: '0 3 * * 0'  # Every Sunday at 03:00 UTC
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: cleanup-gource-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -31,8 +35,8 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_REGION: us-east-1
+          S3_BUCKET: gource-by-amedee
         with:
           script: |
             const AWS = require('aws-sdk');

@@ -2,15 +2,11 @@
 name: 🛠️ Code Quality — Validate Configs
 
 on: # yamllint disable-line rule:truthy
-  push:
-    paths:
-      - "**"
-      - "!*.md"
   workflow_call:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: code-quality-validate-configs-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:

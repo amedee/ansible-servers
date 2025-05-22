@@ -2,19 +2,11 @@
 name: 🛠️ Code Quality — Codacy Scan
 
 on: # yamllint disable-line rule:truthy
-  push:
-    paths:
-      - "**"
-      - "!README.md"
-      - "!.github/**"
-      - ".github/workflows/code-quality-codacy.yml"
-  schedule:
-    - cron: "19 8 * * MON"
   workflow_call:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: code-quality-codacy-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:

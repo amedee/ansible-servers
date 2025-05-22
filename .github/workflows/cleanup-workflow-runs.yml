@@ -2,9 +2,12 @@
 name: 🧹 Cleanup old workflow runs
 
 on: # yamllint disable-line rule:truthy
-  schedule:
-    - cron: "0 0 1 * *"
+  workflow_call:
   workflow_dispatch:
+
+concurrency:
+  group: cleanup-workflow-runs-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

@@ -2,12 +2,11 @@
 name: 🛠️ Code Quality — Super-Linter
 
 on: # yamllint disable-line rule:truthy
-  push:
   workflow_call:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: code-quality-super-linter-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
