@@ -46,6 +46,23 @@ jobs:
     permissions:
       contents: read
 
+  dry-run:
+    name: 🔍 Dry Run on Production
+    uses: ./.github/workflows/dry-run-production.yml
+    strategy:
+      matrix:
+        host:
+          - amedee.be
+          - box.vangasse.eu
+    with:
+      host: ${{ matrix.host }}
+    secrets:
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
+    permissions:
+      contents: read
+      pull-requests: write
+
   deploy:
     name: 🚀 Deploy to Production
     uses: ./.github/workflows/deploy-production.yml
@@ -53,6 +70,7 @@ jobs:
       - codacy
       - super-linter
       - validate-configs
+      - dry-run
     strategy:
       matrix:
         host:
