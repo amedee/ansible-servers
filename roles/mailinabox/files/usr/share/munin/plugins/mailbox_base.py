@@ -4,6 +4,8 @@ Munin plugin base module for visualizing mailbox statistics (size, message count
 via `doveadm` for a Mail-in-a-Box server.
 """
 
+from __future__ import annotations  # pylint: disable=E0611
+
 import json
 import os
 import re
@@ -12,7 +14,7 @@ import sys
 import time
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import DefaultDict, Dict, List, Optional
 
 
 def run(*args: str) -> List[str]:
@@ -40,8 +42,8 @@ def _load_cached_folders(cache_file: Path, ttl: int) -> Optional[List[str]]:
         age = time.time() - cache_file.stat().st_mtime
         if age < ttl:
             try:
-                with open(cache_file, "r", encoding="utf-8") as f:
-                    return json.load(f)
+                with open(cache_file, "r", encoding="utf-8") as file_handle:
+                    return json.load(file_handle)
             except (json.JSONDecodeError, OSError):
                 pass
     return None
@@ -86,14 +88,17 @@ def _order_folders(seen: Dict[str, str], preferred_order: List[str]) -> List[str
 def _cache_folders(cache_file: Path, folders: List[str]) -> None:
     cache_file.parent.mkdir(parents=True, exist_ok=True)
     try:
-        with open(cache_file, "w", encoding="utf-8") as f:
-            json.dump(folders, f)
+        with open(cache_file, "w", encoding="utf-8") as file_handle:
+            json.dump(folders, file_handle)
     except OSError:
         pass
 
 
 def get_top_level_folders(
-    mailbox_user: str, cache_file: Path, preferred_order: List[str], ttl: int
+    mailbox_user: str,
+    cache_file: Path,
+    preferred_order: List[str],
+    ttl: int,
 ) -> List[str]:
     """
     Return a list of top-level folders for the mailbox user.
@@ -155,7 +160,7 @@ def output_values(folders: List[str], mailbox_user: str, metric: str) -> None:
     """
     folder_map = {f.lower(): f for f in folders}
     stat_map = get_mailbox_stat_map(mailbox_user, metric)
-    totals: defaultdict[str, int] = defaultdict(int)
+    totals: DefaultDict[str, int] = defaultdict(int)
     for mailbox, value in stat_map.items():
         top = mailbox.split(".")[0]
         top_lower = top.lower()
