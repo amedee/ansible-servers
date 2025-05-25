@@ -1,4 +1,15 @@
 ---
+galaxy_info:
+  description: Role to configure my WordPress blog.
+  author: Amedee Van Gasse
+  license: MIT
+  min_ansible_version: "2.1"
+  namespace: amedee
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+
 dependencies:
   - role: mailserver
   - role: dbserver

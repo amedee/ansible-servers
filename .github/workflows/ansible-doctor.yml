@@ -1,0 +1,113 @@
+---
+name: 📚 Ansible Role Docs
+
+on:
+  workflow_call:
+    secrets:
+      OPENROUTER_API_KEY:
+        required: true
+  workflow_dispatch:
+
+concurrency:
+  group: ansible-doctor-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install ansible-doctor
+        run: pip install ansible-core ansible-doctor
+
+      - name: Run ansible-doctor
+        run: ansible-doctor --force --recursive roles
+
+      - name: Format Markdown with Prettier
+        run: |
+          npx prettier --write "roles/**/README.md"
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "Ansible Doc Bot 📚"
+          git config --global user.email "amedee-docbot@amedee.be"
+
+      - name: Check for changed .md files
+        id: changes
+        run: |
+          git add roles/**/*.md
+          if git diff --cached --quiet; then
+            echo "no_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "no_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate AI commit message via OpenRouter.ai
+        id: ai_commit
+        if: steps.changes.outputs.no_changes == 'false'
+        run: |
+          echo "Requesting commit message from OpenRouter..."
+
+          diff=$(git diff --cached --unified=0 -- '*.md' | head -c 3000)
+
+          prompt=$(jq -n --arg diff "$diff" '[
+            {
+              "role": "user",
+              "content": ("Write a concise Git commit message (max 72 characters) describing the staged Markdown documentation changes to Ansible roles.\n"
+                + "Start the commit message with a relevant emoji.\n"
+                + "Here is the diff:\n\n"
+                + $diff)
+            }
+          ]')
+
+          data=$(jq -n --argjson messages "$prompt" '{
+            model: "mistralai/devstral-small:free",
+            messages: $messages,
+            temperature: 0.7
+          }')
+
+          response=$(curl -s https://openrouter.ai/api/v1/chat/completions \
+            -H "Authorization: Bearer ${{ secrets.OPENROUTER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -H "HTTP-Referer: https://github.com/${{ github.repository }}" \
+            -H "X-Title: Ansible Docs" \
+            -d "$data"
+          )
+
+          echo "Raw response:"
+          echo "$response"
+
+          message=$(echo "$response" | jq -r '.choices[0].message.content // empty')
+
+          if [ -z "$message" ]; then
+            echo "❌ Failed to get a commit message. Using fallback."
+            message="📝 Update Ansible role documentation"
+          fi
+
+          # Sanitize message: remove backticks and newlines
+          message=$(echo "$message" | tr -d '\n' | sed 's/`//g')
+
+          # Truncate to 72 characters max
+          message="${message:0:72}"
+
+          echo "message=$message"
+          echo "message=$message" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.no_changes == 'false'
+        run: |
+          git commit -m "${{ steps.ai_commit.outputs.message }}"
+          git push
