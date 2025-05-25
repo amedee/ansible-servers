@@ -1,6 +1,6 @@
 ---
 galaxy_info:
-  description: Role to configure a MySQL database server.
+  description: Role to install boto for communication with AWS.
   author: Amedee Van Gasse
   license: MIT
   min_ansible_version: "2.1"
@@ -9,6 +9,3 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - noble
-
-dependencies:
-  - role: common

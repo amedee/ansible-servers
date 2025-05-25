@@ -46,9 +46,45 @@ jobs:
     permissions:
       contents: read
 
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has_non_md_changes: ${{ steps.check.outputs.has_non_md }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: check
+        run: |
+          BEFORE=${{ github.event.before }}
+          AFTER=${{ github.sha }}
+
+          echo "Commit before push: ${BEFORE}"
+          echo "Commit after push: ${AFTER}"
+
+          # Fallback if 'before' does not exist
+          if ! git cat-file -e "${BEFORE}^{commit}"; then
+            echo "::warning::Commit $BEFORE not found, falling back to parent of $AFTER"
+            BEFORE=$(git rev-parse "${AFTER}^")
+          fi
+
+          echo "Diffing from $BEFORE to $AFTER"
+          CHANGED=$(git diff --name-only "$BEFORE" "$AFTER")
+          echo "Changed files:"
+          echo "$CHANGED"
+
+          if echo "$CHANGED" | grep -vE '\.md$' > /dev/null; then
+            echo "has_non_md=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_non_md=false" >> "$GITHUB_OUTPUT"
+          fi
+
   dry-run:
     name: 🔍 Dry Run on Production
     uses: ./.github/workflows/dry-run-production.yml
+    needs: check-changes
+    if: needs.check-changes.outputs.has_non_md_changes == 'true'
     strategy:
       matrix:
         host:
@@ -66,11 +102,13 @@ jobs:
   deploy:
     name: 🚀 Deploy to Production
     uses: ./.github/workflows/deploy-production.yml
+    if: needs.check-changes.outputs.has_non_md_changes == 'true'
     needs:
+      - check-changes
       - codacy
+      - dry-run
       - super-linter
       - validate-configs
-      - dry-run
     strategy:
       matrix:
         host:
@@ -84,6 +122,16 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+
+  ansible-doctor:
+    name: 📚 Ansible Role Docs
+    uses: ./.github/workflows/ansible-doctor.yml
+    needs: deploy
+    secrets:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    permissions:
+      contents: write
+      id-token: write
 
   gource:
     name: 📽️ Gource
@@ -131,6 +179,7 @@ jobs:
     name: 🧹 Cleanup old workflow runs
     uses: ./.github/workflows/cleanup-workflow-runs.yml
     needs:
+      - ansible-doctor
       - cleanup-closed-issues
       - cleanup-gource
     permissions:
