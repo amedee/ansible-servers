@@ -4,3 +4,7 @@ skip-check:
   # the build entry point and the top-level source location.
   # GitHub Actions workflow_dispatch inputs MUST be empty.
   - CKV_GHA_7
+
+skip-path:
+  - roles/geerlingguy.*/
+  - roles/rolehippie.*/
