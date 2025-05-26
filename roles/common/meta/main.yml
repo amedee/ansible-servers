@@ -1,4 +1,5 @@
 ---
+# @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
   description: Role to configure install and configure common stuff on all of my servers.
   author: Amedee Van Gasse
