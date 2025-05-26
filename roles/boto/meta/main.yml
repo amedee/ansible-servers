@@ -1,4 +1,5 @@
 ---
+# @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
   description: Role to install boto for communication with AWS.
   author: Amedee Van Gasse

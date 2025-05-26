@@ -1,4 +1,5 @@
 ---
+# @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
   description: Role to configure a MySQL database server.
   author: Amedee Van Gasse
