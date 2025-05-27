@@ -30,6 +30,7 @@ blog_wp_plugins_install:
   - redirection
   - redis-cache
   - syntaxhighlighter
+  - videojs-html5-player
   - wordfence
   - wp-youtube-lyte
 
