@@ -1,27 +1,20 @@
 ---
-name: 🚀 Deploy to Production
+name: 🚀 Ansible Run
 
 on: # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
-      host:
-        required: true
-        type: string
+      check-mode:
+        description: 'Run in dry-run mode (ansible --check)'
+        required: false
+        default: false
+        type: boolean
     secrets:
       SSH_PRIVATE_KEY:
         required: true
       VAULT_PASSWORD:
         required: true
   workflow_dispatch:
-    inputs:
-      host:
-        description: 'Target host (e.g. box.vangasse.eu)'
-        required: true
-        type: string
-
-concurrency:
-  group: deploy-production-${{ inputs.host }}-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -31,6 +24,19 @@ jobs:
   ansible-playbook:
     name: Ansible Playbook
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        host:
+          - amedee.be
+          - box.vangasse.eu
+    concurrency:
+      group: ${{ format(
+        'ansible-run-{0}{1}-{2}-{3}',
+        inputs.check-mode && 'check-' || '',
+        matrix.host,
+        github.workflow,
+        github.ref) }}
+      cancel-in-progress: true
     env:
       ANSIBLE_CONFIG: ansible.cfg
       ANSIBLE_STDOUT_CALLBACK: yaml
@@ -64,13 +70,17 @@ jobs:
           vault_password: ${{secrets.VAULT_PASSWORD}}
           options: |
             --inventory inventory/production
-            --limit ${{ inputs.host }}
+            --limit ${{ matrix.host }}
+            ${{ inputs.check-mode && '--check' || '' }}
             -vvv
 
       - name: Archive Ansible log
         uses: actions/upload-artifact@v4
         with:
-          name: ansible-${{ inputs.host }}.log
+          name: ${{ format(
+            'ansible-{0}{1}.log',
+            inputs.check-mode && 'check-' || '',
+            matrix.host) }}
           path: ~/.ansible/ansible.log
           compression-level: 9
           overwrite: true
