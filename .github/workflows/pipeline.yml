@@ -24,28 +24,6 @@ permissions:
   contents: read
 
 jobs:
-  codacy:
-    name: 🛠️ Code Quality — Codacy Scan
-    uses: ./.github/workflows/code-quality-codacy.yml
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-  super-linter:
-    name: 🛠️ Code Quality — Super-Linter
-    uses: ./.github/workflows/code-quality-super-linter.yml
-    permissions:
-      contents: write
-      packages: read
-      statuses: write
-
-  validate-configs:
-    name: 🛠️ Code Quality — Validate Configs
-    uses: ./.github/workflows/code-quality-validate-configs.yml
-    permissions:
-      contents: read
-
   check-changes:
     runs-on: ubuntu-latest
     outputs:
@@ -80,6 +58,34 @@ jobs:
             echo "has_non_md=false" >> "$GITHUB_OUTPUT"
           fi
 
+  codacy:
+    name: 🛠️ Code Quality — Codacy Scan
+    uses: ./.github/workflows/code-quality-codacy.yml
+    needs: check-changes
+    if: needs.check-changes.outputs.has_non_md_changes == 'true'
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+  super-linter:
+    name: 🛠️ Code Quality — Super-Linter
+    uses: ./.github/workflows/code-quality-super-linter.yml
+    needs: check-changes
+    if: needs.check-changes.outputs.has_non_md_changes == 'true'
+    permissions:
+      contents: write
+      packages: read
+      statuses: write
+
+  validate-configs:
+    name: 🛠️ Code Quality — Validate Configs
+    uses: ./.github/workflows/code-quality-validate-configs.yml
+    needs: check-changes
+    if: needs.check-changes.outputs.has_non_md_changes == 'true'
+    permissions:
+      contents: read
+
   dry-run:
     name: 🔍 Dry Run on Production
     uses: ./.github/workflows/dry-run-production.yml
@@ -102,9 +108,7 @@ jobs:
   deploy:
     name: 🚀 Deploy to Production
     uses: ./.github/workflows/deploy-production.yml
-    if: needs.check-changes.outputs.has_non_md_changes == 'true'
     needs:
-      - check-changes
       - codacy
       - dry-run
       - super-linter
