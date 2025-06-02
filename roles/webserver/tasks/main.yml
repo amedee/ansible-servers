@@ -24,13 +24,15 @@
   changed_when: ondrej_gpg_import.rc == 0
   failed_when: ondrej_gpg_import.rc != 0
 
-- name: Add Ondřej Surý repositories
+- name: Configure deb822-format APT repositories
   ansible.builtin.deb822_repository:
     name: "{{ item.name }}"
+    types: "{{ item.repo.types | default(omit) }}"
     uris: "{{ item.repo.uris }}"
     suites: "{{ item.repo.suites }}"
     components: "{{ item.repo.components }}"
     signed_by: "{{ item.repo.signed_by }}"
+    state: present
   loop: "{{ webserver_deb822_repositories }}"
 
 - name: Install APT packages
