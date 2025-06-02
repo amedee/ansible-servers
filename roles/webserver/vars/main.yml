@@ -13,8 +13,7 @@ webserver_deb822_repositories:
       components: [main]
       signed_by: "{{ webserver_ondrej_signature }}"
 
-# yamllint disable-line rule:line-length
-webserver_ondrej_signature: "http://ppa.launchpad.net/ondrej/php/ubuntu/dists/noble/Release.gpg"
+webserver_ondrej_signature: "/etc/apt/keyrings/ondrej.gpg"
 
 webserver_apt_packages:
   - curl
