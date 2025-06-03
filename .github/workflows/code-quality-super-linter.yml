@@ -48,7 +48,7 @@ jobs:
           FIX_YAML_PRETTIER: true
 
       # Check the PR diff using the current branch and the base branch of the PR
-      - uses: GrantBirki/git-diff-action@f65a78c343ee50737aebbe653e35f3067752c7b3 # v2.8.0
+      - uses: GrantBirki/git-diff-action@7420e4d095c27bb23359787640976d60c94fd216 # v2.8.1
         name: git-diff-action
         id: git-diff-action
         with:
