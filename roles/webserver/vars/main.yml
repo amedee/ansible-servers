@@ -40,15 +40,16 @@ webserver_apt_packages:
   - php
   - php-curl
   - php-fpm
-  - php8.3-imagick
+  - php-gd
+  - php-imagick
   - php-intl
   - php-json
   - php-mbstring
   - php-mysql
-  - php8.3-redis
-  - php8.3-ssh2
+  - php-redis
+  - php-ssh2
   - php-xml
-  - php8.3-xmlrpc
+  - php-xmlrpc
   - php-zip
   - redis-server
 
