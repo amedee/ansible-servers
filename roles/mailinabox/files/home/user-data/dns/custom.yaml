@@ -1,7 +1,9 @@
 ---
 amedee.be:
   A: 209.38.38.53
-  TXT: pinterest-site-verification=25f529bc9ccfe7c40ede802261902e48
+  TXT:
+    - openai-domain-verification=dv-CE4I5t0idxqOlBeRFw2m6TwK
+    - pinterest-site-verification=25f529bc9ccfe7c40ede802261902e48
 "*.amedee.be":
   A: 209.38.38.53
 www.amedee.be:
