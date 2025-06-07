@@ -72,7 +72,7 @@ jobs:
             --inventory inventory/production
             --limit ${{ matrix.host }}
             ${{ inputs.check-mode && '--check' || '' }}
-            -vvv
+            -vv
 
       - name: Archive Ansible log
         uses: actions/upload-artifact@v4
