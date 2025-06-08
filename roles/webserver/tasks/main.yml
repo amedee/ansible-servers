@@ -21,7 +21,6 @@
     creates: "{{ webserver_ondrej_signature }}"
     executable: /bin/bash
   register: ondrej_gpg_import
-  changed_when: ondrej_gpg_import.rc == 0
   failed_when: ondrej_gpg_import.rc != 0
 
 - name: Configure deb822-format APT repositories
