@@ -1,0 +1,4 @@
+Explanation: Duplicity version 3.0.1 has a bug and I don't want it installed
+Package: duplicity
+Pin: version 3.0.1*
+Pin-Priority: -1

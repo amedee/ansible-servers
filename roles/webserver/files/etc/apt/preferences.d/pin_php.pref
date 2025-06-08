@@ -1,0 +1,4 @@
+Explanation: I don't want a RC version of PHP
+Package: php
+Pin: version *rc**
+Pin-Priority: -1
