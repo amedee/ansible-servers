@@ -18,7 +18,6 @@ Role to configure my webserver.
 ## Dependencies
 
 - common
-- debops.debops.apt_preferences
 - boto
 
 ## License
