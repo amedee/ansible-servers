@@ -35,6 +35,19 @@
     state: present
   loop: "{{ webserver_deb822_repositories }}"
 
+- name: Install APT preference to block RC versions of PHP
+  ansible.builtin.copy:
+    src: etc/apt/preferences.d/pin_php.pref
+    dest: /etc/apt/preferences.d/pin_php.pref
+    owner: root
+    mode: u=rw,go=r
+  register: apt_pin_result
+
+- name: Update APT cache if pinning file changed  # noqa no-handler
+  ansible.builtin.apt:
+    update_cache: true
+  when: apt_pin_result.changed
+
 - name: Install APT packages
   ansible.builtin.apt:
     update_cache: true

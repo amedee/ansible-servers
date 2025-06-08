@@ -13,13 +13,6 @@ galaxy_info:
 
 dependencies:
   - role: mailserver
-  - role: debops.debops.apt_preferences
-    apt_preferences__list:
-      - package: duplicity
-        version: 3.0.1
-        priority: -1
-        reason: |-
-          Duplicity version 3.0.1 has a bug and I don't want it installed
   - role: debops.debops.cron
     cron__jobs:
       doveadm_expunge:
