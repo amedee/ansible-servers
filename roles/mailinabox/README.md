@@ -18,7 +18,6 @@ Role to do post-install configuration of nailinabox.
 ## Dependencies
 
 - mailserver
-- debops.debops.apt_preferences
 - debops.debops.cron
 - geerlingguy.munin-node
 
