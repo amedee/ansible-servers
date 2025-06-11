@@ -1,4 +1,5 @@
 ---
+# Zone: amedee.be
 amedee.be:
   A: 209.38.38.53
   TXT:
@@ -14,18 +15,27 @@ s1._domainkey.amedee.be:
   CNAME: s1.domainkey.u44990685.wl186.sendgrid.net.
 s2._domainkey.amedee.be:
   CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
+_dmarc.amedee.be:
+  TXT: v=DMARC1; p=quarantine;
 _atproto.amedee.be:
   TXT: did=did:plc:ii5acpyq5qnlybvcqutuhbk5
 
+# Zone: vangasse.eu
 em980.vangasse.eu:
   CNAME: u44990685.wl186.sendgrid.net.
 s1._domainkey.vangasse.eu:
   CNAME: s1.domainkey.u44990685.wl186.sendgrid.net.
 s2._domainkey.vangasse.eu:
   CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
+_dmarc.vangasse.eu:
+  TXT: v=DMARC1; p=quarantine;
+
+# Zone: box.vangasse.eu
 em5813.box.vangasse.eu:
   CNAME: u44990685.wl186.sendgrid.net.
 s1._domainkey.box.vangasse.eu:
   CNAME: s1.domainkey.u44990685.wl186.sendgrid.net.
 s2._domainkey.box.vangasse.eu:
   CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
+_dmarc.box.vangasse.eu:
+  TXT: v=DMARC1; p=quarantine;
