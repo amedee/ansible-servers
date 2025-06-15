@@ -1,0 +1,84 @@
+---
+- name: Copy sendgrid-sendmail.py
+  ansible.builtin.copy:
+    src: files/usr/local/bin/sendgrid_sendmail.py
+    dest: /usr/local/bin/sendgrid_sendmail.py
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Ensure /etc/sendgrid directory exists
+  ansible.builtin.file:
+    path: /etc/sendgrid
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create /etc/sendgrid/api_key
+  ansible.builtin.template:
+    src: etc/sendgrid/api_key.j2
+    dest: /etc/sendgrid/api_key
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Install SendGrid Python library
+  ansible.builtin.pip:
+    name: sendgrid
+    executable: pip3
+    state: present
+
+- name: Ensure sendgrid service is present in master.cf
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/master.cf
+    regexp: '^sendgrid\b'
+    line: "sendgrid  unix  -  n  n  -  -  pipe flags=F user=postfix argv=/usr/local/bin/sendgrid-sendmail.py"
+  notify: Restart Postfix
+
+- name: Check current transport_maps setting
+  ansible.builtin.command:
+    cmd: postconf transport_maps
+  register: transport_maps_current
+  changed_when: false
+
+- name: Set transport_maps in main.cf if not already set
+  ansible.builtin.command:
+    cmd: postconf -e "transport_maps = hash:/etc/postfix/transport"
+  when: transport_maps_current.stdout != "transport_maps = hash:/etc/postfix/transport"
+  changed_when: true
+  notify: Reload Postfix
+
+- name: Ensure /etc/postfix/transport exists with sendgrid configuration
+  ansible.builtin.copy:
+    dest: /etc/postfix/transport
+    content: |
+      # send all mail via sendgrid transport
+      *    sendgrid:
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Build Postfix transport
+    - Restart Postfix
+
+- name: Ensure SendGrid sendmail log file exists
+  ansible.builtin.file:
+    path: /var/log/sendgrid-sendmail.log
+    state: touch
+    owner: postfix
+    group: postfix
+    mode: '0664'
+
+- name: Check current relayhost setting
+  ansible.builtin.command:
+    cmd: postconf relayhost
+  register: relayhost_current
+  changed_when: false
+
+- name: Remove relayhost setting if present
+  ansible.builtin.command:
+    cmd: postconf -X relayhost
+  when: relayhost_current.stdout != "relayhost ="
+  changed_when: true
+  notify: Restart Postfix

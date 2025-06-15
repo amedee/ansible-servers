@@ -39,3 +39,6 @@
     line: "{{ item.line }}"
   loop: "{{ mailserver_postfix_settings }}"
   notify: Restart Postfix
+
+- name: Configure SendGrid Web API
+  ansible.builtin.import_tasks: sendgrid.yml
