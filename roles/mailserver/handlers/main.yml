@@ -11,3 +11,8 @@
   ansible.builtin.service:
     name: postfix
     state: restarted
+
+- name: Restart rsyslog
+  ansible.builtin.service:
+    name: rsyslog
+    state: restarted

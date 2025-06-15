@@ -4,34 +4,19 @@ mailserver_apt_packages:
   - postfix
   - postfix-pcre
   - procmail
+  - swaks
 
-mailserver_postfix_settings:
-  - regexp: body_checks
-    line: "body_checks = pcre:/etc/postfix/checks/body_checks.pcre"
-  - regexp: header_checks
-    line: "header_checks = pcre:/etc/postfix/checks/header_checks.pcre"
-  - regexp: header_size_limit
-    line: "header_size_limit = 4096000"
-  - regexp: mime_header_checks
-    # yamllint disable-line rule:line-length
-    line: "mime_header_checks = pcre:/etc/postfix/checks/mime_header_checks.pcre"
-  - regexp: recipient_delimiter
-    line: "recipient_delimiter = -"
-  - regexp: relayhost
-    line: "relayhost = [smtp.sendgrid.net]:587"
-  - regexp: smtp_sasl_auth_enable
-    line: "smtp_sasl_auth_enable = yes"
-  - regexp: smtp_sasl_password_maps
-    # yamllint disable-line rule:line-length
-    line: "smtp_sasl_password_maps = hash:/etc/postfix/sasl/sasl_passwd" # pragma: allowlist-secret
-  - regexp: smtp_sasl_security_options
-    line: "smtp_sasl_security_options = noanonymous"
-  - regexp: smtp_sasl_tls_security_options
-    line: "smtp_sasl_tls_security_options = noanonymous"
-  - regexp: smtp_tls_security_level
-    line: "smtp_tls_security_level = encrypt"
-  - regexp: smtpd_sasl_auth_enable
-    line: "smtpd_sasl_auth_enable = yes"
+mailserver_postfix_static_settings:
+  body_checks: "pcre:/etc/postfix/checks/body_checks.pcre"
+  header_checks: "pcre:/etc/postfix/checks/header_checks.pcre"
+  mime_header_checks: "pcre:/etc/postfix/checks/mime_header_checks.pcre"
+  recipient_canonical_maps: "pcre:/etc/postfix/recipient-canonical-maps.pcre"
+  header_size_limit: "4096000"
+  recipient_delimiter: "-"
+  smtpd_sasl_auth_enable: "yes"
+  default_transport: sendgrid
+  relayhost: null
+  transport_maps: null
 
 mailserver_sendgrid_api_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256

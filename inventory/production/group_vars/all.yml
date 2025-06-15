@@ -8,3 +8,5 @@ ansible_ssh_common_args: >-
   -o ForwardAgent=yes
   -o StrictHostKeyChecking=accept-new
 hold_grub_packages: false
+
+mailserver_mydomains: []

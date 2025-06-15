@@ -1,0 +1,90 @@
+---
+- name: Ensure sendgrid user exists
+  ansible.builtin.user:
+    name: sendgrid
+    system: true
+    create_home: false
+    shell: /usr/sbin/nologin
+    state: present
+
+- name: Copy sendgrid-sendmail.py
+  ansible.builtin.copy:
+    src: files/usr/local/bin/sendgrid_sendmail.py
+    dest: /usr/local/bin/sendgrid_sendmail.py
+    owner: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
+    group: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
+    mode: '0755'
+
+- name: Ensure /etc/sendgrid directory exists
+  ansible.builtin.file:
+    path: /etc/sendgrid
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create /etc/sendgrid/api_key
+  ansible.builtin.template:
+    src: etc/sendgrid/api_key.j2
+    dest: /etc/sendgrid/api_key
+    owner: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
+    group: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
+    mode: '0600'
+
+- name: Ensure Python venv package is installed
+  ansible.builtin.apt:
+    name: python3-venv
+    state: present
+    update_cache: true
+
+- name: Create virtual environment for SendGrid
+  ansible.builtin.command:
+    cmd: python3 -m venv /opt/sendgrid-venv
+  args:
+    creates: /opt/sendgrid-venv/bin/activate
+
+- name: Install SendGrid and requests in venv
+  ansible.builtin.pip:
+    virtualenv: /opt/sendgrid-venv
+    name:
+      - requests
+      - sendgrid
+    state: present
+
+- name: Ensure sendgrid service is present in master.cf
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/master.cf
+    regexp: '^sendgrid\b'
+    line: >
+      sendgrid  unix  -  n  n  -  -  pipe flags=F user=sendgrid
+      argv=/opt/sendgrid-venv/bin/python3 /usr/local/bin/sendgrid_sendmail.py
+  notify: Restart Postfix
+
+- name: Create rsyslog config for SendGrid
+  ansible.builtin.copy:
+    dest: /etc/rsyslog.d/sendgrid.conf
+    content: "local0.*    /var/log/sendgrid.log\n"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart rsyslog
+
+- name: Create logrotate config for SendGrid
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/logrotate.d/sendgrid
+    content: |
+      /var/log/sendgrid.log {
+          daily
+          rotate 7
+          compress
+          missingok
+          notifempty
+          create 0640 root adm
+          postrotate
+              systemctl kill -s HUP rsyslog
+          endscript
+      }
+    owner: root
+    group: root
+    mode: '0644'

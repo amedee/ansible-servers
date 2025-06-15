@@ -14,28 +14,70 @@
   notify:
     - Restart Postfix
 
-- name: Create directory /etc/postfix/sasl/
-  ansible.builtin.file:
-    path: /etc/postfix/sasl/
-    state: directory
+- name: Ensure recipient canonical PCRE map exists
+  ansible.builtin.copy:
+    dest: /etc/postfix/recipient-canonical-maps.pcre
+    content: |
+      /^(.*)-[^@]+@(.*)$/     ${1}@$2
     owner: root
-    mode: u=rwx,go=rx
-
-- name: Create /etc/postfix/sasl/sasl_passwd from template
-  ansible.builtin.template:
-    src: etc/postfix/sasl/sasl_passwd.j2
-    dest: /etc/postfix/sasl/sasl_passwd
-    owner: root
-    mode: u=rw,go=
-  notify: Update Postfix hashtables
-
-- name: Configure Postfix
-  ansible.builtin.lineinfile:
-    path: /etc/postfix/main.cf
-    create: true
-    owner: root
-    mode: u=rw,go=r
-    regexp: "^{{ item.regexp }}"
-    line: "{{ item.line }}"
-  loop: "{{ mailserver_postfix_settings }}"
+    group: root
+    mode: '0644'
   notify: Restart Postfix
+
+- name: Postmap the recipient-canonical-maps.pcre file
+  ansible.builtin.command: postmap /etc/postfix/recipient-canonical-maps.pcre
+  args:
+    creates: /etc/postfix/recipient-canonical-maps.pcre.db
+  notify: Restart Postfix
+
+- name: Build dynamic Postfix settings
+  ansible.builtin.set_fact:
+    mailserver_postfix_dynamic_settings:
+      myhostname: "{{ ansible_hostname }}"
+      mydestination: >-
+        {{
+          (['$myhostname', ansible_hostname, 'localhost.localdomain', 'localhost'] +
+           mailserver_mydomains
+          ) | unique | join(', ')
+        }}
+
+- name: Merge static and dynamic Postfix settings
+  ansible.builtin.set_fact:
+    mailserver_postfix_settings: "{{ mailserver_postfix_dynamic_settings | combine(mailserver_postfix_static_settings) }}"
+
+- name: Get current Postfix settings
+  ansible.builtin.command: postconf -n
+  register: current_postfix_output
+  changed_when: false
+
+- name: Parse current Postfix settings into a dict
+  ansible.builtin.set_fact:
+    current_postfix_settings: >-
+      {{
+        dict(
+          current_postfix_output.stdout_lines
+          | map('split', ' =', 1)
+          | map('map', 'trim')
+        )
+      }}
+
+- name: Apply Postfix settings - set or delete
+  ansible.builtin.command: >
+    {% if item.value is none %}
+      postconf -X {{ item.key }}
+    {% else %}
+      postconf -e {{ (item.key ~ ' = ' ~ (item.value | string)) | quote }}
+    {% endif %}
+  loop: "{{ mailserver_postfix_settings | dict2items }}"
+  when: >
+    (item.value is none and item.key in current_postfix_settings)
+    or
+    (item.value is not none and
+     (item.key not in current_postfix_settings or
+      current_postfix_settings[item.key] != (item.value | string)))
+  changed_when: true
+  check_mode: false
+  notify: Restart Postfix
+
+- name: Configure SendGrid Web API
+  ansible.builtin.import_tasks: sendgrid.yml
