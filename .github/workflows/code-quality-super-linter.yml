@@ -27,6 +27,17 @@ jobs:
           # list of files that changed across commits
           fetch-depth: 0
 
+      - name: Restore Ansible roles and collections cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .ansible/
+          key: ansible-deps-v1
+
+      - name: Move back to proper directory
+        run: |
+          mkdir -p .ansible/collections
+          cp -r .ansible/collections /home/runner/.ansible/
+
       - name: Pre-install Ansible Galaxy roles (with retry)
         run: |
           for i in {1..5}; do
@@ -37,6 +48,16 @@ jobs:
               sleep $((i * 10))
             fi
           done
+
+      - name: Prepare directory
+        run: |
+          cp -r /home/runner/.ansible/collections .ansible/collections
+
+      - name: Save Ansible roles and collections cache
+        uses: actions/cache/save@v4
+        with:
+          path: .ansible/
+          key: ansible-deps-v1
 
       - name: Run Super-linter
         # yamllint disable-line rule:line-length
