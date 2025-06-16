@@ -48,6 +48,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Restore Ansible roles and collections cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .ansible/
+          key: ansible-deps-v1
+
+      - name: Move back to proper directory
+        run: |
+          mkdir -p .ansible/collections
+          cp -r .ansible/collections /home/runner/.ansible/
+
       - name: Pre-install Ansible Galaxy roles (with retry)
         run: |
           for i in {1..5}; do
@@ -58,6 +69,16 @@ jobs:
               sleep $((i * 10))
             fi
           done
+
+      - name: Save Ansible roles and collections cache
+        uses: actions/cache/save@v4
+        with:
+          path: .ansible/
+          key: ansible-deps-v1
+
+      - name: Prepare directory
+        run: |
+          cp -r /home/runner/.ansible/collections .ansible/collections
 
       - name: Create controlmasters directory
         run: mkdir --parents ~/.ssh/controlmasters
