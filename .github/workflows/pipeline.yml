@@ -24,6 +24,13 @@ permissions:
   contents: read
 
 jobs:
+  ansible-cache:
+    name: 🚀 Ansible Cache
+    uses: ./.github/workflows/ansible-cache.yml
+    permissions:
+      contents: read
+      pull-requests: write
+
   codacy:
     name: 🛠️ Code Quality — Codacy Scan
     uses: ./.github/workflows/code-quality-codacy.yml
@@ -35,6 +42,8 @@ jobs:
   super-linter:
     name: 🛠️ Code Quality — Super-Linter
     uses: ./.github/workflows/code-quality-super-linter.yml
+    needs:
+      - ansible-cache
     permissions:
       contents: write
       packages: read
@@ -49,6 +58,8 @@ jobs:
   dry-run:
     name: 🔍 Dry Run on Production
     uses: ./.github/workflows/ansible-run.yml
+    needs:
+      - ansible-cache
     with:
       check-mode: true
     secrets:
@@ -62,6 +73,7 @@ jobs:
     name: 🚀 Deploy to Production
     uses: ./.github/workflows/ansible-run.yml
     needs:
+      - ansible-cache
       - codacy
       - dry-run
       - super-linter
