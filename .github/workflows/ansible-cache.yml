@@ -1,0 +1,62 @@
+---
+name: 🚀 Ansible Cache
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ansible-cache:
+    name: Ansible Cache
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ format(
+        'ansible-cache-{0}-{1}',
+        github.workflow,
+        github.ref) }}
+      cancel-in-progress: true
+    env:
+      ANSIBLE_CONFIG: ansible.cfg
+      ANSIBLE_STDOUT_CALLBACK: yaml
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Clear current roles directory
+        run: |
+          rm -rf roles
+          mkdir -p roles
+
+      - name: Restore Ansible roles and collections cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .ansible/
+            roles/
+          key: ansible-deps-${{ hashFiles('requirements.yml') }}
+          restore-keys: |
+            ansible-deps-
+
+      - name: Copy Ansible collections to proper directory
+        run: |
+          mkdir -p .ansible/collections /home/runner/.ansible
+          cp -r .ansible/collections /home/runner/.ansible/
+
+      - name: Pre-install Ansible Galaxy roles (with retry)
+        run: |
+          for i in {1..5}; do
+            if ansible-galaxy install -vv -r requirements.yml; then
+              break
+            else
+              echo "Installation failed, retry in $((i * 10)) seconds…" >&2
+              sleep $((i * 10))
+            fi
+          done
+
+      - name: Copy Ansible collections to cache directory
+        run: |
+          cp -r /home/runner/.ansible/collections .ansible/
