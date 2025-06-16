@@ -51,9 +51,10 @@ jobs:
       - name: Pre-install Ansible Galaxy roles (with retry)
         run: |
           for i in {1..5}; do
-            if ansible-galaxy install -r requirements.yml; then
+            if ansible-galaxy install -vv -r requirements.yml; then
               break
             else
+              echo "Installation failed, retry in $((i * 10)) seconds…" >&2
               sleep $((i * 10))
             fi
           done
