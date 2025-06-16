@@ -35,7 +35,11 @@ jobs:
           gh-code-scanning-compat: true
           max-allowed-issues: 2147483647
 
+      - name: Combine runs into a single run
+        run: |
+          jq '.runs = [ { tool: .runs[0].tool, results: [ .runs[] | .results ] | add } ]' results.sarif > merged.sarif
+
       - name: Upload SARIF results file
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: results.sarif
+          sarif_file: merged.sarif
