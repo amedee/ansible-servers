@@ -46,11 +46,12 @@ jobs:
         uses: super-linter/super-linter/slim@12150456a73e248bdc94d0794898f94e23127c88 # v7.4.0
         env:
           ANSIBLE_DIRECTORY: .
+          CREATE_LOG_FILE: true
+          FIX_YAML_PRETTIER: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_GIT_COMMITLINT: false
           VALIDATE_PYTHON_PYINK: false
-          FIX_YAML_PRETTIER: true
 
       # Check the PR diff using the current branch and the base branch of the PR
       - uses: GrantBirki/git-diff-action@7420e4d095c27bb23359787640976d60c94fd216 # v2.8.1

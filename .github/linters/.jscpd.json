@@ -1,0 +1,7 @@
+{
+  "threshold": 0,
+  "reporters": ["html", "console", "markdown"],
+  "ignore": ["/github/workspace/.ansible/**"],
+  "absolute": true,
+  "gitignore": true
+}

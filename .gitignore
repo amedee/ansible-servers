@@ -2,6 +2,7 @@
 *.log
 *.sql
 *.xz
+.ansible/
 .idea/
 .logs/
 .vagrant/
