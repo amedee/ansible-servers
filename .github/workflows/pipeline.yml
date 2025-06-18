@@ -24,7 +24,6 @@ permissions:
   actions: read
   contents: write
   id-token: write
-  issues: write
   packages: read
   pull-requests: write
   security-events: write
@@ -96,8 +95,3 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-  workflow-metrics:
-    name: 📊 Workflow Metrics
-    uses: ./.github/workflows/workflow-metrics.yml
-    needs: deploy

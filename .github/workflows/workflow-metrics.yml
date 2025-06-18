@@ -2,11 +2,12 @@
 name: 📊 Workflow Metrics
 
 on: # yamllint disable-line rule:truthy
-  workflow_call:
+  schedule:
+    - cron: '0 3 * * *'  # Runs daily at 03:00 UTC
   workflow_dispatch:
 
 concurrency:
-  group: workflow-metrics-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
