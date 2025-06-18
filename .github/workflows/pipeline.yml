@@ -21,49 +21,39 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  actions: read
+  contents: write
+  id-token: write
+  issues: write
+  packages: read
+  pull-requests: write
+  security-events: write
+  statuses: write
 
 jobs:
   ansible-cache:
     name: 🚀 Ansible Cache
     uses: ./.github/workflows/ansible-cache.yml
-    permissions:
-      contents: read
-      pull-requests: write
 
   codacy:
     name: 🛠️ Code Quality — Codacy Scan
     uses: ./.github/workflows/code-quality-codacy.yml
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
 
   super-linter:
     name: 🛠️ Code Quality — Super-Linter
     uses: ./.github/workflows/code-quality-super-linter.yml
     needs:
       - ansible-cache
-    permissions:
-      contents: write
-      packages: read
-      statuses: write
 
   ansible-lint:
     name: 🛠️ Code Quality — Ansible Lint
     uses: ./.github/workflows/code-quality-ansible-lint.yml
     needs:
       - ansible-cache
-    permissions:
-      contents: write
-      packages: read
-      statuses: write
 
   validate-configs:
     name: 🛠️ Code Quality — Validate Configs
     uses: ./.github/workflows/code-quality-validate-configs.yml
-    permissions:
-      contents: read
 
   dry-run:
     name: 🔍 Dry Run on Production
@@ -75,9 +65,6 @@ jobs:
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
-    permissions:
-      contents: read
-      pull-requests: write
 
   deploy:
     name: 🚀 Deploy to Production
@@ -94,9 +81,6 @@ jobs:
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
-    permissions:
-      contents: read
-      pull-requests: write
 
   ansible-doctor:
     name: 📚 Ansible Role Docs
@@ -104,9 +88,6 @@ jobs:
     needs: deploy
     secrets:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-    permissions:
-      contents: write
-      id-token: write
 
   gource:
     name: 📽️ Gource
@@ -115,17 +96,11 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    permissions:
-      contents: write
-      id-token: write
 
   workflow-metrics:
     name: 📊 Workflow Metrics
     uses: ./.github/workflows/workflow-metrics.yml
     needs: deploy
-    permissions:
-      actions: read
-      issues: write
 
   cleanup-closed-issues:
     name: 🧹 Cleanup Closed Issues
@@ -137,8 +112,6 @@ jobs:
       min_issues_to_keep: "6"
     secrets:
       GH_FINEGRAINED_PAT: ${{ secrets.GH_FINEGRAINED_PAT }}
-    permissions:
-      issues: write
 
   cleanup-gource:
     name: 🧹 Cleanup orphaned Gource files
@@ -147,5 +120,3 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    permissions:
-      contents: read
