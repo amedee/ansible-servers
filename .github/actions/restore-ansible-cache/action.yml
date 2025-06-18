@@ -1,0 +1,20 @@
+name: ♻️ Restore Ansible Cache
+description: Restores and relocates Ansible role/collection cache
+
+runs:
+  using: "composite"
+  steps:
+    - name: Restore Ansible roles and collections cache
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          .ansible/
+          roles/
+        key: ansible-deps-${{ hashFiles('requirements.yml') }}
+        fail-on-cache-miss: true
+
+    - name: Copy Ansible collections to proper directory
+      shell: bash
+      run: |
+        mkdir -p .ansible/collections /home/runner/.ansible
+        cp -r .ansible/collections /home/runner/.ansible/

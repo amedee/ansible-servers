@@ -27,19 +27,8 @@ jobs:
           # list of files that changed across commits
           fetch-depth: 0
 
-      - name: Restore Ansible roles and collections cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            .ansible/
-            roles/
-          key: ansible-deps-${{ hashFiles('requirements.yml') }}
-          fail-on-cache-miss: true
-
-      - name: Copy Ansible collections to proper directory
-        run: |
-          mkdir -p .ansible/collections /home/runner/.ansible
-          cp -r .ansible/collections /home/runner/.ansible/
+      - name: Restore Ansible cache
+        uses: ./.github/actions/restore-ansible-cache
 
       - name: Run Super-linter
         # yamllint disable-line rule:line-length
