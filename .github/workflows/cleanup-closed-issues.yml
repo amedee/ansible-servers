@@ -2,20 +2,8 @@
 name: 🧹 Cleanup Closed Issues
 
 on: # yamllint disable-line rule:truthy
-  workflow_call:
-    inputs:
-      dry_run:
-        required: true
-        type: boolean
-      days_to_keep:
-        required: true
-        type: string
-      min_issues_to_keep:
-        required: true
-        type: string
-    secrets:
-      GH_FINEGRAINED_PAT:
-        required: true
+  schedule:
+    - cron: '0 3 * * 1' # Runs every Monday at 03:00 UTC
   workflow_dispatch: # Allow manual execution
     inputs:
       dry_run:
@@ -38,7 +26,7 @@ on: # yamllint disable-line rule:truthy
         type: string
 
 concurrency:
-  group: cleanup-closed-issue-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -55,13 +43,11 @@ jobs:
       - name: Delete old closed issues
         env:
           GH_TOKEN: ${{ secrets.GH_FINEGRAINED_PAT }}
-          DRY_RUN: ${{ inputs.dry_run }}
-          DAYS_TO_KEEP: ${{ inputs.days_to_keep }}
-          MIN_ISSUES_TO_KEEP: ${{ inputs.min_issues_to_keep }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          DAYS_TO_KEEP: ${{ github.event.inputs.days_to_keep || '30' }}
+          MIN_ISSUES_TO_KEEP: ${{ github.event.inputs.min_issues_to_keep || '6' }}
           REPO: ${{ github.repository }}
         run: |
-          # Delete old closed issues
-          # Setting threshold date
           NOW=$(date -u +%s)
           THRESHOLD_DATE=$(date -u -d "${DAYS_TO_KEEP} days ago" +%s)
           echo "Only consider issues older than ${THRESHOLD_DATE}"

@@ -102,17 +102,6 @@ jobs:
     uses: ./.github/workflows/workflow-metrics.yml
     needs: deploy
 
-  cleanup-closed-issues:
-    name: 🧹 Cleanup Closed Issues
-    uses: ./.github/workflows/cleanup-closed-issues.yml
-    needs: workflow-metrics
-    with:
-      dry_run: false
-      days_to_keep: "30"
-      min_issues_to_keep: "6"
-    secrets:
-      GH_FINEGRAINED_PAT: ${{ secrets.GH_FINEGRAINED_PAT }}
-
   cleanup-gource:
     name: 🧹 Cleanup orphaned Gource files
     uses: ./.github/workflows/cleanup-gource.yml
