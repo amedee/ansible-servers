@@ -101,11 +101,3 @@ jobs:
     name: 📊 Workflow Metrics
     uses: ./.github/workflows/workflow-metrics.yml
     needs: deploy
-
-  cleanup-gource:
-    name: 🧹 Cleanup orphaned Gource files
-    uses: ./.github/workflows/cleanup-gource.yml
-    needs: gource
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

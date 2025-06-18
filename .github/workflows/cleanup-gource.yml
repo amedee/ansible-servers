@@ -1,17 +1,13 @@
 ---
 name: 🧹 Cleanup orphaned Gource files
 
-on:
-  workflow_call:
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        required: true
+on: # yamllint disable-line rule:truthy
+  schedule:
+    - cron: '0 3 * * 1'  # Every Monday at 03:00 UTC
   workflow_dispatch:
 
 concurrency:
-  group: cleanup-gource-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
