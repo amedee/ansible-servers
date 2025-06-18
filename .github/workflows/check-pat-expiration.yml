@@ -1,0 +1,50 @@
+---
+name: 🔔 Check Fine-Grained PAT Expiration
+
+on: # yamllint disable-line rule:truthy
+  schedule:
+    - cron: '0 7 * * 1'  # Every Monday at 07:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  issues: write
+
+jobs:
+  check-token-expiration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PAT expiration via GitHub API
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO="${{ github.repository }}"
+          TOKEN_NAME="GH_FINEGRAINED_PAT"
+
+          # Optional: set your alert threshold in days
+          ALERT_DAYS=14
+
+          # Simulate expiration tracking with a static date
+          # Replace this with a manual update each time you create a new token
+          # Format: YYYY-MM-DD
+          TOKEN_EXPIRY="2025-09-16"
+
+          TODAY=$(date +%s)
+          EXPIRY_DATE=$(date -d "$TOKEN_EXPIRY" +%s)
+          DAYS_LEFT=$(( (EXPIRY_DATE - TODAY) / 86400 ))
+
+          echo "Token '$TOKEN_NAME' expires in $DAYS_LEFT day(s)"
+
+          if [ "$DAYS_LEFT" -le "$ALERT_DAYS" ]; then
+            echo "::warning::Token '$TOKEN_NAME' will expire in $DAYS_LEFT day(s)"
+            gh issue list --repo "$REPO" --state open --search "GH_FINEGRAINED_PAT expiration" | grep . || \
+              gh issue create --repo "$REPO" \
+                --title "⚠️ Fine-Grained PAT '$TOKEN_NAME' Expiring Soon" \
+                --body "Your token \`$TOKEN_NAME\` will expire in $DAYS_LEFT day(s). Please generate a new one." \
+                --label "maintenance"
+          else
+            echo "Token is still valid."
+          fi
