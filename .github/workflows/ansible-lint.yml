@@ -1,0 +1,39 @@
+---
+name: Ansible Lint
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+  workflow_dispatch:
+
+concurrency:
+  group: ansible-doctor-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  build:
+    name: Ansible Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Restore Ansible roles and collections cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .ansible/
+            roles/
+          key: ansible-deps-${{ hashFiles('requirements.yml') }}
+          fail-on-cache-miss: true
+
+      - name: Copy Ansible collections to proper directory
+        run: |
+          mkdir -p .ansible/collections /home/runner/.ansible
+          cp -r .ansible/collections /home/runner/.ansible/
+
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@8c9b342cb98b1d023e21c7f9eeac95a0de978f77 # v25.6.0
