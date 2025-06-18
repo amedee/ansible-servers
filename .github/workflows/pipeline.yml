@@ -149,15 +149,3 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     permissions:
       contents: read
-
-  cleanup-workflow-runs:
-    name: 🧹 Cleanup old workflow runs
-    uses: ./.github/workflows/cleanup-workflow-runs.yml
-    needs:
-      - ansible-doctor
-      - cleanup-closed-issues
-      - cleanup-gource
-      - deploy
-    permissions:
-      actions: write
-      contents: read
