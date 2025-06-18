@@ -45,11 +45,11 @@ jobs:
         # yamllint disable-line rule:line-length
         uses: super-linter/super-linter/slim@12150456a73e248bdc94d0794898f94e23127c88 # v7.4.0
         env:
-          ANSIBLE_DIRECTORY: .
           CREATE_LOG_FILE: true
           FIX_YAML_PRETTIER: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
+          VALIDATE_ANSIBLE: false
           VALIDATE_GIT_COMMITLINT: false
           VALIDATE_PYTHON_PYINK: false
 

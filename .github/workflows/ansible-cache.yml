@@ -5,6 +5,10 @@ on: # yamllint disable-line rule:truthy
   workflow_call:
   workflow_dispatch:
 
+concurrency:
+  group: ansible-cache-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   pull-requests: write
@@ -13,12 +17,6 @@ jobs:
   ansible-cache:
     name: Ansible Cache
     runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ format(
-        'ansible-cache-{0}-{1}',
-        github.workflow,
-        github.ref) }}
-      cancel-in-progress: true
     env:
       ANSIBLE_CONFIG: ansible.cfg
       ANSIBLE_STDOUT_CALLBACK: yaml

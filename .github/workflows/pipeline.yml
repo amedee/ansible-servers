@@ -49,6 +49,16 @@ jobs:
       packages: read
       statuses: write
 
+  ansible-lint:
+    name: 🛠️ Code Quality — Ansible Lint
+    uses: ./.github/workflows/code-quality-ansible-lint.yml
+    needs:
+      - ansible-cache
+    permissions:
+      contents: write
+      packages: read
+      statuses: write
+
   validate-configs:
     name: 🛠️ Code Quality — Validate Configs
     uses: ./.github/workflows/code-quality-validate-configs.yml
@@ -77,6 +87,7 @@ jobs:
       - codacy
       - dry-run
       - super-linter
+      - ansible-lint
       - validate-configs
     with:
       check-mode: false
@@ -90,7 +101,7 @@ jobs:
   ansible-doctor:
     name: 📚 Ansible Role Docs
     uses: ./.github/workflows/ansible-doctor.yml
-    needs: super-linter
+    needs: deploy
     secrets:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
     permissions:
@@ -100,7 +111,7 @@ jobs:
   gource:
     name: 📽️ Gource
     uses: ./.github/workflows/gource.yml
-    needs: super-linter
+    needs: deploy
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
