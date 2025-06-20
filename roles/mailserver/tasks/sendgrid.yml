@@ -43,10 +43,11 @@
   args:
     creates: /opt/sendgrid-venv/bin/activate
 
-- name: Install SendGrid and requests in venv
+- name: Install packages in venv
   ansible.builtin.pip:
     virtualenv: /opt/sendgrid-venv
     name:
+      - email-validator
       - requests
       - sendgrid
     state: present

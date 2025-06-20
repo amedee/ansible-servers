@@ -16,6 +16,7 @@ import traceback
 from email.errors import MessageError
 from email.utils import getaddresses, parseaddr
 
+from email_validator import EmailNotValidError, validate_email
 from requests.exceptions import RequestException
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import (
@@ -128,6 +129,75 @@ def extract_body(msg):
     return plain, html
 
 
+def is_valid_email(address):
+    """
+    Validate email address
+    """
+    try:
+        validate_email(address, allow_smtputf8=True)
+        return True
+    except EmailNotValidError as exc:
+        logging.warning("Invalid email address %s: %s", address, exc)
+        return False
+
+
+def normalize_recipients(addresses):
+    """
+    Validate and normalize a list of recipient email addresses.
+
+    Args:
+        addresses (list of tuples): [(name, email), ...]
+
+    Returns:
+        list of sendgrid.helpers.mail.To objects
+    """
+    to_emails = []
+    invalid = []
+
+    for name, email_addr in addresses:
+        try:
+            validated = validate_email(email_addr, allow_smtputf8=True)
+            normalized_email = validated.email
+            to_emails.append(To(email=normalized_email, name=name))
+        except EmailNotValidError as exc:
+            logging.warning("Invalid recipient address %s: %s", email_addr, exc)
+            invalid.append(email_addr)
+
+    if invalid:
+        logging.error("Invalid recipient addresses: %s", ", ".join(invalid))
+        sys.exit(1)
+
+    return to_emails
+
+
+def extract_custom_headers(msg):
+    """
+    Return a dict of custom headers that should be passed along.
+    Excludes standard headers handled by the SendGrid Mail object.
+    """
+    skip_headers = {
+        "bcc",
+        "cc",
+        "content-transfer-encoding",
+        "content-type",
+        "date",
+        "dkim-signature",
+        "from",
+        "message-id",
+        "mime-version",
+        "received",
+        "return-path",
+        "subject",
+        "to",
+    }
+
+    custom_headers = {}
+    for key, value in msg.items():
+        if key.lower() not in skip_headers:
+            custom_headers[key] = value
+    return custom_headers
+
+
 def main():
     """Main function: read email from stdin and send it via SendGrid."""
     try:
@@ -139,20 +209,45 @@ def main():
             sys.exit(1)
 
         from_email_raw = msg["From"]
-        _, from_email_addr = parseaddr(from_email_raw or "")
+        name, from_email_addr = parseaddr(from_email_raw or "")
+
+        try:
+            validated = validate_email(from_email_addr, allow_smtputf8=True)
+            from_email_addr = (
+                validated.email
+            )  # Normalized (IDNA domain, Unicode local part)
+        except EmailNotValidError as exc:
+            logging.error("Invalid From address: %s (%s)", from_email_addr, exc)
+            sys.exit(1)
         if not from_email_addr:
             logging.error("Invalid or missing From address")
             sys.exit(1)
+        if not is_valid_email(from_email_addr):
+            logging.error("Invalid From email format: %s", from_email_addr)
+            sys.exit(1)
+        validated = validate_email(from_email_addr, allow_smtputf8=True)
+        from_email_addr = (
+            validated.email
+        )  # now IDNA-encoded domain, Unicode-safe local part
 
         # Collect all recipients from To, Cc, Bcc headers
         recipient_headers = []
         for header in ["To", "Cc", "Bcc"]:
             recipient_headers.extend(msg.get_all(header, []))
         addresses = getaddresses(recipient_headers)
-        to_emails = [To(addr) for _, addr in addresses if addr]
+        to_emails = normalize_recipients(addresses)
 
         if not to_emails:
             logging.error("No valid recipients found in To, Cc, or Bcc")
+            sys.exit(1)
+
+        invalid_recipients = [
+            to.email for to in to_emails if not is_valid_email(to.email)
+        ]
+        if invalid_recipients:
+            logging.error(
+                "Invalid recipient addresses: %s", ", ".join(invalid_recipients)
+            )
             sys.exit(1)
 
         # Remove Bcc header to avoid leaking Bcc addresses
@@ -174,20 +269,25 @@ def main():
         for att in attachments:
             email_msg.add_attachment(att)
 
+        custom_headers = extract_custom_headers(msg)
+        for key, value in custom_headers.items():
+            email_msg.add_header(key, value)
+
         try:
             response = sendgrid_client.send(email_msg)
         except RequestException as exc:
             logging.error("SendGrid request error: %s", exc)
-            sys.exit(1)
+            sys.exit(75)  # TEMPFAIL
         except Exception:  # pylint: disable=all
             logging.error("Unexpected error sending email:\n%s", traceback.format_exc())
-            sys.exit(1)
+            sys.exit(75)  # TEMPFAIL
 
         if 200 <= response.status_code < 300:
             logging.info(
-                "Email sent: From=%s, To=%s",
+                "Email sent: From=%s, To=%s, Subject=%s",
                 from_email_addr,
                 ",".join([e.email for e in to_emails]),
+                msg.get("Subject", "(No Subject)"),
             )
             sys.exit(0)
         else:
