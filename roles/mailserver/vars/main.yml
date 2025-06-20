@@ -12,9 +12,17 @@ mailserver_postfix_static_settings:
   mime_header_checks: "pcre:/etc/postfix/checks/mime_header_checks.pcre"
   recipient_canonical_maps: "pcre:/etc/postfix/recipient-canonical-maps.pcre"
   header_size_limit: "4096000"
+  message_size_limit: "52428800"
   recipient_delimiter: "-"
   smtpd_sasl_auth_enable: "yes"
+  smtp_tls_ciphers: high
+  smtputf8_enable: "yes"
   default_transport: sendgrid
+  bounce_queue_lifetime: 3d
+  maximal_queue_lifetime: 5d
+  append_dot_mydomain: null
+  biff: null
+  readme_directory: null
   relayhost: null
   transport_maps: null
 
