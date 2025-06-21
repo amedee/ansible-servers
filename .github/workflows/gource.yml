@@ -1,7 +1,7 @@
 ---
 name: 📽️ Gource
 
-on:
+on: # yamllint disable-line rule:truthy
   workflow_call:
     secrets:
       AWS_ACCESS_KEY_ID:
