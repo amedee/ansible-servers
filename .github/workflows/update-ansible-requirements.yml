@@ -46,72 +46,30 @@ jobs:
             echo "no_changes=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Generate AI commit message via OpenRouter.ai
+      - name: Generate AI commit message
         id: ai_commit
+        uses: ./.github/actions/ai-commit-message
+        if: steps.changes.outputs.no_changes == 'false'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          diff_path: 'requirements.yml'
+          prompt_content: |
+            Write a concise Git commit message describing the staged updates
+            to Ansible roles and collections in requirements.yml.
+            The commit message must start with a relevant emoji on the first line,
+            which is max 72 characters.
+            Leave a blank line after the first line.
+            Then add the rest of the commit message explaining the changes.
+
+      - name: Show message
         if: steps.changes.outputs.no_changes == 'false'
         run: |
-          echo "Requesting commit message from OpenRouter..."
-
-          diff=$(git diff --cached --unified=0 -- 'requirements.yml' | head -c 3000)
-
-          prompt=$(jq -n --arg diff "$diff" '[
-            {
-              "role": "user",
-              "content": (
-                "Write a concise Git commit message describing the staged updates "
-                + "to Ansible roles and collections in requirements.yml.\n"
-                + "The commit message must start with a relevant emoji on the first line, "
-                + "which is max 72 characters.\n"
-                + "Leave a blank line after the first line.\n"
-                + "Then add the rest of the commit message explaining the changes.\n"
-                + "Here is the diff:\n\n"
-                + $diff
-              )
-            }
-          ]')
-
-          data=$(jq -n --argjson messages "$prompt" '{
-            model: "mistralai/devstral-small:free",
-            messages: $messages,
-            temperature: 0.7
-          }')
-
-          response=$(curl -s https://openrouter.ai/api/v1/chat/completions \
-            -H "Authorization: Bearer ${{ secrets.OPENROUTER_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -H "HTTP-Referer: https://github.com/${{ github.repository }}" \
-            -H "X-Title: Ansible Requirements Update" \
-            -d "$data"
-          )
-
-          echo "Raw response:"
-          echo "$response"
-
-          message=$(echo "$response" | jq -r '.choices[0].message.content // empty')
-
-          if [ -z "$message" ]; then
-            echo "❌ Failed to get a commit message. Using fallback."
-            message="⬆️ Update Ansible requirements.yml dependencies\n\nUpdated roles and collections to latest versions."
-          fi
-
-          # Remove backticks only, preserve newlines for commit message formatting
-          message="${message//\`/}"
-
-          # Split first line and rest, truncate first line to 72 chars max
-          first_line=$(echo "$message" | head -n1 | cut -c1-72)
-          rest=$(echo "$message" | tail -n +2)
-
-          # Reassemble message with blank line between
-          full_message="$first_line"$'\n\n'"$rest"
-
-          {
-            echo "message<<EOF"
-            echo "$full_message"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
+          echo "Message from AI: ${{ steps.ai_commit.outputs.message }}"
 
       - name: 🧪 Commit & Push updated requirements.yml
         id: commit_push
+        if: steps.changes.outputs.no_changes == 'false'
         env:
           ANSIBLE_DEP_UPDATER_TOKEN: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
         run: |
@@ -120,7 +78,13 @@ jobs:
           git checkout -b ansible-requirements-update
           git add requirements.yml
           if [ "${{ steps.changes.outputs.no_changes }}" = "false" ]; then
-            git commit -m "${{ steps.ai_commit.outputs.message }}"
+            raw_message="${{ steps.ai_commit.outputs.message }}"
+            message="${raw_message//\`/}"  # Remove backticks if needed
+            # Split first line and rest for the requirements.yml style commit message
+            first_line=$(echo "$message" | head -n1 | cut -c1-72)
+            rest=$(echo "$message" | tail -n +2)
+            full_message="$first_line"$'\n\n'"$rest"
+            git commit -m "$full_message"
             REPO_URL="https://x-access-token:${ANSIBLE_DEP_UPDATER_TOKEN}@github.com/${{ github.repository }}.git"
             git push --force "$REPO_URL" ansible-requirements-update
             git fetch origin ansible-requirements-update:refs/remotes/origin/ansible-requirements-update

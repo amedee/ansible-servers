@@ -55,56 +55,23 @@ jobs:
             echo "no_changes=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Generate AI commit message via OpenRouter.ai
+      - name: Generate AI commit message
         id: ai_commit
+        uses: ./.github/actions/ai-commit-message
+        if: steps.changes.outputs.no_changes == 'false'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          diff_path: 'roles/*/README.md'
+          prompt_content: |
+            Write a concise Git commit message (max 72 characters)
+            describing the staged Markdown documentation changes to Ansible roles.
+            The commit message must start with a relevant emoji.
+
+      - name: Show message
         if: steps.changes.outputs.no_changes == 'false'
         run: |
-          echo "Requesting commit message from OpenRouter..."
-
-          diff=$(git diff --cached --unified=0 -- '*.md' | head -c 3000)
-
-          prompt=$(jq -n --arg diff "$diff" '[
-            {
-              "role": "user",
-              "content": ("Write a concise Git commit message (max 72 characters) describing the staged Markdown documentation changes to Ansible roles.\n"
-                + "Start the commit message with a relevant emoji.\n"
-                + "Here is the diff:\n\n"
-                + $diff)
-            }
-          ]')
-
-          data=$(jq -n --argjson messages "$prompt" '{
-            model: "mistralai/devstral-small:free",
-            messages: $messages,
-            temperature: 0.7
-          }')
-
-          response=$(curl -s https://openrouter.ai/api/v1/chat/completions \
-            -H "Authorization: Bearer ${{ secrets.OPENROUTER_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -H "HTTP-Referer: https://github.com/${{ github.repository }}" \
-            -H "X-Title: Ansible Docs" \
-            -d "$data"
-          )
-
-          echo "Raw response:"
-          echo "$response"
-
-          message=$(echo "$response" | jq -r '.choices[0].message.content // empty')
-
-          if [ -z "$message" ]; then
-            echo "❌ Failed to get a commit message. Using fallback."
-            message="📝 Update Ansible role documentation"
-          fi
-
-          # Sanitize message: remove backticks and newlines
-          message=$(echo "$message" | tr -d '\n' | sed 's/`//g')
-
-          # Truncate to 72 characters max
-          message="${message:0:72}"
-
-          echo "message=$message"
-          echo "message=$message" >> "$GITHUB_OUTPUT"
+          echo "Message from AI: ${{ steps.ai_commit.outputs.message }}"
 
       - name: Commit and push changes
         if: steps.changes.outputs.no_changes == 'false'
