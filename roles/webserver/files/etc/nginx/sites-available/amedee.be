@@ -7,6 +7,8 @@ server {
     index index.php;
     server_name amedee.be;
 
+    add_header Cache-Control "public, max-age=31536000, immutable";
+
     location / {
         limit_req zone=mylimit burst=20 nodelay;
         try_files $uri $uri/ /index.php?q=$uri&$args;
@@ -39,7 +41,6 @@ server {
     # Static Files Caching
     location ~* \.(css|gif|ico|jpeg|jpg|js|png|svg|woff|woff2|eot|ttf|otf)$ {
         expires 1y;
-        add_header Cache-Control "public, max-age=31536000, immutable";
         log_not_found off;
         try_files $uri =404;
     }
@@ -72,8 +73,9 @@ server {
 
     server_tokens off;
 
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
     location / {
-        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         return 301 https://amedee.be$request_uri;
     }
 }
