@@ -1,0 +1,14 @@
+---
+rules:
+  - id: allow-es6
+    patterns:
+      - pattern: const $X = ...
+    languages: [js]
+    severity: INFO
+    message: Using modern JavaScript (ES6)
+
+ignore:
+  - .vagrant/
+  - dist/
+  - logs/
+  - node_modules/

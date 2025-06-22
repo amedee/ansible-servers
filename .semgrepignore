@@ -1,0 +1,4 @@
+.vagrant/
+dist/
+logs/
+node_modules/

@@ -1,0 +1,72 @@
+---
+name: Create or Update PR
+description: Commit changes, push to a branch, and create or update a pull request.
+
+inputs:
+  branch:
+    description: 'Branch to push changes to'
+    required: true
+  commit_message:
+    description: 'Full commit message'
+    required: true
+  pr_title:
+    description: 'Title for the pull request'
+    required: true
+  pr_body:
+    description: 'Body for the pull request'
+    required: true
+  github_token:
+    description: 'GitHub token with write access'
+    required: true
+  git_user_name:
+    description: 'Git user.name to use for commits'
+    required: true
+  git_user_email:
+    description: 'Git user.email to use for commits'
+    required: true
+
+outputs:
+  pushed:
+    description: 'Whether changes were pushed'
+    value: ${{ steps.commit_push.outputs.pushed }}
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      id: commit_push
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        git config user.name "${{ inputs.git_user_name }}"
+        git config user.email "${{ inputs.git_user_email }}"
+        git checkout -B "${{ inputs.branch }}"
+
+        git commit -am "${{ inputs.commit_message }}" || {
+          echo "Nothing to commit."
+          echo "pushed=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        }
+
+        REPO_URL="https://x-access-token:${{ inputs.github_token }}@github.com/${GITHUB_REPOSITORY}.git"
+        git push --force "$REPO_URL" "${{ inputs.branch }}"
+        echo "pushed=true" >> "$GITHUB_OUTPUT"
+
+    - shell: bash
+      if: steps.commit_push.outputs.pushed == 'true'
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: |
+        if gh pr view "${{ inputs.branch }}" --json number &>/dev/null; then
+          echo "🔄 PR already exists, updating..."
+          gh pr edit "${{ inputs.branch }}" \
+            --title "${{ inputs.pr_title }}" \
+            --body "${{ inputs.pr_body }}"
+        else
+          echo "🆕 Creating new PR..."
+          gh pr create \
+            --base main \
+            --head "${{ inputs.branch }}" \
+            --title "${{ inputs.pr_title }}" \
+            --body "${{ inputs.pr_body }}"
+        fi

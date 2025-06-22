@@ -1,0 +1,19 @@
+---
+name: 'AI Commit Message Generator'
+description: 'Generate concise AI-powered git commit message'
+
+inputs:
+  diff_content:
+    description: 'Diff content string to use for commit message generation'
+    required: true
+  prompt_content:
+    description: 'Prompt message describing what the AI should do'
+    required: true
+
+outputs:
+  message:
+    description: 'Generated commit message'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

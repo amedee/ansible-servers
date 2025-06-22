@@ -1,0 +1,28 @@
+---
+name: Setup Python and Install Dependencies
+description: Setup Python, cache pip packages, and install dependencies from a requirements file
+
+inputs:
+  python-version:
+    description: 'Python version to use'
+    default: '3.x'
+  requirements-file:
+    description: 'Path to the requirements file'
+    default: 'requirements.txt'
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: pip-cache-${{ hashFiles(inputs.requirements-file) }}
+        restore-keys: |
+          pip-cache-
+
+    - run: pip install -r ${{ inputs.requirements-file }}
+      shell: bash
