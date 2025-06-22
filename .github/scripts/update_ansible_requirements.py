@@ -11,6 +11,8 @@ from ruamel.yaml import YAML
 
 YAML_PARSER = YAML()
 YAML_PARSER.preserve_quotes = True
+YAML_PARSER.explicit_start = True
+YAML_PARSER.indent(mapping=2, sequence=4, offset=2)
 
 with open("requirements.yml", encoding="utf-8") as f:
     REQUIREMENTS = YAML_PARSER.load(f)

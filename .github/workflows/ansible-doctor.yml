@@ -4,6 +4,8 @@ name: 📚 Ansible Role Docs
 on: # yamllint disable-line rule:truthy
   workflow_call:
     secrets:
+      ANSIBLE_DEP_UPDATER_TOKEN:
+        required: true
       OPENROUTER_API_KEY:
         required: true
   workflow_dispatch:
@@ -25,89 +27,57 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: 🐍 Setup Python and Install Dependencies
+        uses: ./.github/actions/setup-python-pip
         with:
-          python-version: '3.x'
-
-      - name: Install ansible-doctor
-        run: pip install ansible-core ansible-doctor
+          python-version: '3.13'
+          requirements-file: 'requirements-docs.txt'
 
       - name: Run ansible-doctor
         run: ansible-doctor --force --recursive roles
+
+      - name: 📦 Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-cache-prettier
+          restore-keys: |
+            npm-cache-
 
       - name: Format Markdown with Prettier
         run: |
           npx prettier --write "roles/**/README.md"
 
-      - name: Configure Git
-        run: |
-          git config --global user.name "Ansible Doc Bot 📚"
-          git config --global user.email "amedee-docbot@amedee.be"
+      - name: 📤 Extract staged git diff
+        uses: ./.github/actions/extract-staged-diff
+        id: get_diff
+        with:
+          globs: "roles/*/README.md"
 
-      - name: Check for changed .md files
-        id: changes
-        run: |
-          git add roles/**/*.md
-          if git diff --cached --quiet; then
-            echo "no_changes=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "no_changes=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Generate AI commit message via OpenRouter.ai
+      - name: 🤖 Generate AI commit message
         id: ai_commit
-        if: steps.changes.outputs.no_changes == 'false'
-        run: |
-          echo "Requesting commit message from OpenRouter..."
+        if: steps.get_diff.outputs.has_diff == 'true'
+        uses: ./.github/actions/ai-commit-message
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          diff_content: ${{ steps.get_diff.outputs.diff_content }}
+          prompt_content: |
+            Write a concise Git commit message describing the staged changes
+            to Markdown documentation of Ansible roles.
+            The commit message must start with a relevant emoji on the first line,
+            which is max 72 characters.
+            Leave a blank line after the first line.
+            Then add the rest of the commit message explaining the changes.
 
-          diff=$(git diff --cached --unified=0 -- '*.md' | head -c 3000)
-
-          prompt=$(jq -n --arg diff "$diff" '[
-            {
-              "role": "user",
-              "content": ("Write a concise Git commit message (max 72 characters) describing the staged Markdown documentation changes to Ansible roles.\n"
-                + "Start the commit message with a relevant emoji.\n"
-                + "Here is the diff:\n\n"
-                + $diff)
-            }
-          ]')
-
-          data=$(jq -n --argjson messages "$prompt" '{
-            model: "mistralai/devstral-small:free",
-            messages: $messages,
-            temperature: 0.7
-          }')
-
-          response=$(curl -s https://openrouter.ai/api/v1/chat/completions \
-            -H "Authorization: Bearer ${{ secrets.OPENROUTER_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -H "HTTP-Referer: https://github.com/${{ github.repository }}" \
-            -H "X-Title: Ansible Docs" \
-            -d "$data"
-          )
-
-          echo "Raw response:"
-          echo "$response"
-
-          message=$(echo "$response" | jq -r '.choices[0].message.content // empty')
-
-          if [ -z "$message" ]; then
-            echo "❌ Failed to get a commit message. Using fallback."
-            message="📝 Update Ansible role documentation"
-          fi
-
-          # Sanitize message: remove backticks and newlines
-          message=$(echo "$message" | tr -d '\n' | sed 's/`//g')
-
-          # Truncate to 72 characters max
-          message="${message:0:72}"
-
-          echo "message=$message"
-          echo "message=$message" >> "$GITHUB_OUTPUT"
-
-      - name: Commit and push changes
-        if: steps.changes.outputs.no_changes == 'false'
-        run: |
-          git commit -m "${{ steps.ai_commit.outputs.message }}"
-          git push
+      - name: 🔁 Commit, push, and PR
+        uses: ./.github/actions/create-or-update-pr
+        if: steps.get_diff.outputs.has_diff == 'true'
+        with:
+          branch: ansible-docs
+          commit_message: ${{ steps.ai_commit.outputs.message }}
+          pr_title: "📚️ Update Ansible role docs"
+          pr_body: ${{ steps.ai_commit.outputs.message }}
+          github_token: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
+          git_user_name: "Ansible Doc Bot 📚"
+          git_user_email: "amedee-docbot@amedee.be"
