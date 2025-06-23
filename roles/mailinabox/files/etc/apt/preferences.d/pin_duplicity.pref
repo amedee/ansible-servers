@@ -1,4 +1,9 @@
-Explanation: Duplicity version 3.0.1 has a bug and I don't want it installed
+Explanation: Duplicity version 3.0.1* has a bug and should not be installed
 Package: duplicity
 Pin: version 3.0.1*
+Pin-Priority: -1
+
+Explanation: Duplicity version 3.0.5* has a bug and should not be installed
+Package: duplicity
+Pin: version 3.0.5*
 Pin-Priority: -1
