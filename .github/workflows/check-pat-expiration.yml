@@ -48,3 +48,14 @@ jobs:
           else
             echo "Token is still valid."
           fi
+
+          {
+            echo "### 🧪 PAT Expiration Check"
+            echo "- Token name: \`$TOKEN_NAME\`"
+            echo "- Days until expiration: **$DAYS_LEFT**"
+            if [ "$DAYS_LEFT" -le "$ALERT_DAYS" ]; then
+              echo "- ⚠️ **ALERT**: Token expires soon!"
+            else
+              echo "- ✅ Token is still valid."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
