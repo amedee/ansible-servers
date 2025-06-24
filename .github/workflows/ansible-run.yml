@@ -56,7 +56,7 @@ jobs:
 
       - name: Deploy changes to servers
         # yamllint disable-line rule:line-length
-        uses: dawidd6/action-ansible-playbook@a4133a9690f77b38c8227021ed497fc1267635d5 # v3
+        uses: dawidd6/action-ansible-playbook@93764e7048f4dd16117d134dadb4b36e8ee73227 # v4
         with:
           playbook: playbooks/site.yml
           key: ${{secrets.SSH_PRIVATE_KEY}}
