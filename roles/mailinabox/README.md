@@ -1,6 +1,6 @@
 # mailinabox
 
-Role to do post-install configuration of nailinabox.
+Role to do post-install configuration of mailinabox.
 
 ## Table of content
 
