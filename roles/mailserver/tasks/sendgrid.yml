@@ -23,6 +23,14 @@
     group: root
     mode: '0755'
 
+- name: Ensure /var/log/sendgrid_sendmail directory exists
+  ansible.builtin.file:
+    path: /var/log/sendgrid_sendmail
+    state: directory
+    owner: sendgrid
+    group: sendgrid
+    mode: '0755'
+
 - name: Create /etc/sendgrid/api_key
   ansible.builtin.template:
     src: etc/sendgrid/api_key.j2

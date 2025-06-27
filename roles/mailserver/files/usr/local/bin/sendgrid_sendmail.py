@@ -39,7 +39,7 @@ syslog_formatter = logging.Formatter(
 syslog_handler.setFormatter(syslog_formatter)
 
 # Also log to a file for debugging
-file_handler = logging.FileHandler("/tmp/sendgrid_sendmail_debug.log")
+file_handler = logging.FileHandler("/var/log/sendgrid_sendmail/debug.log")
 file_formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
 file_handler.setFormatter(file_formatter)
 
