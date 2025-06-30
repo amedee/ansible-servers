@@ -24,12 +24,6 @@
     mode: '0644'
   notify: Restart Postfix
 
-- name: Postmap the recipient-canonical-maps.pcre file
-  ansible.builtin.command: postmap /etc/postfix/recipient-canonical-maps.pcre
-  args:
-    creates: /etc/postfix/recipient-canonical-maps.pcre.db
-  notify: Restart Postfix
-
 - name: Build dynamic Postfix settings
   ansible.builtin.set_fact:
     mailserver_postfix_dynamic_settings:
