@@ -9,8 +9,8 @@
     src: etc/postfix/checks/
     dest: /etc/postfix/checks/
     owner: root
-    mode: u=rw,go=r
-    directory_mode: u=rwx,go=rx
+    group: root
+    mode: '0644'
   notify:
     - Restart Postfix
 
@@ -71,6 +71,54 @@
       current_postfix_settings[item.key] != (item.value | string)))
   changed_when: true
   check_mode: false
+  notify: Restart Postfix
+
+- name: Read current smtpd_recipient_restrictions from Postfix
+  ansible.builtin.command: postconf -h smtpd_recipient_restrictions
+  register: smtpd_restrictions
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Define the check_line value
+  ansible.builtin.set_fact:
+    check_line: "check_recipient_access pcre:/etc/postfix/checks/dead_recipients.pcre"
+
+- name: Parse current smtpd_recipient_restrictions into list
+  ansible.builtin.set_fact:
+    old_list: "{{ smtpd_restrictions.stdout.split(',') | map('trim') | list }}"
+  when:
+    - smtpd_restrictions.stdout is defined
+
+- name: Prepare new smtpd_recipient_restrictions list
+  ansible.builtin.set_fact:
+    new_list: >-
+      {%- if 'permit_mynetworks' in old_list -%}
+      {{
+        old_list[: old_list.index('permit_mynetworks') + 1]
+        + [check_line]
+        + old_list[old_list.index('permit_mynetworks') + 1 :]
+      }}
+      {%- else -%}
+      {{ old_list + [check_line] }}
+      {%- endif -%}
+  when:
+    - not ansible_check_mode
+    - old_list is defined
+    - smtpd_restrictions.stdout is defined
+    - smtpd_restrictions.stdout | length > 0
+    - check_line not in smtpd_restrictions.stdout
+
+- name: Update smtpd_recipient_restrictions using postconf
+  ansible.builtin.command: >
+    postconf -e smtpd_recipient_restrictions="{{ new_list | join(', ') }}"
+  when:
+    - not ansible_check_mode
+    - new_list is defined
+    - smtpd_restrictions.stdout is defined
+    - smtpd_restrictions.stdout | length > 0
+    - check_line not in smtpd_restrictions.stdout
+  changed_when: true
   notify: Restart Postfix
 
 - name: Configure SendGrid Web API
