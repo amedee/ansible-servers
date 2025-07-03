@@ -1,0 +1,3 @@
+# It's the 21st century, lines can be 120 chars long
+[body-max-line-length]
+line-length=120
