@@ -33,23 +33,9 @@ dependencies:
             owner: root
             mode: "u=rwx,go=rx"
   - role: geerlingguy.munin-node
-    munin_node_allowed_ips:
-      - ^127\.0\.0\.1$
-      - "^::1$"
-      - ^142\.93\.227\.16$
     munin_node_config:
       backup_size:
         user: root
-      df:
-        env.exclude: >-
-          none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs tmpfs
-          cgroup_root devtmpfs
-      df_inode:
-        env.exclude: >-
-          none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs tmpfs
-          nilfs2 vfat
-      diskstats:
-        env.include_only: vd
       "mailbox_*":
         user: root
         env.mailbox_user: amedee@vangasse.eu
