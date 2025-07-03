@@ -44,7 +44,11 @@ dependencies:
         env.critical: 98
         env.exclude: >-
           none unknown rootfs iso9660 squashfs udf romfs ramfs debugfs
-          cgroup_root devtmpfs tmpfs
+          cgroup_root devtmpfs nilfs2 tmpfs
         env.exclude_re: ^/dev/shm ^/run
+      df:
+        env.include_re: ^/boot/efi$
+      df_inode:
+        env.exclude_re: ^/boot/efi$
       "diskstats*":
-        env.exclude: loop
+        env.include_only: vd
