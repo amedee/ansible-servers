@@ -93,13 +93,30 @@
     region: us-east-1
   register: s3_download
 
+- name: Stat archive file
+  ansible.builtin.stat:
+    path: /tmp/wp-content/uploads.tar.xz
+  register: archive_stat
+
+- name: Fail if archive is missing in normal mode
+  ansible.builtin.fail:
+    msg: "uploads.tar.xz is missing — aborting deployment"
+  when: not ansible_check_mode and not archive_stat.stat.exists
+
+- name: Skip unarchive in check mode if archive is missing
+  ansible.builtin.debug:
+    msg: "Skipping extract: archive file not present in check mode"
+  when: ansible_check_mode and not archive_stat.stat.exists
+
 - name: Extract WordPress uploads on the remote machine # noqa no-handler
-  when: s3_download.changed
   ansible.builtin.unarchive:
     remote_src: true
     src: /tmp/wp-content/uploads.tar.xz
     dest: "{{ webserver_directory }}/wp-content/"
     owner: "{{ webserver_user }}"
+  when: >
+    (not ansible_check_mode and s3_download.changed) or
+    (ansible_check_mode and archive_stat.stat.exists)
 
 - name: Configure Redis
   ansible.builtin.include_tasks:
