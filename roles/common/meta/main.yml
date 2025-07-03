@@ -13,13 +13,6 @@ galaxy_info:
         - noble
 
 dependencies:
-  - role: debops.debops.etckeeper
-    etckeeper__gitignore:
-      - name: alternatives
-      - name: apparmor.d
-      - name: fonts
-      - name: ssl
-      - name: systemd
   - role: rolehippie.swap
     swap_size: 4096
   - role: debops.debops.etc_aliases
