@@ -1,8 +1,4 @@
 ---
-- name: Show etckeeper__gitignore
-  ansible.builtin.debug:
-    var: etckeeper__gitignore
-
 - name: Check if APT lock files exist
   ansible.builtin.stat:
     path: "{{ item }}"

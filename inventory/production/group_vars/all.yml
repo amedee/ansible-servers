@@ -19,3 +19,5 @@ etckeeper__gitignore:
 hold_grub_packages: false
 
 mailserver_mydomains: []
+
+swap_size: 4096

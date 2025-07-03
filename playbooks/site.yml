@@ -3,6 +3,7 @@
   hosts: all
   roles:
     - debops.debops.etckeeper
+    - rolehippie.swap
 
 - name: Configure Mail-in-a-Box servers
   hosts: mailservers
