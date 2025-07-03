@@ -1,5 +1,10 @@
 ---
-- name: Mail Servers Playbook
-  import_playbook: mailservers.yml
-- name: Blog Playbook
-  import_playbook: blogs.yml
+- name: Configure Mail-in-a-Box servers
+  hosts: mailservers
+  roles:
+    - mailinabox
+
+- name: Configure WordPress servers
+  hosts: blogs
+  roles:
+    - blog
