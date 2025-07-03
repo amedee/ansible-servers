@@ -1,5 +1,5 @@
 ---
-ansible_user: root
+ansible_python_interpreter: /usr/bin/python3
 ansible_ssh_common_args: >-
   -C
   -o ControlMaster=auto
@@ -7,6 +7,15 @@ ansible_ssh_common_args: >-
   -o ControlPersist=10m
   -o ForwardAgent=yes
   -o StrictHostKeyChecking=accept-new
+ansible_user: root
+
+etckeeper__gitignore:
+  - alternatives
+  - apparmor.d
+  - fonts
+  - ssl
+  - systemd
+
 hold_grub_packages: false
 
 mailserver_mydomains: []

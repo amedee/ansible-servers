@@ -1,4 +1,9 @@
 ---
+- name: Base configuration for all hosts
+  hosts: all
+  roles:
+    - debops.debops.etckeeper
+
 - name: Configure Mail-in-a-Box servers
   hosts: mailservers
   roles:
