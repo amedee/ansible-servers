@@ -1,6 +1,6 @@
-# common
+# localepurge
 
-Role to configure install and configure common stuff on all of my servers.
+Role to install and configure localepurge.
 
 ## Table of content
 
@@ -17,8 +17,7 @@ Role to configure install and configure common stuff on all of my servers.
 
 ## Dependencies
 
-- debops.debops.cron
-- geerlingguy.munin-node
+None.
 
 ## License
 
