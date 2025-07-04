@@ -1,6 +1,6 @@
-# mailinabox
+# merge_vars
 
-Role to do post-install configuration of mailinabox.
+Merges two dicts into a third one using combine()
 
 ## Table of content
 
@@ -17,8 +17,7 @@ Role to do post-install configuration of mailinabox.
 
 ## Dependencies
 
-- mailserver
-- geerlingguy.munin-node
+None.
 
 ## License
 
@@ -26,4 +25,4 @@ MIT
 
 ## Author
 
-[Amedee Van Gasse](https://amedee.be)
+Amedee Van Gasse
