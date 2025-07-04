@@ -9,6 +9,12 @@
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
 
+    - role: merge_vars
+      merge_vars_from_1: cron__jobs_base
+      merge_vars_from_2: cron__jobs_extra
+      merge_vars_target: cron__jobs
+    - debops.debops.cron
+
 - name: Configure Mail-in-a-Box servers
   hosts: mailservers
   roles:

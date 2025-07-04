@@ -17,7 +17,6 @@ Role to configure install and configure common stuff on all of my servers.
 
 ## Dependencies
 
-- debops.debops.cron
 - geerlingguy.munin-node
 
 ## License
