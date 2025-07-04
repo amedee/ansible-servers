@@ -21,6 +21,8 @@ etckeeper__gitignore:
 
 hold_grub_packages: false
 
+locale: en_US.UTF-8
+
 mailserver_mydomains: []
 
 swap_size: 4096
