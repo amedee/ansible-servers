@@ -13,9 +13,6 @@ galaxy_info:
         - noble
 
 dependencies:
-  - role: debops.debops.etc_aliases
-    etc_aliases__recipients:
-      - root: amedee@vangasse.eu
   - role: debops.debops.apt_listchanges
   - role: debops.debops.cron
     cron__jobs:

@@ -9,6 +9,9 @@ ansible_ssh_common_args: >-
   -o StrictHostKeyChecking=accept-new
 ansible_user: root
 
+etc_aliases__recipients:
+  - root: amedee@vangasse.eu
+
 etckeeper__gitignore:
   - alternatives
   - apparmor.d
