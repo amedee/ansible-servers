@@ -13,7 +13,6 @@ galaxy_info:
         - noble
 
 dependencies:
-  - role: debops.debops.apt_listchanges
   - role: debops.debops.cron
     cron__jobs:
       hadori:
