@@ -2,8 +2,9 @@
 - name: Base configuration for all hosts
   hosts: all
   roles:
-    - debops.debops.etckeeper
     - rolehippie.swap
+    - localepurge
+    - debops.debops.etckeeper
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades

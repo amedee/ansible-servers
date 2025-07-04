@@ -45,9 +45,6 @@
   delay: 60
   until: result is not failed
 
-- name: Configure locale
-  ansible.builtin.import_tasks: locale.yml
-
 - name: Install and upgrade software
   ansible.builtin.import_tasks: install_software.yml
 

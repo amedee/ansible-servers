@@ -1,10 +1,7 @@
 ---
-common_locale: en_US.UTF-8
-
 common_apt_packages:
   - hadori
   - hping3
-  - localepurge
   - mc
   - ncdu
   - nmap
