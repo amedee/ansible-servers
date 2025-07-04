@@ -13,12 +13,6 @@ galaxy_info:
         - noble
 
 dependencies:
-  - role: debops.debops.cron
-    cron__jobs:
-      hadori:
-        name: Hardlink with hadori
-        special_time: monthly
-        job: /usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt
   - role: geerlingguy.munin-node
     munin_node_allowed_ips:
       - ^127\.0\.0\.1$

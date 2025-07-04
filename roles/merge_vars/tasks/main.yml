@@ -1,0 +1,8 @@
+---
+- name: Merge variables into {{ merge_vars_target }}
+  ansible.builtin.set_fact:
+    "{{ merge_vars_target }}": >-
+      {{
+        (lookup('vars', merge_vars_from_1, default={}))
+        | combine(lookup('vars', merge_vars_from_2, default={}), recursive=True)
+      }}

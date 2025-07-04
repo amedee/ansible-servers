@@ -9,6 +9,12 @@ ansible_ssh_common_args: >-
   -o StrictHostKeyChecking=accept-new
 ansible_user: root
 
+cron__jobs_base:
+  hadori:
+    name: Hardlink with hadori
+    special_time: monthly
+    job: /usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt
+
 etc_aliases__recipients:
   - root: amedee@vangasse.eu
 
