@@ -6,6 +6,7 @@
     - rolehippie.swap
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
+    - debops.debops.unattended_upgrades
 
 - name: Configure Mail-in-a-Box servers
   hosts: mailservers

@@ -19,7 +19,6 @@ dependencies:
         name: Hardlink with hadori
         special_time: monthly
         job: /usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt
-  - role: debops.debops.unattended_upgrades
   - role: geerlingguy.munin-node
     munin_node_allowed_ips:
       - ^127\.0\.0\.1$
