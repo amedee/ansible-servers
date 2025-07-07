@@ -1,21 +1,9 @@
 ---
-- name: Install munin-node and munin
+- name: Install munin
   ansible.builtin.apt:
     state: present
     pkg:
       - munin
-
-- name: Allow munin-node to read files in home directories
-  community.general.ini_file:
-    path: /lib/systemd/system/munin-node.service
-    section: Service
-    option: ProtectHome
-    value: false
-    ignore_spaces: true
-    no_extra_spaces: true
-    owner: root
-    mode: u=rw,go=r
-  notify: Reload systemd
 
 - name: Add munin host configurations
   ansible.builtin.copy:

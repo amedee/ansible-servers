@@ -1,6 +1,6 @@
-# mailinabox
+# munin_node
 
-Role to do post-install configuration of mailinabox.
+Role to configure munin-node.
 
 ## Table of content
 
@@ -17,7 +17,7 @@ Role to do post-install configuration of mailinabox.
 
 ## Dependencies
 
-- mailserver
+- geerlingguy.munin-node
 
 ## License
 
