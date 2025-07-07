@@ -1,0 +1,11 @@
+---
+- name: Configure Redis
+  ansible.builtin.lineinfile:
+    path: /etc/redis/redis.conf
+    create: true
+    owner: root
+    mode: u=rw,go=r
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop: "{{ redis_settings }}"
+  notify: Restart redis

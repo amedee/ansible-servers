@@ -1,0 +1,6 @@
+---
+redis_settings:
+  - regexp: "^(# )?supervised "
+    line: "supervised systemd"
+  - regexp: "^(# )?requirepass"
+    line: "requirepass {{ redis_password }}"
