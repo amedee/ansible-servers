@@ -88,8 +88,8 @@
     dest: /tmp/wp-content/uploads.tar.xz
     mode: get
     overwrite: different
-    access_key: "{{ common_aws_access_key }}"
-    secret_key: "{{ common_aws_secret_key }}"
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
     region: us-east-1
   register: s3_download
 
