@@ -1,6 +1,0 @@
----
-webserver_directory: /var/www/html
-webserver_default_indexfiles:
-  - index.html
-  - index.nginx-debian.html
-webserver_user: www-data
