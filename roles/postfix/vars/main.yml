@@ -10,7 +10,6 @@ postfix_static_settings:
   smtpd_sasl_auth_enable: "yes"
   smtp_tls_ciphers: high
   smtputf8_enable: "yes"
-  default_transport: sendgrid
   bounce_queue_lifetime: 3d
   maximal_queue_lifetime: 5d
   append_dot_mydomain: null

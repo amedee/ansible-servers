@@ -125,6 +125,3 @@
     - check_line not in smtpd_restrictions.stdout
   changed_when: true
   notify: Restart Postfix
-
-- name: Configure SendGrid Web API
-  ansible.builtin.import_tasks: sendgrid.yml
