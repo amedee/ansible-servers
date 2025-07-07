@@ -71,23 +71,3 @@
     group: root
     mode: '0644'
   notify: Restart rsyslog
-
-- name: Create logrotate config for SendGrid
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/logrotate.d/sendgrid
-    content: |
-      /var/log/sendgrid.log {
-          daily
-          rotate 7
-          compress
-          missingok
-          notifempty
-          create 0640 root adm
-          postrotate
-              systemctl kill -s HUP rsyslog
-          endscript
-      }
-    owner: root
-    group: root
-    mode: '0644'
