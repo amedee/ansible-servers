@@ -1,0 +1,5 @@
+---
+- name: Restart munin
+  ansible.builtin.service:
+    name: munin
+    state: restarted
