@@ -2,7 +2,19 @@
 - name: Merge variables into {{ merge_vars_target }}
   ansible.builtin.set_fact:
     "{{ merge_vars_target }}": >-
-      {{
-        (lookup('vars', merge_vars_from_1, default={}))
-        | combine(lookup('vars', merge_vars_from_2, default={}), recursive=True)
-      }}
+      {%- set base = lookup('vars', merge_vars_from_1, default=none) -%}
+      {%- set extra = lookup('vars', merge_vars_from_2, default=none) -%}
+      {%- if base is mapping and extra is mapping -%}
+        {{ base | combine(extra, recursive=True) }}
+      {%- elif base is sequence and not base is string and
+              extra is sequence and not extra is string -%}
+        {{ base + extra }}
+      {%- elif base is mapping and (extra is none or extra is undefined) -%}
+        {{ base }}
+      {%- elif extra is mapping and (base is none or base is undefined) -%}
+        {{ extra }}
+      {%- elif extra is not none and extra is not undefined -%}
+        {{ extra }}
+      {%- else -%}
+        {{ base }}
+      {%- endif -%}
