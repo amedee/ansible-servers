@@ -43,6 +43,7 @@
 - name: Configure Mail-in-a-Box servers
   hosts: mailservers
   roles:
+    - mailinabox_dns
     - mailinabox
     - munin
 
