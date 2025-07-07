@@ -1,6 +1,6 @@
-# webserver
+# nginx
 
-Role to configure my webserver.
+Role to configure nginx.
 
 ## Table of content
 
