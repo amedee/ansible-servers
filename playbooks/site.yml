@@ -47,6 +47,7 @@
     - mailinabox_duplicity
     - mailinabox
     - munin
+    - ufw
 
 - name: Configure WordPress servers
   hosts: blogs

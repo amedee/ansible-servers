@@ -6,6 +6,3 @@
     owner: root
     mode: u=rwx,go=rx
     directory_mode: u=rwx,go=rx
-
-- name: Configure UFW to redirect traffic
-  ansible.builtin.include_tasks: tasks/configure_ufw_redirection.yml
