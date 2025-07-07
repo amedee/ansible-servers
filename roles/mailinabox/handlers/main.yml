@@ -5,11 +5,6 @@
   changed_when: true
   when: dns_update.stat.exists
 
-- name: Restart munin
-  ansible.builtin.service:
-    name: munin
-    state: restarted
-
 - name: Perform backup
   ansible.builtin.command:
     cmd: /root/mailinabox/management/backup.py
