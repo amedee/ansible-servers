@@ -17,7 +17,7 @@ Role to configure install and configure common stuff on all of my servers.
 
 ## Dependencies
 
-- geerlingguy.munin-node
+None.
 
 ## License
 

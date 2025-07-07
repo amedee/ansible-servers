@@ -5,16 +5,6 @@
   changed_when: true
   when: dns_update.stat.exists
 
-- name: Reload systemd
-  ansible.builtin.systemd_service:
-    daemon_reload: true
-  notify: Restart munin-node
-
-- name: Restart munin-node
-  ansible.builtin.service:
-    name: munin-node
-    state: restarted
-
 - name: Restart munin
   ansible.builtin.service:
     name: munin

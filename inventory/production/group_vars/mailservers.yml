@@ -19,3 +19,21 @@ cron__jobs_extra:
         dest: /usr/local/bin/extract_image_attachments.sh
         owner: root
         mode: "u=rwx,go=rx"
+
+munin_node_config_extra:
+  backup_size:
+    user: root
+  "mailbox_*":
+    user: root
+    env.mailbox_user: amedee@vangasse.eu
+munin_node_install_plugins_extra:
+  - src: backup_size
+  - src: mailbox_base.py
+  - src: mailbox_messages.py
+  - src: mailbox_vsize.py
+munin_node_plugins_extra:
+  - name: backup_size
+  - name: mailbox_messages
+    plugin: mailbox_messages.py
+  - name: mailbox_vsize
+    plugin: mailbox_vsize.py

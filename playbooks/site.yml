@@ -15,6 +15,20 @@
       merge_vars_target: cron__jobs
     - debops.debops.cron
 
+    - role: merge_vars
+      merge_vars_from_1: munin_node_config_base
+      merge_vars_from_2: munin_node_config_extra
+      merge_vars_target: munin_node_config
+    - role: merge_vars
+      merge_vars_from_1: munin_node_install_plugins_base
+      merge_vars_from_2: munin_node_install_plugins_extra
+      merge_vars_target: munin_node_install_plugins
+    - role: merge_vars
+      merge_vars_from_1: munin_node_plugins_base
+      merge_vars_from_2: munin_node_plugins_extra
+      merge_vars_target: munin_node_plugins
+    - munin_node
+
 - name: Configure Mail-in-a-Box servers
   hosts: mailservers
   roles:

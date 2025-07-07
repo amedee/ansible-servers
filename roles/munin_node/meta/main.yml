@@ -1,7 +1,7 @@
 ---
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Role to do post-install configuration of mailinabox.
+  description: Role to configure munin-node.
   author: Amedee Van Gasse
   license: MIT
   min_ansible_version: "2.1"
@@ -10,6 +10,7 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - jammy
+        - noble
 
 dependencies:
-  - role: mailserver
+  - role: geerlingguy.munin-node

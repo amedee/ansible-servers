@@ -51,9 +51,3 @@
 - name: Set hostname
   ansible.builtin.hostname:
     name: "{{ hostname }}"
-
-- name: Allow Munin access to port 4949
-  community.general.ufw:
-    rule: allow
-    port: 4949
-    src: 142.93.227.16
