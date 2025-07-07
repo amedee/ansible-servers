@@ -9,6 +9,3 @@
 
 - name: Configure UFW to redirect traffic
   ansible.builtin.include_tasks: tasks/configure_ufw_redirection.yml
-
-- name: Configure Backup
-  ansible.builtin.include_tasks: tasks/backup.yml
