@@ -1,5 +1,0 @@
----
-- name: Install APT packages
-  ansible.builtin.apt:
-    state: present
-    pkg: "{{ boto_apt_packages }}"

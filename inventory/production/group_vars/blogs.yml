@@ -1,2 +1,7 @@
 ---
+apt_packages_extra:
+  - python3-pip
+  - python3-packaging
+  - python3-boto3
+
 dbserver_wp_db_host: localhost

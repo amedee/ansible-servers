@@ -9,6 +9,11 @@
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
     - hostname
+
+    - role: merge_vars
+      merge_vars_from_1: apt_packages_base
+      merge_vars_from_2: apt_packages_extra
+      merge_vars_target: apt_packages
     - install_software
 
     - role: merge_vars
