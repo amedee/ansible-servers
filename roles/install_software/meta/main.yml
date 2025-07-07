@@ -1,7 +1,7 @@
 ---
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Role to configure install and configure common stuff on all of my servers.
+  description: Role to configure install software on all of my servers.
   author: Amedee Van Gasse
   license: MIT
   min_ansible_version: "2.1"
