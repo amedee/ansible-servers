@@ -13,7 +13,7 @@
 
 - name: Copy custom DNS settings
   ansible.builtin.copy:
-    src: home/user-data/dns/custom.yaml
+    src: custom.yaml
     dest: /home/user-data/dns/custom.yaml
     owner: root
     mode: u=rw,go=r
