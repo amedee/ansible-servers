@@ -13,7 +13,6 @@ galaxy_info:
 
 dependencies:
   - role: mailserver
-  - role: dbserver
   - role: webserver
   - role: debops.debops.keyring
     keyring__dependent_gpg_keys:
