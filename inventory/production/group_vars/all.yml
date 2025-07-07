@@ -97,4 +97,12 @@ munin_node_install_plugins_extra: []
 munin_node_plugins_base: []
 munin_node_plugins_extra: []
 
+postfix_invalid_recipients:
+  - amedee-android@amedee.be
+  - amedee-bitly@amedee.be
+  - amedee-ff@amedee.be
+  - amedee-lastfm@amedee.be
+  - amedee-twunch@vangasse.eu
+  - amedee-zoosk@amedee.be
+
 swap_size: 4096
