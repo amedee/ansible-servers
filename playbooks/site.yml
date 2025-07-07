@@ -8,6 +8,7 @@
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
+    - hostname
 
     - role: merge_vars
       merge_vars_from_1: cron__jobs_base
