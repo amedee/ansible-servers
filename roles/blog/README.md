@@ -17,8 +17,7 @@ Role to configure my WordPress blog.
 
 ## Dependencies
 
-- debops.debops.keyring
-- debops.debops.wpcli
+None.
 
 ## License
 
