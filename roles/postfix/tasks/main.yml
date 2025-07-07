@@ -31,18 +31,18 @@
 
 - name: Build dynamic Postfix settings
   ansible.builtin.set_fact:
-    mailserver_postfix_dynamic_settings:
+    postfix_dynamic_settings:
       myhostname: "{{ ansible_hostname }}"
       mydestination: >-
         {{
           (['$myhostname', ansible_hostname, 'localhost.localdomain', 'localhost'] +
-           mailserver_mydomains
+           mydomains
           ) | unique | join(', ')
         }}
 
 - name: Merge static and dynamic Postfix settings
   ansible.builtin.set_fact:
-    mailserver_postfix_settings: "{{ mailserver_postfix_dynamic_settings | combine(mailserver_postfix_static_settings) }}"
+    postfix_settings: "{{ postfix_dynamic_settings | combine(postfix_static_settings) }}"
 
 - name: Get current Postfix settings
   ansible.builtin.command: postconf -n
@@ -67,7 +67,7 @@
     {% else %}
       postconf -e {{ (item.key ~ ' = ' ~ (item.value | string)) | quote }}
     {% endif %}
-  loop: "{{ mailserver_postfix_settings | dict2items }}"
+  loop: "{{ postfix_settings | dict2items }}"
   when: >
     (item.value is none and item.key in current_postfix_settings)
     or

@@ -17,7 +17,7 @@ Role to do post-install configuration of mailinabox.
 
 ## Dependencies
 
-- mailserver
+None.
 
 ## License
 
