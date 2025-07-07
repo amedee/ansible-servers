@@ -17,7 +17,7 @@ Role to configure my mailservers.
 
 ## Dependencies
 
-- debops.debops.logrotate
+None.
 
 ## License
 
