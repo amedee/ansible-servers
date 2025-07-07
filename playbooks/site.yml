@@ -37,6 +37,7 @@
     - munin_node
 
     - postfix
+    - postfix_sendgrid
     - debops.debops.logrotate
 
 - name: Configure Mail-in-a-Box servers

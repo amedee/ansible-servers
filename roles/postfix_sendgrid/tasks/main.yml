@@ -9,7 +9,7 @@
 
 - name: Copy sendgrid-sendmail.py
   ansible.builtin.copy:
-    src: files/usr/local/bin/sendgrid_sendmail.py
+    src: sendgrid_sendmail.py
     dest: /usr/local/bin/sendgrid_sendmail.py
     owner: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
     group: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
@@ -33,7 +33,7 @@
 
 - name: Create /etc/sendgrid/api_key
   ansible.builtin.template:
-    src: etc/sendgrid/api_key.j2
+    src: api_key.j2
     dest: /etc/sendgrid/api_key
     owner: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
     group: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
@@ -53,6 +53,17 @@
       - requests
       - sendgrid
     state: present
+
+- name: Get current Postfix default_transport
+  ansible.builtin.command: postconf -h default_transport
+  register: postfix_default_transport
+  changed_when: false
+
+- name: Set Postfix default_transport to sendgrid
+  ansible.builtin.command: postconf -e "default_transport = sendgrid"
+  when: postfix_default_transport.stdout != "sendgrid"
+  changed_when: true
+  notify: Restart Postfix
 
 - name: Ensure sendgrid service is present in master.cf
   ansible.builtin.lineinfile:
