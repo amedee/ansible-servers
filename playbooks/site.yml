@@ -36,6 +36,7 @@
       merge_vars_target: munin_node_plugins
     - munin_node
 
+    - postfix
     - debops.debops.logrotate
 
 - name: Configure Mail-in-a-Box servers

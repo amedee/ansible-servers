@@ -1,6 +1,6 @@
-# mailserver
+# postfix
 
-Role to configure my mailservers.
+Role to configure Postfix.
 
 ## Table of content
 

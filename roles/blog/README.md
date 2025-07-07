@@ -17,7 +17,6 @@ Role to configure my WordPress blog.
 
 ## Dependencies
 
-- mailserver
 - webserver
 - debops.debops.keyring
 - debops.debops.wpcli
