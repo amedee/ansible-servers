@@ -9,6 +9,16 @@
   notify:
     - Restart Postfix
 
+- name: Generate Postfix recipient access map
+  ansible.builtin.template:
+    src: postfix_invalid_recipients.j2
+    dest: /etc/postfix/checks/invalid_recipients.pcre
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Restart Postfix
+
 - name: Ensure recipient canonical PCRE map exists
   ansible.builtin.copy:
     dest: /etc/postfix/recipient-canonical-maps.pcre
@@ -77,7 +87,7 @@
 
 - name: Define the check_line value
   ansible.builtin.set_fact:
-    check_line: "check_recipient_access pcre:/etc/postfix/checks/dead_recipients.pcre"
+    check_line: "check_recipient_access pcre:/etc/postfix/checks/invalid_recipients.pcre"
 
 - name: Parse current smtpd_recipient_restrictions into list
   ansible.builtin.set_fact:

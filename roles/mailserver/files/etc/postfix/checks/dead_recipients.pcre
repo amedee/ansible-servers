@@ -1,5 +1,0 @@
-/^amedee-android@amedee\.be$/ REJECT Invalid recipient
-/^amedee-bitly@amedee\.be$/ REJECT Invalid recipient
-/^amedee-ff@amedee\.be$/ REJECT Invalid recipient
-/^amedee-lastfm@amedee\.be$/ REJECT Invalid recipient
-/^amedee-zoosk@amedee\.be$/ REJECT Invalid recipient
