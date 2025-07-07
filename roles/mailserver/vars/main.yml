@@ -1,11 +1,4 @@
 ---
-mailserver_apt_packages:
-  - mutt
-  - postfix
-  - postfix-pcre
-  - procmail
-  - swaks
-
 mailserver_postfix_static_settings:
   body_checks: "pcre:/etc/postfix/checks/body_checks.pcre"
   header_checks: "pcre:/etc/postfix/checks/header_checks.pcre"

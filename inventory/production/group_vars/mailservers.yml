@@ -1,4 +1,10 @@
 ---
+apt_packages_extra:
+  - duplicity
+  - fdupes
+  - mpack
+  - munin
+
 cron__jobs_extra:
   doveadm_expunge_trash:
     name: Expunge Trash

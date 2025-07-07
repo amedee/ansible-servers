@@ -1,9 +1,4 @@
 ---
-- name: Install APT packages
-  ansible.builtin.apt:
-    state: present
-    pkg: "{{ blog_apt_packages }}"
-
 - name: "Create database '{{ blog_wp_db_name }}'"
   community.mysql.mysql_db:
     name: "{{ blog_wp_db_name }}"
