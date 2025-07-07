@@ -47,7 +47,3 @@
 
 - name: Install and upgrade software
   ansible.builtin.import_tasks: install_software.yml
-
-- name: Set hostname
-  ansible.builtin.hostname:
-    name: "{{ hostname }}"
