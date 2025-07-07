@@ -1,8 +1,0 @@
----
-- name: Copy /etc/profile.d files
-  ansible.builtin.copy:
-    src: etc/profile.d/
-    dest: /etc/profile.d/
-    owner: root
-    mode: u=rwx,go=rx
-    directory_mode: u=rwx,go=rx

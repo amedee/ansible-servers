@@ -1,4 +1,4 @@
-# mailinabox
+# mailinabox_profile
 
 Role to do post-install configuration of mailinabox.
 

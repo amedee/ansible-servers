@@ -1,0 +1,15 @@
+---
+- name: Copy Mail-in-a-Box_management.sh
+  ansible.builtin.copy:
+    src: Mail-in-a-Box_management.sh
+    dest: /etc/profile.d/
+    owner: root
+    mode: u=rwx,go=rx
+    directory_mode: u=rwx,go=rx
+
+- name: Template miab-env.sh
+  ansible.builtin.template:
+    src: miab-env.j2
+    dest: /etc/profile.d/miab-env.sh
+    owner: root
+    mode: u=rwx,go=rx
