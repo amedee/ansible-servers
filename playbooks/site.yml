@@ -49,4 +49,5 @@
   hosts: blogs
   roles:
     - mysql
+    - redis
     - blog

@@ -1,5 +1,5 @@
 ---
-- name: Restart nginx
+- name: Restart redis
   ansible.builtin.service:
-    name: nginx
+    name: redis-server
     state: restarted

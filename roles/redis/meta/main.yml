@@ -1,0 +1,12 @@
+---
+# @meta author:value: [Amedee Van Gasse](https://amedee.be)
+galaxy_info:
+  description: Role to configure Redis.
+  author: Amedee Van Gasse
+  license: MIT
+  min_ansible_version: "2.1"
+  namespace: amedee
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble

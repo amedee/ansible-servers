@@ -41,6 +41,6 @@ blog_wp_redis:
   - name: WP_CACHE_KEY_SALT
     value: amedee.be
   - name: WP_REDIS_PASSWORD
-    value: "{{ webserver_redis_password }}"
+    value: "{{ redis_password }}"
   - name: WP_REDIS_PREFIX
     value: amedee.be_
