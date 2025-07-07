@@ -1,10 +1,4 @@
 ---
-- name: Install munin
-  ansible.builtin.apt:
-    state: present
-    pkg:
-      - munin
-
 - name: Add munin host configurations
   ansible.builtin.copy:
     src: etc/munin/munin-conf.d/

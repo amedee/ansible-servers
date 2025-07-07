@@ -1,22 +1,4 @@
 ---
-- name: Install APT preference to block Duplicity 3.0.1
-  ansible.builtin.copy:
-    src: etc/apt/preferences.d/pin_duplicity.pref
-    dest: /etc/apt/preferences.d/pin_duplicity.pref
-    owner: root
-    mode: u=rw,go=r
-  register: apt_pin_result
-
-- name: Update APT cache if pinning file changed  # noqa no-handler
-  ansible.builtin.apt:
-    update_cache: true
-  when: apt_pin_result.changed
-
-- name: Ensure duplicity is installed
-  ansible.builtin.apt:
-    name: duplicity
-    state: present
-
 - name: Create duplicity config directory
   ansible.builtin.file:
     path: /home/user-data/backup

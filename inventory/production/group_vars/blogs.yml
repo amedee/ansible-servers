@@ -1,7 +1,60 @@
 ---
 apt_packages_extra:
-  - python3-pip
-  - python3-packaging
+  - curl
+  - elinks
+  - ghostscript
+  - imagemagick
+  - mysql-client
+  - mysql-client
+  - mysql-server
+  - nginx
+  - openssl
+  - php
+  - php-curl
+  - php-fpm
+  - php-gd
+  - php-imagick
+  - php-intl
+  - php-json
+  - php-mbstring
+  - php-mysql
+  - php-redis
+  - php-ssh2
+  - php-xml
+  - php-xmlrpc
+  - php-zip
   - python3-boto3
+  - python3-mysqldb
+  - python3-packaging
+  - python3-pip
+  - redis-server
 
 dbserver_wp_db_host: localhost
+
+deb822_repositories:
+  - name: ondrej-ubuntu-nginx-noble
+    repo:
+      uris: "https://ppa.launchpadcontent.net/ondrej/nginx/ubuntu/"
+      suites: [noble]
+      components: [main]
+      signed_by: /etc/apt/keyrings/ondrej.gpg
+  - name: ondrej-ubuntu-php-noble
+    repo:
+      uris: "https://ppa.launchpadcontent.net/ondrej/php/ubuntu/"
+      suites: [noble]
+      components: [main]
+      signed_by: /etc/apt/keyrings/ondrej.gpg
+  - name: third-party
+    repo:
+      types: [deb]
+      uris: "http://mirrors.digitalocean.com/ubuntu/"
+      suites:
+        - noble
+        - noble-updates
+        - noble-backports
+      components:
+        - main
+        - restricted
+        - universe
+        - multiverse
+      signed_by: "/usr/share/keyrings/ubuntu-archive-keyring.gpg"

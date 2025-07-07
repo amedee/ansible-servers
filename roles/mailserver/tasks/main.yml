@@ -1,9 +1,4 @@
 ---
-- name: Install APT packages
-  ansible.builtin.apt:
-    state: present
-    pkg: "{{ mailserver_apt_packages }}"
-
 - name: Copy Postfix checks files
   ansible.builtin.copy:
     src: etc/postfix/checks/

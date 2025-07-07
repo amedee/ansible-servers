@@ -39,12 +39,6 @@
     group: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
     mode: '0600'
 
-- name: Ensure Python venv package is installed
-  ansible.builtin.apt:
-    name: python3-venv
-    state: present
-    update_cache: true
-
 - name: Create virtual environment for SendGrid
   ansible.builtin.command:
     cmd: python3 -m venv /opt/sendgrid-venv

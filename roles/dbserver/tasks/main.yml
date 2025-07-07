@@ -1,9 +1,4 @@
 ---
-- name: Install mysql-server
-  ansible.builtin.apt:
-    state: present
-    pkg: mysql-server
-
 - name: Disable binary logging in MySQL
   community.general.ini_file:
     path: /etc/mysql/mysql.conf.d/mysqld.cnf

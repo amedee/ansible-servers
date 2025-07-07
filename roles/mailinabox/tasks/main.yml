@@ -1,9 +1,4 @@
 ---
-- name: Install APT packages
-  ansible.builtin.apt:
-    state: present
-    pkg: "{{ mailinabox_apt_packages }}"
-
 - name: Copy /etc/profile.d files
   ansible.builtin.copy:
     src: etc/profile.d/

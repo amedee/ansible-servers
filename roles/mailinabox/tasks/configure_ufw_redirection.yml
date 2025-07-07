@@ -1,9 +1,4 @@
 ---
-- name: Ensure UFW is installed
-  ansible.builtin.apt:
-    name: ufw
-    state: present
-
 - name: Ensure UFW is enabled
   ansible.builtin.command: ufw enable
   when: ansible_facts['os_family'] == 'Debian'
