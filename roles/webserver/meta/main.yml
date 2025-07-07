@@ -12,5 +12,4 @@ galaxy_info:
         - noble
 
 dependencies:
-  - role: common
   - role: boto

@@ -1,6 +1,6 @@
-# common
+# install_software
 
-Role to configure install and configure common stuff on all of my servers.
+Role to configure install software on all of my servers.
 
 ## Table of content
 

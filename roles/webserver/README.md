@@ -17,7 +17,6 @@ Role to configure my webserver.
 
 ## Dependencies
 
-- common
 - boto
 
 ## License
