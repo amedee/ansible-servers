@@ -9,13 +9,14 @@ ansible_ssh_common_args: >-
   -o StrictHostKeyChecking=accept-new
 ansible_user: root
 
-apt_packages:
+apt_packages_base:
   - hadori
   - hping3
   - mc
   - ncdu
   - nmap
   - uptimed
+apt_packages_extra: []
 
 apt_packages_uninstall:
   - apport

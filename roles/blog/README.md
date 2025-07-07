@@ -20,7 +20,6 @@ Role to configure my WordPress blog.
 - mailserver
 - dbserver
 - webserver
-- boto
 - debops.debops.keyring
 - debops.debops.wpcli
 
