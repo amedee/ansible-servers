@@ -14,6 +14,7 @@ cron__jobs_base:
     name: Hardlink with hadori
     special_time: monthly
     job: /usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt
+cron__jobs_extra: {}
 
 etc_aliases__recipients:
   - root: amedee@vangasse.eu
