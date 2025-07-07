@@ -45,7 +45,7 @@
   roles:
     - mailinabox_dns
     - mailinabox_duplicity
-    - mailinabox
+    - mailinabox_profile
     - munin
     - ufw
 
