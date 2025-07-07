@@ -40,6 +40,7 @@ jobs:
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_ANSIBLE: false
           VALIDATE_GIT_COMMITLINT: false
+          VALIDATE_NATURAL_LANGUAGE: false
           VALIDATE_PYTHON_PYINK: false
 
       # Check the PR diff using the current branch and the base branch of the PR

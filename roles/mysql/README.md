@@ -1,4 +1,4 @@
-# dbserver
+# mysql
 
 Role to configure a MySQL database server.
 
