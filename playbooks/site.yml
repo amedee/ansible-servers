@@ -44,6 +44,7 @@
   hosts: mailservers
   roles:
     - mailinabox_dns
+    - mailinabox_duplicity
     - mailinabox
     - munin
 
