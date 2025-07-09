@@ -16,6 +16,7 @@ blog_wp_plugins_install:
   - activitypub
   - akismet
   - better-robots-txt
+  - editorial-calendar
   - google-site-kit
   - health-check
   - jetpack
