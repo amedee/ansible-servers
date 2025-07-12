@@ -1,27 +1,34 @@
 ---
-- name: Check WordPress theme {{ wp_theme }}
+- name: Activate fallback theme
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv:
       - wp
       - theme
-      - is-installed
-      - "{{ wp_theme }}"
+      - activate
+      - "{{ blog_wp_themes_fallback }}"
       - "--path={{ webserver_directory }}"
-  changed_when: false
+  register: wp_theme_activate_fallback
   failed_when: false
-  register: wp_theme_is_installed
+  changed_when: "'Success' in wp_theme_activate_fallback.stdout"
 
 - name: Uninstall WordPress theme {{ wp_theme }}
-  when: wp_theme_is_installed.rc | int == 0
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv:
       - wp
       - theme
-      - uninstall
+      - delete
       - "{{ wp_theme }}"
       - "--path={{ webserver_directory }}"
-  changed_when: true
+  register: wp_theme_remove
+  failed_when: >
+    wp_theme_remove.rc != 0 and
+    (
+      'not found' not in (wp_theme_remove.stderr | lower) and
+      'is not installed' not in (wp_theme_remove.stderr | lower) and
+      'could not be found' not in (wp_theme_remove.stderr | lower)
+    )
+  changed_when: "'Deleted' in wp_theme_remove.stdout"

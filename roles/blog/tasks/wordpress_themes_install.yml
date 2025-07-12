@@ -1,19 +1,5 @@
 ---
-- name: Check WordPress theme {{ wp_theme }}
-  become: true
-  become_user: "{{ webserver_user }}"
-  ansible.builtin.command:
-    argv:
-      - wp
-      - theme
-      - is-installed
-      - "{{ wp_theme }}"
-      - "--path={{ webserver_directory }}"
-  changed_when: false
-  failed_when: false
-  register: wp_theme_is_installed
-
-- name: Install WordPress theme {{ wp_theme }}
+- name: Ensure WordPress theme is installed - {{ wp_theme }}
   when: wp_theme_is_installed.rc | int != 0
   become: true
   become_user: "{{ webserver_user }}"
@@ -25,26 +11,10 @@
       - "{{ wp_theme }}"
       - --activate
       - "--path={{ webserver_directory }}"
-  changed_when: true
+  register: wp_theme_install
+  changed_when: "'Installing' in wp_theme_install.stdout"
 
-- name: Check if auto-updates are disabled for {{ wp_theme }}
-  become: true
-  become_user: "{{ webserver_user }}"
-  ansible.builtin.command:
-    argv:
-      - wp
-      - theme
-      - auto-updates
-      - status
-      - "{{ wp_theme }}"
-      - "--path={{ webserver_directory }}"
-      - "--disabled-only"
-      - "--field=name"
-  changed_when: false
-  register: wp_theme_auto_updates
-
-- name: Enable auto-updates if disabled for {{ wp_plugin }}
-  when: wp_theme_auto_updates.stdout | trim == wp_theme
+- name: Ensure auto-updates are enabled for {{ wp_theme }}
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
@@ -55,4 +25,5 @@
       - enable
       - "{{ wp_theme }}"
       - "--path={{ webserver_directory }}"
-  changed_when: true
+  register: wp_theme_autoupdate
+  changed_when: "'Success' in wp_theme_autoupdate.stdout"

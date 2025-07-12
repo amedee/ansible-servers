@@ -1,27 +1,21 @@
 ---
-- name: Check WordPress plugin {{ wp_plugin }}
+- name: Deactivate and uninstall WordPress plugin {{ wp_plugin }}
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv:
       - wp
       - plugin
-      - is-installed
+      - deactivate
       - "{{ wp_plugin }}"
+      - --uninstall
       - "--path={{ webserver_directory }}"
-  changed_when: false
-  failed_when: false
-  register: wp_plugin_is_installed
-
-- name: Uninstall WordPress plugin {{ wp_plugin }}
-  when: wp_plugin_is_installed.rc | int == 0
-  become: true
-  become_user: "{{ webserver_user }}"
-  ansible.builtin.command:
-    argv:
-      - wp
-      - plugin
-      - uninstall
-      - "{{ wp_plugin }}"
-      - "--path={{ webserver_directory }}"
-  changed_when: true
+  register: wp_plugin_remove
+  failed_when: >
+    wp_plugin_remove.rc != 0 and
+    (
+      'not found' not in wp_plugin_remove.stderr | lower and
+      'is not installed' not in wp_plugin_remove.stderr | lower and
+      'could not be found' not in wp_plugin_remove.stderr | lower
+    )
+  changed_when: "'Success: Uninstalled' in wp_plugin_deactivate.stdout"
