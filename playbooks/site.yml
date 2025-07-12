@@ -1,6 +1,12 @@
 ---
 - name: Base configuration for all hosts
   hosts: all
+
+  pre_tasks:
+    - name: Set hostname
+      ansible.builtin.hostname:
+        name: "{{ hostname }}"
+
   roles:
     - debops.debops.swapfile
     - localepurge
@@ -8,7 +14,6 @@
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
-    - hostname
     - apt_keyrings
 
     - role: merge_vars
