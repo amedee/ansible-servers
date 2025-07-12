@@ -85,7 +85,6 @@
   notify:
     - APT autoclean
     - APT autoremove
-    - Check if reboot required
 
 - name: Install APT packages
   ansible.builtin.apt:
@@ -94,7 +93,6 @@
   notify:
     - APT autoclean
     - APT autoremove
-    - Check if reboot required
 
 - name: Upgrade all packages
   ansible.builtin.apt:
@@ -102,7 +100,6 @@
   notify:
     - APT autoclean
     - APT autoremove
-    - Check if reboot required
 
 - name: Install snap packages
   community.general.snap:
