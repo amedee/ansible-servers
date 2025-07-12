@@ -1,0 +1,62 @@
+---
+- name: Ensure WordPress themes are installed
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    argv: >-
+      {{ ['wp', 'theme', 'install'] +
+          wp_themes_install +
+          ['--path=' + webserver_directory] }}
+  register: wp_theme_install
+  changed_when: "'Installing' in wp_theme_install.stdout"
+  failed_when: >
+    wp_theme_install.rc != 0 and
+    'Theme already installed' not in wp_theme_install.stdout
+
+- name: Ensure theme auto-updates are enabled for {{ item }}
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    argv:
+      - wp
+      - theme
+      - auto-updates
+      - enable
+      - "{{ item }}"
+      - "--path={{ webserver_directory }}"
+  loop: "{{ wp_themes_install }}"
+  register: wp_theme_autoupdate
+  changed_when: "'Success' in wp_theme_autoupdate.stdout"
+  failed_when: >
+    wp_theme_autoupdate.rc != 0 and
+    'already enabled' not in wp_theme_autoupdate.stderr | lower
+
+- name: Activate fallback theme {{ wp_fallback_theme }}
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    argv:
+      - wp
+      - theme
+      - activate
+      - "{{ wp_fallback_theme }}"
+      - "--path={{ webserver_directory }}"
+  register: wp_theme_activate_fallback
+  changed_when: "'Success' in wp_theme_activate_fallback.stdout"
+  failed_when: false
+
+- name: Delete WordPress themes
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    argv: >-
+      {{ ['wp', 'theme', 'delete'] +
+          wp_themes_uninstall +
+          ['--path=' + webserver_directory] }}
+  register: wp_theme_delete
+  changed_when: "'Deleted' in wp_theme_delete.stdout"
+  failed_when: >
+    wp_theme_delete.rc != 0 and
+    'not found' not in wp_theme_delete.stderr | lower and
+    'is not installed' not in wp_theme_delete.stderr | lower and
+    'could not be found' not in wp_theme_delete.stderr | lower
