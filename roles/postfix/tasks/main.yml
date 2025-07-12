@@ -46,15 +46,15 @@
 
 - name: Get current Postfix settings
   ansible.builtin.command: postconf -n
-  register: current_postfix_output
+  register: postfix_current_settings
   changed_when: false
 
 - name: Parse current Postfix settings into a dict
   ansible.builtin.set_fact:
-    current_postfix_settings: >-
+    postfix_current_settings: >-
       {{
         dict(
-          current_postfix_output.stdout_lines
+          postfix_current_settings.stdout_lines
           | map('split', ' =', 1)
           | map('map', 'trim')
         )
@@ -69,59 +69,59 @@
     {% endif %}
   loop: "{{ postfix_settings | dict2items }}"
   when: >
-    (item.value is none and item.key in current_postfix_settings)
+    (item.value is none and item.key in postfix_current_settings)
     or
     (item.value is not none and
-     (item.key not in current_postfix_settings or
-      current_postfix_settings[item.key] != (item.value | string)))
+     (item.key not in postfix_current_settings or
+      postfix_current_settings[item.key] != (item.value | string)))
   changed_when: true
   check_mode: false
   notify: Restart Postfix
 
 - name: Read current smtpd_recipient_restrictions from Postfix
   ansible.builtin.command: postconf -h smtpd_recipient_restrictions
-  register: smtpd_restrictions
+  register: postfix_smtpd_restrictions
   changed_when: false
   failed_when: false
   check_mode: false
 
 - name: Define the check_line value
   ansible.builtin.set_fact:
-    check_line: "check_recipient_access pcre:/etc/postfix/checks/invalid_recipients.pcre"
+    postfix_check_line: "check_recipient_access pcre:/etc/postfix/checks/invalid_recipients.pcre"
 
 - name: Parse current smtpd_recipient_restrictions into list
   ansible.builtin.set_fact:
-    old_list: "{{ smtpd_restrictions.stdout.split(',') | map('trim') | list }}"
+    postfix_old_list: "{{ postfix_smtpd_restrictions.stdout.split(',') | map('trim') | list }}"
   when:
-    - smtpd_restrictions.stdout is defined
+    - postfix_smtpd_restrictions.stdout is defined
 
 - name: Prepare new smtpd_recipient_restrictions list
   ansible.builtin.set_fact:
-    new_list: >-
-      {%- if 'permit_mynetworks' in old_list -%}
+    postfix_new_list: >-
+      {%- if 'permit_mynetworks' in postfix_old_list -%}
       {{
-        old_list[: old_list.index('permit_mynetworks') + 1]
-        + [check_line]
-        + old_list[old_list.index('permit_mynetworks') + 1 :]
+        postfix_old_list[: postfix_old_list.index('permit_mynetworks') + 1]
+        + [postfix_check_line]
+        + postfix_old_list[postfix_old_list.index('permit_mynetworks') + 1 :]
       }}
       {%- else -%}
-      {{ old_list + [check_line] }}
+      {{ postfix_old_list + [postfix_check_line] }}
       {%- endif -%}
   when:
     - not ansible_check_mode
-    - old_list is defined
-    - smtpd_restrictions.stdout is defined
-    - smtpd_restrictions.stdout | length > 0
-    - check_line not in smtpd_restrictions.stdout
+    - postfix_old_list is defined
+    - postfix_smtpd_restrictions.stdout is defined
+    - postfix_smtpd_restrictions.stdout | length > 0
+    - postfix_check_line not in postfix_smtpd_restrictions.stdout
 
 - name: Update smtpd_recipient_restrictions using postconf
   ansible.builtin.command: >
-    postconf -e smtpd_recipient_restrictions="{{ new_list | join(', ') }}"
+    postconf -e smtpd_recipient_restrictions="{{ postfix_new_list | join(', ') }}"
   when:
     - not ansible_check_mode
-    - new_list is defined
-    - smtpd_restrictions.stdout is defined
-    - smtpd_restrictions.stdout | length > 0
-    - check_line not in smtpd_restrictions.stdout
+    - postfix_new_list is defined
+    - postfix_smtpd_restrictions.stdout is defined
+    - postfix_smtpd_restrictions.stdout | length > 0
+    - postfix_check_line not in postfix_smtpd_restrictions.stdout
   changed_when: true
   notify: Restart Postfix
