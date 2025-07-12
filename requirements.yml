@@ -2,8 +2,6 @@
 roles:
   - name: geerlingguy.munin-node
     version: 1.4.0
-  - name: rolehippie.swap
-    version: v2.0.0
 
 collections:
   - name: amazon.aws
