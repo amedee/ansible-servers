@@ -30,6 +30,14 @@ cron__jobs_extra:
         owner: root
         mode: "u=rwx,go=rx"
 
+environment__group_variables:
+  - name: NONINTERACTIVE
+    value: "1"
+  - name: PATH
+    value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/root/mailinabox/management
+  - name: PRIMARY_HOSTNAME
+    value: "{{ hostname }}"
+
 munin_node_config_extra:
   backup_size:
     user: root
