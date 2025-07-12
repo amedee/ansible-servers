@@ -23,10 +23,6 @@
     - install_software
     - debops.debops.reboot
 
-    - role: merge_vars
-      merge_vars_from_1: cron__jobs_base
-      merge_vars_from_2: cron__jobs_extra
-      merge_vars_target: cron__jobs
     - debops.debops.cron
 
     - role: merge_vars

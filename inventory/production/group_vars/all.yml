@@ -50,12 +50,11 @@ aws_secret_key: !vault |
   32623530313863363961643939323762366164313032366134393138633233613765313832613833
   6365643831303464373961386265633463613235383335383039
 
-cron__jobs_base:
+cron__jobs:
   hadori:
     name: Hardlink with hadori
     special_time: monthly
     job: /usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt
-cron__jobs_extra: {}
 
 etc_aliases__recipients:
   - root: amedee@vangasse.eu
