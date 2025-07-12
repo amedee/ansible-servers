@@ -7,4 +7,3 @@ skip-check:
 
 skip-path:
   - roles/geerlingguy.*/
-  - roles/rolehippie.*/
