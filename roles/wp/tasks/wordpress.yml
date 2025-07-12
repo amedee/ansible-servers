@@ -73,33 +73,13 @@
   changed_when: false
   failed_when: "'Status: Connected' not in wp_redis_status.stdout"
 
-- name: Install WordPress themes
+- name: Manage WordPress plugins
   ansible.builtin.include_tasks:
-    file: wordpress_themes_install.yml
-  loop: "{{ wp_themes_install }}"
-  loop_control:
-    loop_var: wp_theme
+    file: wordpress_plugins.yml
 
-- name: Install WordPress plugins
+- name: Manage WordPress themes
   ansible.builtin.include_tasks:
-    file: wordpress_plugins_install.yml
-  loop: "{{ wp_plugins_install }}"
-  loop_control:
-    loop_var: wp_plugin
-
-- name: Uninstall WordPress themes
-  ansible.builtin.include_tasks:
-    file: wordpress_themes_uninstall.yml
-  loop: "{{ wp_themes_uninstall }}"
-  loop_control:
-    loop_var: wp_theme
-
-- name: Uninstall WordPress plugins
-  ansible.builtin.include_tasks:
-    file: wordpress_plugins_uninstall.yml
-  loop: "{{ wp_plugins_uninstall }}"
-  loop_control:
-    loop_var: wp_plugin
+    file: wordpress_themes.yml
 
 - name: Create directory /tmp/wp-content
   ansible.builtin.file:
@@ -133,7 +113,6 @@
   ansible.builtin.debug:
     msg: "Skipping extract: archive file not present in check mode"
   when: ansible_check_mode and not wp_archive_stat.stat.exists
-
 - name: Extract WordPress uploads on the remote machine # noqa no-handler
   ansible.builtin.unarchive:
     remote_src: true

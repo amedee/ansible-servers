@@ -1,0 +1,46 @@
+---
+- name: Ensure WordPress plugins are installed
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    argv: >-
+      {{ ['wp', 'plugin', 'install'] +
+          wp_plugins_install +
+          ['--activate', '--path=' + webserver_directory] }}
+  when: wp_plugins_install | length > 0
+  register: wp_plugin_install
+  changed_when: "'Installing' in wp_plugin_install.stdout"
+
+- name: Ensure plugin auto-updates are enabled for {{ item }}
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    argv:
+      - wp
+      - plugin
+      - auto-updates
+      - enable
+      - "{{ item }}"
+      - "--path={{ webserver_directory }}"
+  loop: "{{ wp_plugins_install }}"
+  register: wp_plugin_autoupdate
+  changed_when: "'Success' in wp_plugin_autoupdate.stdout"
+  failed_when: >
+    wp_plugin_autoupdate.rc != 0 and
+    'already enabled' not in wp_plugin_autoupdate.stderr | lower
+
+- name: Deactivate and uninstall WordPress plugins
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    argv: >-
+      {{ ['wp', 'plugin', 'deactivate'] +
+          wp_plugins_uninstall +
+          ['--uninstall', '--path=' + webserver_directory] }}
+  register: wp_plugin_deactivate
+  changed_when: "'Success: Uninstalled' in wp_plugin_deactivate.stdout"
+  failed_when: >
+    wp_plugin_deactivate.rc != 0 and
+    'not found' not in wp_plugin_deactivate.stderr | lower and
+    'is not installed' not in wp_plugin_deactivate.stderr | lower and
+    'could not be found' not in wp_plugin_deactivate.stderr | lower
