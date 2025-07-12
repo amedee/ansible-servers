@@ -52,7 +52,7 @@
   roles:
     - mailinabox_dns
     - mailinabox_duplicity
-    - mailinabox_profile
+    - debops.debops.environment
     - munin
     - ufw
 
