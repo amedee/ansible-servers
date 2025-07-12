@@ -7,30 +7,6 @@
     mode: u=rw,go=r
   loop: "{{ query('fileglob', playbook_dir + '/files/apt_prefs/*.pref') }}"
 
-- name: Ensure keyrings directory exists
-  ansible.builtin.file:
-    path: /etc/apt/keyrings
-    state: directory
-    owner: root
-    mode: u=rwx,go=rx
-
-- name: Import Ondřej Surý GPG keys using isolated GNUPGHOME
-  ansible.builtin.shell: |
-    set -euo pipefail
-    export GNUPGHOME="$(mktemp -d)"
-    trap 'rm -rf "$GNUPGHOME"' EXIT
-
-    gpg --keyserver keyserver.ubuntu.com \
-        --recv-keys 71DAEAAB4AD4CAB6 4F4EA0AAE5267A6C
-
-    gpg --export 71DAEAAB4AD4CAB6 4F4EA0AAE5267A6C \
-        > /etc/apt/keyrings/ondrej.gpg
-  args:
-    creates: /etc/apt/keyrings/ondrej.gpg
-    executable: /bin/bash
-  register: install_software_gpg_import
-  failed_when: install_software_gpg_import.rc != 0
-
 - name: Configure deb822-format APT repositories
   ansible.builtin.deb822_repository:
     name: "{{ item.name }}"

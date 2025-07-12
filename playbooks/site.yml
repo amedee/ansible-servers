@@ -9,6 +9,7 @@
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
     - hostname
+    - apt_keyrings
 
     - role: merge_vars
       merge_vars_from_1: apt_packages_base
