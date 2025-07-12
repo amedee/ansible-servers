@@ -56,12 +56,12 @@
 
 - name: Get current Postfix default_transport
   ansible.builtin.command: postconf -h default_transport
-  register: postfix_default_transport
+  register: postfix_sendgrid_default_transport
   changed_when: false
 
 - name: Set Postfix default_transport to sendgrid
   ansible.builtin.command: postconf -e "default_transport = sendgrid"
-  when: postfix_default_transport.stdout != "sendgrid"
+  when: postfix_sendgrid_default_transport.stdout != "sendgrid"
   changed_when: true
   notify: Restart Postfix
 

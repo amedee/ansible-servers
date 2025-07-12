@@ -10,11 +10,11 @@
 - name: Check if reboot required
   ansible.builtin.stat:
     path: /var/run/reboot-required
-  register: reboot_required_file
+  register: install_software_reboot
   changed_when: true
   notify: Reboot
 
 - name: Reboot
-  when: reboot_required_file.stat.exists
+  when: install_software_reboot.stat.exists
   ansible.builtin.reboot:
     reboot_timeout: 3600

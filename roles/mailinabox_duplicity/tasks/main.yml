@@ -9,7 +9,7 @@
 - name: Check if backup.py exists
   ansible.builtin.stat:
     path: /root/mailinabox/management/backup.py
-  register: backup_py
+  register: mailinabox_duplicity_backup_py
 
 - name: Configure duplicity
   ansible.builtin.template:

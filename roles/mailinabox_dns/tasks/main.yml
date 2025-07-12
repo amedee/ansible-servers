@@ -9,7 +9,7 @@
 - name: Check if dns_update exists
   ansible.builtin.stat:
     path: /root/mailinabox/tools/dns_update
-  register: dns_update
+  register: mailinabox_dns_update
 
 - name: Copy custom DNS settings
   ansible.builtin.copy:
