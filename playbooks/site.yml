@@ -2,7 +2,7 @@
 - name: Base configuration for all hosts
   hosts: all
   roles:
-    - rolehippie.swap
+    - debops.debops.swapfile
     - localepurge
     - debops.debops.etckeeper
     - debops.debops.etc_aliases
