@@ -1,16 +1,16 @@
 ---
-- name: "Create database '{{ blog_wp_db_name }}'"
+- name: "Create database '{{ wp_db_name }}'"
   community.mysql.mysql_db:
-    name: "{{ blog_wp_db_name }}"
+    name: "{{ wp_db_name }}"
     state: present
     login_user: root
     login_unix_socket: /run/mysqld/mysqld.sock
 
-- name: "Create database user '{{ blog_wp_db_user }}'"
+- name: "Create database user '{{ wp_db_user }}'"
   community.mysql.mysql_user:
-    name: "{{ blog_wp_db_user }}"
-    password: "{{ blog_wp_db_password }}"
-    priv: "{{ blog_wp_db_name }}.*:ALL"
+    name: "{{ wp_db_user }}"
+    password: "{{ wp_db_password }}"
+    priv: "{{ wp_db_name }}.*:ALL"
     column_case_sensitive: true
     state: present
     login_user: root
@@ -18,8 +18,8 @@
 
 - name: Check if WordPress tables exist
   community.mysql.mysql_query:
-    login_db: "{{ blog_wp_db_name }}"
-    query: SHOW TABLES FROM {{ blog_wp_db_name }} LIKE 'wp_posts';
+    login_db: "{{ wp_db_name }}"
+    query: SHOW TABLES FROM {{ wp_db_name }} LIKE 'wp_posts';
     login_unix_socket: /run/mysqld/mysqld.sock
   register: wp_posts
   changed_when: false
@@ -29,8 +29,8 @@
     - (wp_posts.get('rowcount', [0]) | first | int) == 0
   amazon.aws.s3_object:
     bucket: backups-by-amedee
-    object: "{{ blog_wp_db_name }}.sql.xz"
-    dest: "/tmp/{{ blog_wp_db_name }}.sql.xz"
+    object: "{{ wp_db_name }}.sql.xz"
+    dest: "/tmp/{{ wp_db_name }}.sql.xz"
     mode: get
     overwrite: different
     access_key: "{{ aws_access_key }}"
@@ -42,6 +42,6 @@
     - not ansible_check_mode
     - (wp_posts.get('rowcount', [0]) | first | int) == 0
   community.mysql.mysql_db:
-    name: "{{ blog_wp_db_name }}"
+    name: "{{ wp_db_name }}"
     state: import
-    target: "/tmp/{{ blog_wp_db_name }}.sql.xz"
+    target: "/tmp/{{ wp_db_name }}.sql.xz"
