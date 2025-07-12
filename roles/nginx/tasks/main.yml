@@ -29,6 +29,3 @@
     owner: "{{ webserver_user }}"
     group: "{{ webserver_user }}"
     mode: u=rwx,go=rx
-
-- name: Install and configure Letsencrypt
-  ansible.builtin.import_tasks: letsencrypt.yml

@@ -2,10 +2,10 @@
 - name: Check if Certbot is already configured
   ansible.builtin.stat:
     path: /etc/letsencrypt/renewal/amedee.be.conf
-  register: letsencrypt
+  register: letsencrypt_config
 
 - name: Get letsencrypt backup from S3
-  when: not (letsencrypt.stat.exists and letsencrypt.stat.isreg)
+  when: not (letsencrypt_config.stat.exists and letsencrypt_config.stat.isreg)
   amazon.aws.s3_object:
     bucket: backups-by-amedee
     object: letsencrypt.tar.xz
@@ -17,8 +17,7 @@
     region: us-east-1
 
 - name: Extract letsencrypt backup on the remote machine
-  when: not (letsencrypt.stat.exists and letsencrypt.stat.isreg)
-  become: true
+  when: not (letsencrypt_config.stat.exists and letsencrypt_config.stat.isreg)
   ansible.builtin.unarchive:
     remote_src: true
     src: /tmp/letsencrypt.tar.xz
