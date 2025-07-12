@@ -39,10 +39,10 @@
       - wp
       - config
       - create
-      - "--dbname={{ blog_wp_db_name }}"
-      - "--dbuser={{ blog_wp_db_user }}"
-      - "--dbpass={{ blog_wp_db_password }}"
-      - "--dbhost={{ blog_wp_db_host }}"
+      - "--dbname={{ wp_db_name }}"
+      - "--dbuser={{ wp_db_user }}"
+      - "--dbpass={{ wp_db_password }}"
+      - "--dbhost={{ wp_db_host }}"
       - "--path={{ webserver_directory }}"
   register: wp_core_download
   changed_when: true
@@ -50,28 +50,28 @@
 - name: Install WordPress themes
   ansible.builtin.include_tasks:
     file: wordpress_themes_install.yml
-  loop: "{{ blog_wp_themes_install }}"
+  loop: "{{ wp_themes_install }}"
   loop_control:
     loop_var: wp_theme
 
 - name: Install WordPress plugins
   ansible.builtin.include_tasks:
     file: wordpress_plugins_install.yml
-  loop: "{{ blog_wp_plugins_install }}"
+  loop: "{{ wp_plugins_install }}"
   loop_control:
     loop_var: wp_plugin
 
 - name: Uninstall WordPress themes
   ansible.builtin.include_tasks:
     file: wordpress_themes_uninstall.yml
-  loop: "{{ blog_wp_themes_uninstall }}"
+  loop: "{{ wp_themes_uninstall }}"
   loop_control:
     loop_var: wp_theme
 
 - name: Uninstall WordPress plugins
   ansible.builtin.include_tasks:
     file: wordpress_plugins_uninstall.yml
-  loop: "{{ blog_wp_plugins_uninstall }}"
+  loop: "{{ wp_plugins_uninstall }}"
   loop_control:
     loop_var: wp_plugin
 
@@ -91,22 +91,22 @@
     access_key: "{{ aws_access_key }}"
     secret_key: "{{ aws_secret_key }}"
     region: us-east-1
-  register: s3_download
+  register: wp_s3_download
 
 - name: Stat archive file
   ansible.builtin.stat:
     path: /tmp/wp-content/uploads.tar.xz
-  register: archive_stat
+  register: wp_archive_stat
 
 - name: Fail if archive is missing in normal mode
   ansible.builtin.fail:
     msg: "uploads.tar.xz is missing — aborting deployment"
-  when: not ansible_check_mode and not archive_stat.stat.exists
+  when: not ansible_check_mode and not wp_archive_stat.stat.exists
 
 - name: Skip unarchive in check mode if archive is missing
   ansible.builtin.debug:
     msg: "Skipping extract: archive file not present in check mode"
-  when: ansible_check_mode and not archive_stat.stat.exists
+  when: ansible_check_mode and not wp_archive_stat.stat.exists
 
 - name: Extract WordPress uploads on the remote machine # noqa no-handler
   ansible.builtin.unarchive:
@@ -115,12 +115,12 @@
     dest: "{{ webserver_directory }}/wp-content/"
     owner: "{{ webserver_user }}"
   when: >
-    (not ansible_check_mode and s3_download.changed) or
-    (ansible_check_mode and archive_stat.stat.exists)
+    (not ansible_check_mode and wp_s3_download.changed) or
+    (ansible_check_mode and wp_archive_stat.stat.exists)
 
 - name: Configure Redis
   ansible.builtin.include_tasks:
     file: wordpress_config_redis.yml
-  loop: "{{ blog_wp_redis }}"
+  loop: "{{ wp_redis }}"
   loop_control:
     loop_var: wp_config_redis

@@ -61,4 +61,4 @@
       keyring__dependent_gpg_keys:
         - id: 63AF7AA15067C05616FDDD88A3A2E8F226F0BC06
     - debops.debops.wpcli
-    - blog
+    - wp

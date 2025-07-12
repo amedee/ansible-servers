@@ -1,4 +1,4 @@
-# blog
+# wp
 
 Role to configure my WordPress blog.
 
