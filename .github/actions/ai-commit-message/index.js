@@ -1,12 +1,14 @@
 import * as core from "@actions/core";
 import fetch from "node-fetch";
 
+const MODEL_ID = "mistralai/devstral-small-2505:free";
+
 /**
  * Generate the prompt message body for OpenRouter API.
  */
 function buildRequestBody(promptMessage, diff) {
   return {
-    model: "mistralai/devstral-small:free",
+    model: MODEL_ID,
     messages: [
       {
         role: "user",
