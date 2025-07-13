@@ -76,3 +76,9 @@ webserver_default_indexfiles:
   - index.html
   - index.nginx-debian.html
 webserver_user: www-data
+
+wp_constants:
+  - name: WP_CACHE_KEY_SALT
+    value: amedee.be
+  - name: WP_REDIS_PREFIX
+    value: amedee.be_

@@ -1,5 +1,5 @@
 ---
-- name: Get Redis value for {{ wp_config_redis.name }}
+- name: "Get current value of {{ item.name }}"
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
@@ -7,14 +7,13 @@
       - wp
       - config
       - get
-      - "{{ wp_config_redis.name }}"
+      - "{{ item.name }}"
       - "--path={{ webserver_directory }}"
+  register: wp_config_get
   changed_when: false
   failed_when: false
-  register: wp_config
 
-- name: Set Redis value for {{ wp_config_redis.name }}
-  when: wp_config.stdout != wp_config_redis.value
+- name: "Set constant {{ item.name }}"
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
@@ -22,8 +21,10 @@
       - wp
       - config
       - set
-      - "{{ wp_config_redis.name }}"
-      - "{{ wp_config_redis.value }}"
+      - "{{ item.name }}"
+      - "{{ item.value }}"
       - "--path={{ webserver_directory }}"
+  when: wp_config_get.stdout != item.value
+  register: wp_config_set
   changed_when: true
   failed_when: false
