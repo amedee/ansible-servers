@@ -47,6 +47,32 @@
   register: wp_core_download
   changed_when: true
 
+- name: Ensure constants in wp-config.php
+  ansible.builtin.include_tasks:
+    file: wordpress_config.yml
+  loop: "{{ wp_constants }}"
+
+- name: Remove WP_REDIS_PASSWORD from wp-config.php
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.lineinfile:
+    path: "{{ webserver_directory }}/wp-config.php"
+    regexp: "^[ \\t]*define\\(\\s*['\"]WP_REDIS_PASSWORD['\"],.*\\);"
+    state: absent
+
+- name: Check if WordPress is connected to Redis
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    argv:
+      - wp
+      - redis
+      - status
+      - "--path={{ webserver_directory }}"
+  register: wp_redis_status
+  changed_when: false
+  failed_when: "'Status: Connected' not in wp_redis_status.stdout"
+
 - name: Install WordPress themes
   ansible.builtin.include_tasks:
     file: wordpress_themes_install.yml
@@ -117,10 +143,3 @@
   when: >
     (not ansible_check_mode and wp_s3_download.changed) or
     (ansible_check_mode and wp_archive_stat.stat.exists)
-
-- name: Configure Redis
-  ansible.builtin.include_tasks:
-    file: wordpress_config_redis.yml
-  loop: "{{ wp_redis }}"
-  loop_control:
-    loop_var: wp_config_redis

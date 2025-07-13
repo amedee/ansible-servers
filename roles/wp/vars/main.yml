@@ -37,11 +37,3 @@ wp_themes_uninstall:
   - twentytwentyfour
 wp_plugins_uninstall:
   - hello
-
-wp_redis:
-  - name: WP_CACHE_KEY_SALT
-    value: amedee.be
-  - name: WP_REDIS_PASSWORD
-    value: "{{ redis_password }}"
-  - name: WP_REDIS_PREFIX
-    value: amedee.be_
