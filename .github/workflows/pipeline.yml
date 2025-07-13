@@ -34,10 +34,6 @@ jobs:
     name: 🚀 Ansible Cache
     uses: ./.github/workflows/ansible-cache.yml
 
-  codacy:
-    name: 🛠️ Code Quality — Codacy Scan
-    uses: ./.github/workflows/code-quality-codacy.yml
-
   super-linter:
     name: 🛠️ Code Quality — Super-Linter
     uses: ./.github/workflows/code-quality-super-linter.yml
@@ -70,7 +66,6 @@ jobs:
     uses: ./.github/workflows/ansible-run.yml
     needs:
       - ansible-cache
-      - codacy
       - dry-run
       - super-linter
       - ansible-lint
