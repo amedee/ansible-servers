@@ -27,8 +27,8 @@ Role to configure Redis.
 redis_settings:
   - regexp: '^(# )?supervised '
     line: supervised systemd
-  - regexp: ^(# )?requirepass
-    line: requirepass {{ redis_password }}
+  - regexp: ^requirepass
+    line: '# requirepass removed for local-only access'
 ```
 
 ## Dependencies
