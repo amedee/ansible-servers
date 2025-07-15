@@ -18,3 +18,23 @@
     owner: root
     mode: u=rw,go=r
   notify: Perform backup
+
+- name: Create apt-backup-duplicity.sh script
+  ansible.builtin.copy:
+    dest: /usr/local/bin/apt-backup-duplicity.sh
+    mode: '0755'
+    content: |
+      #!/bin/bash
+      set -x
+
+      mkdir -p /var/backups/debs/duplicity
+
+      cp -vn /var/cache/apt/archives/duplicity_*.deb /var/backups/debs/duplicity/ 2>/dev/null || true
+      cp -vn /root/duplicity_*.deb /var/backups/debs/duplicity/ 2>/dev/null || true
+
+- name: Create APT Post-Invoke hook to run backup script
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/99backup-duplicity-debs
+    mode: '0644'
+    content: |
+      DPkg::Post-Invoke { "/usr/local/bin/apt-backup-duplicity.sh"; };
