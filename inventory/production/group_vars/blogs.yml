@@ -59,6 +59,28 @@ deb822_repositories:
         - multiverse
       signed_by: "/usr/share/keyrings/ubuntu-archive-keyring.gpg"
 
+logrotate__config:
+  - filename: nginx
+    divert: true
+    logs:
+      - "/var/log/*.log"
+    options: |
+      monthly
+      rotate 24
+      missingok
+      notifempty
+      compress
+      delaycompress
+      extension log
+      create 0640 www-data adm
+      sharedscripts
+    prerotate: |
+      if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+              run-parts /etc/logrotate.d/httpd-prerotate; \
+      fi \
+    postrotate: |
+      invoke-rc.d nginx rotate >/dev/null 2>&1
+
 redis_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   32336333613162383136373737333462313834396236326538663365303935373138353166623632
