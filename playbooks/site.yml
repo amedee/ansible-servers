@@ -8,7 +8,7 @@
         name: "{{ hostname }}"
 
   roles:
-    - debops.debops.swapfile
+    - swapfile
     - localepurge
     - debops.debops.etckeeper
     - debops.debops.etc_aliases
