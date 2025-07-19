@@ -1,73 +1,97 @@
 #!/bin/bash
-
-# Enable strict error handling
 set -euo pipefail
 
-# Define log file
 LOGFILE="/var/log/resize_disk.log"
-
-# Log output to both console and file
 exec > >(tee -a "$LOGFILE") 2>&1
 
-echo "[$(date)] Starting disk resize process..."
+log() {
+	echo "[$(date)] $*"
+}
 
-# Check if required tools are available
-REQUIRED_TOOLS=("parted" "pvresize" "lvresize" "lvdisplay" "grep" "awk")
+require_tools() {
+	local tools=("$@")
+	for tool in "${tools[@]}"; do
+		if ! command -v "$tool" &>/dev/null; then
+			log "ERROR: Required tool '$tool' is missing. Exiting."
+			exit 1
+		fi
+	done
+}
 
-for tool in "${REQUIRED_TOOLS[@]}"; do
-	if ! command -v "$tool" &>/dev/null; then
-		echo "[$(date)] ERROR: Required tool '$tool' is missing. Exiting."
-		exit 1
+get_partition_info() {
+	local output
+	output=$(parted --script /dev/sda unit s print || true)
+
+	local part total
+	read -r part total < <(awk '
+		/ 3 / {part = $4}
+		/^Disk \/dev\/sda:/ {total = $3}
+		END {print part, total}
+	' <<<"$output")
+
+	part="${part%s}"
+	total="${total%s}"
+	echo "$part $total"
+}
+
+resize_partition_if_needed() {
+	local part_size=$1
+	local total_size=$2
+
+	if ((part_size < total_size)); then
+		log "Resizing partition /dev/sda3..."
+		parted --fix --script /dev/sda resizepart 3 100%
+	else
+		log "Partition /dev/sda3 is already at full size. Skipping."
 	fi
-done
+}
 
-# Get partition and total disk size
-parted_output=$(parted --script /dev/sda unit s print || true)
-read -r PARTITION_SIZE TOTAL_SIZE < <(echo "$parted_output" | awk '
-    / 3 / {part = $4}          # Extracts the size of partition 3
-    /^Disk \/dev\/sda:/ {total = $3}  # Extracts the total disk size
-    END {print part, total}
-')
+resize_pv_if_needed() {
+	if ! pvresize --test /dev/sda3 2>&1 | grep -q "successfully resized"; then
+		log "Resizing physical volume..."
+		pvresize /dev/sda3
+	else
+		log "Physical volume is already resized. Skipping."
+	fi
+}
 
-# Remove the 's' suffix and compare the numerical values
-PARTITION_SIZE_NUM="${PARTITION_SIZE%s}"
-TOTAL_SIZE_NUM="${TOTAL_SIZE%s}"
+resize_lv_if_needed() {
+	local lv_path="/dev/ubuntu-vg/ubuntu-lv"
+	local vg_path="/dev/ubuntu-vg"
 
-# Resize partition if needed
-if [[ "$PARTITION_SIZE_NUM" -lt "$TOTAL_SIZE_NUM" ]]; then
-	echo "[$(date)] Resizing partition /dev/sda3..."
-	parted --fix --script /dev/sda resizepart 3 100%
-else
-	echo "[$(date)] Partition /dev/sda3 is already at full size. Skipping."
-fi
+	local lv_size
+	lv_size=$(lvdisplay --units M "$lv_path" | awk '/LV Size/ {gsub("MiB","",$3); print $3}')
 
-# Resize the physical volume if needed
-if [[ "$(pvresize --test /dev/sda3 2>&1)" != *"successfully resized"* ]]; then
-	echo "[$(date)] Resizing physical volume..."
-	pvresize /dev/sda3
-else
-	echo "[$(date)] Physical volume is already resized. Skipping."
-fi
+	local pe_size
+	pe_size=$(vgdisplay --units M "$vg_path" | awk '/PE Size/ {gsub("MiB","",$3); print $3}')
 
-# Get the LV size in MiB
-LV_SIZE=$(lvdisplay --units M /dev/ubuntu-vg/ubuntu-lv | grep "LV Size" | awk '{print $3}' | tr -d 'MiB')
+	local current_le
+	current_le=$(lvdisplay "$lv_path" | awk '/Current LE/ {print $3}')
 
-# Get the PE size in MiB
-PE_SIZE=$(vgdisplay --units M /dev/ubuntu-vg | grep "PE Size" | awk '{print $3}' | tr -d 'MiB')
+	local used_space
+	used_space=$(echo "$current_le * $pe_size" | bc)
 
-# Get the Current LE
-CURRENT_LE=$(lvdisplay /dev/ubuntu-vg/ubuntu-lv | grep "Current LE" | awk '{print $3}')
+	local free_space
+	free_space=$(echo "$lv_size - $used_space" | bc)
 
-# Calculate the used space (Current LE * PE Size)
-USED_SPACE=$(echo "$CURRENT_LE * $PE_SIZE" | bc)
+	if (($(echo "$free_space > 0" | bc -l))); then
+		log "Resizing logical volume..."
+		lvresize -rl +100%FREE "$lv_path"
+	else
+		log "Logical volume is already fully extended. Skipping."
+	fi
+}
 
-# Calculate free space using bc for floating-point arithmetic
-FREE_SPACE=$(echo "$LV_SIZE - $USED_SPACE" | bc)
+main() {
+	log "Starting disk resize process..."
+	require_tools parted pvresize lvresize lvdisplay vgdisplay grep awk bc tee
 
-# Check if there is free space (non-zero)
-if (($(echo "$FREE_SPACE > 0" | bc -l))); then
-	echo "[$(date)] Resizing logical volume..."
-	lvresize -rl +100%FREE /dev/ubuntu-vg/ubuntu-lv
-else
-	echo "[$(date)] Logical volume is already fully extended. Skipping."
-fi
+	local part_size total_size
+	read -r part_size total_size < <(get_partition_info)
+
+	resize_partition_if_needed "$part_size" "$total_size"
+	resize_pv_if_needed
+	resize_lv_if_needed
+}
+
+main "$@"
