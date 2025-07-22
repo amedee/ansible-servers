@@ -55,3 +55,14 @@ munin_node_plugins_extra:
     plugin: mailbox_messages.py
   - name: mailbox_vsize
     plugin: mailbox_vsize.py
+
+postfix_invalid_recipients:
+  - amedee-android@amedee.be
+  - amedee-bitly@amedee.be
+  - amedee-ff@amedee.be
+  - amedee-lastfm@amedee.be
+  - amedee-ma3d@amedee.be
+  - amedee-passion@amedee.be
+  - amedee-twunch@vangasse.eu
+  - amedee-zoosk@amedee.be
+  - amedee.be@amedee.be
