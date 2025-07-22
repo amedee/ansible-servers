@@ -132,13 +132,7 @@ munin_node_plugins_extra: []
 
 mydomains: []
 
-postfix_invalid_recipients:
-  - amedee-android@amedee.be
-  - amedee-bitly@amedee.be
-  - amedee-ff@amedee.be
-  - amedee-lastfm@amedee.be
-  - amedee-twunch@vangasse.eu
-  - amedee-zoosk@amedee.be
+postfix_invalid_recipients: []
 
 sendgrid_api_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
