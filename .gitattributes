@@ -13,8 +13,9 @@
 *.md       text diff=markdown linguist-detectable=true
 
 # Other code and config files
-*.yaml     text
 *.js       text
+*.sh       text
+*.yaml     text
 .gitownrc  text
 
 #
