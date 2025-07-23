@@ -26,6 +26,7 @@ apt_packages_base:
 apt_packages_extra: []
 
 apt_packages_uninstall:
+  - apache2-bin
   - apport
   - mecab-utils
 
