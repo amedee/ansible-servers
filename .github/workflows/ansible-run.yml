@@ -2,6 +2,12 @@
 name: 🚀 Ansible Run
 
 on: # yamllint disable-line rule:truthy
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+      - reopened
+      - synchronize
   workflow_call:
     inputs:
       check-mode:
@@ -32,7 +38,7 @@ jobs:
     concurrency:
       group: ${{ format(
         'ansible-run-{0}{1}-{2}-{3}',
-        inputs.check-mode && 'check-' || '',
+        github.event_name == 'pull_request' && 'check-' || (inputs.check-mode && 'check-' || ''),
         matrix.host,
         github.workflow,
         github.ref) }}
@@ -64,7 +70,7 @@ jobs:
           options: |
             --inventory inventory/production
             --limit ${{ matrix.host }}
-            ${{ inputs.check-mode && '--check' || '' }}
+            ${{ github.event_name == 'pull_request' && '--check' || (inputs.check-mode && '--check' || '') }}
             -vv
 
       - name: Archive Ansible log
@@ -73,7 +79,7 @@ jobs:
         with:
           name: ${{ format(
             'ansible-{0}{1}.log',
-            inputs.check-mode && 'check-' || '',
+            github.event_name == 'pull_request' && 'check-' || (inputs.check-mode && 'check-' || ''),
             matrix.host) }}
           path: ~/.ansible/ansible.log
           compression-level: 9

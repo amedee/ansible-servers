@@ -2,6 +2,12 @@
 name: 🛠️ Code Quality — Codacy Scan
 
 on: # yamllint disable-line rule:truthy
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+      - reopened
+      - synchronize
   push:
     branches:
       - main
@@ -10,7 +16,10 @@ on: # yamllint disable-line rule:truthy
   workflow_dispatch:
 
 concurrency:
-  group: code-quality-codacy-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ format(
+    'code-quality-codacy-{0}-{1}',
+    github.workflow,
+    github.event_name == 'pull_request' && github.head_ref || github.ref) }}
   cancel-in-progress: true
 
 permissions:
