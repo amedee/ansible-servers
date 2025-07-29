@@ -29,17 +29,19 @@ jobs:
         host:
           - amedee.be
           - box.vangasse.eu
+
     concurrency:
       group: ${{ format(
-        'ansible-run-{0}{1}-{2}-{3}',
-        inputs.check-mode && 'check-' || '',
+        'ansible-run-{0}-{1}-{2}',
+        (inputs.check-mode && 'check-' || ''),
         matrix.host,
-        github.workflow,
         github.ref) }}
       cancel-in-progress: true
+
     env:
       ANSIBLE_CONFIG: ansible.cfg
       ANSIBLE_STDOUT_CALLBACK: yaml
+
     steps:
       - name: Collect Workflow Telemetry
         # yamllint disable-line rule:line-length

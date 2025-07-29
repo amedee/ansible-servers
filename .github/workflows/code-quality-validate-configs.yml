@@ -2,11 +2,20 @@
 name: 🛠️ Code Quality — Validate Configs
 
 on: # yamllint disable-line rule:truthy
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+      - reopened
+      - synchronize
   workflow_call:
   workflow_dispatch:
 
 concurrency:
-  group: code-quality-validate-configs-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ format(
+    'code-quality-validate-configs-{0}-{1}',
+    github.workflow,
+    github.event_name == 'pull_request' && github.head_ref || github.ref) }}
   cancel-in-progress: true
 
 permissions:
