@@ -27,6 +27,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: 🔐 Verify secrets are available
+        uses: ./.github/actions/verify-secrets
+        env:
+          ANSIBLE_DEP_UPDATER_TOKEN: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          secrets: ANSIBLE_DEP_UPDATER_TOKEN,OPENROUTER_API_KEY
+
       - name: 🐍 Setup Python and Install Dependencies
         uses: ./.github/actions/setup-python-pip
         with:
