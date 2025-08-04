@@ -24,8 +24,29 @@ permissions:
   id-token: write
 
 jobs:
+  verify-secrets:
+    name: 🔐 Verify AWS Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout minimal repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            .github/actions/verify-secrets
+
+      - name: 🔐 Verify secrets are available
+        uses: ./.github/actions/verify-secrets
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        with:
+          secrets: AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY
+
   generate-gource:
     name: Generate Gource video and thumbnail
+    needs:
+      - verify-secrets
     runs-on: ubuntu-latest
     outputs:
       run_upload: ${{ steps.gource-check.outputs.run_job }}
@@ -106,7 +127,9 @@ jobs:
   upload-artifacts:
     name: Upload artifacts to S3
     if: needs.generate-gource.outputs.run_upload == 'true'
-    needs: generate-gource
+    needs:
+      - verify-secrets
+      - generate-gource
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -152,6 +175,7 @@ jobs:
   generate-summary:
     name: Gource video upload
     needs:
+      - verify-secrets
       - generate-gource
       - upload-artifacts
     runs-on: ubuntu-latest
@@ -177,7 +201,7 @@ jobs:
         run: |
           VIDEO_URL="https://$BUCKET.s3.$AWS_REGION.amazonaws.com/gource-${{ github.sha }}.mp4"
           THUMB_URL="https://$BUCKET.s3.$AWS_REGION.amazonaws.com/gource-${{ github.sha }}.gif"
-          FILE_SIZE=$(du -h "./gource/gource.mp4" | cut -f1)
+          FILE_SIZE=$(stat --format="%s" "./gource/gource.mp4")
           COMMIT_MSG=$(git log -1 --pretty=%s)
           COMMIT_DATE=$(git log -1 --format=%cd --date=short)
 
@@ -194,4 +218,4 @@ jobs:
           echo "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
 
           gh api repos/${{ github.repository }}/commits/${{ github.sha }}/comments \
-            --field body="$SUMMARY"
+            --raw-field body="$SUMMARY"

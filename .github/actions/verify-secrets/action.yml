@@ -1,0 +1,16 @@
+---
+name: 🔐 Verify Required Secrets
+description: Check that all required secrets are available and print which ones are missing
+
+inputs:
+  secrets:
+    description: Comma-separated list of required secrets
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run secret check
+      shell: bash
+      run: |
+        $GITHUB_ACTION_PATH/entrypoint.sh "${{ inputs.secrets }}"
