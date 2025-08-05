@@ -57,16 +57,22 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github_token }}
       run: |
-        if gh pr view "${{ inputs.branch }}" --json number &>/dev/null; then
+        REPO="${GITHUB_REPOSITORY}"
+        BRANCH="${{ inputs.branch }}"
+
+        if gh pr view --repo "$REPO" --head "$BRANCH" --json number &>/dev/null; then
           echo "🔄 PR already exists, updating..."
-          gh pr edit "${{ inputs.branch }}" \
+          PR_NUMBER=$(gh pr view --repo "$REPO" --head "$BRANCH" --json number -q .number)
+          gh pr edit "$PR_NUMBER" \
+            --repo "$REPO" \
             --title "${{ inputs.pr_title }}" \
             --body "${{ inputs.pr_body }}"
         else
           echo "🆕 Creating new PR..."
           gh pr create \
+            --repo "$REPO" \
             --base main \
-            --head "${{ inputs.branch }}" \
+            --head "$BRANCH" \
             --title "${{ inputs.pr_title }}" \
             --body "${{ inputs.pr_body }}"
         fi
