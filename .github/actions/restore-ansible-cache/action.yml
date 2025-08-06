@@ -12,7 +12,18 @@ runs:
           .ansible/
           roles/
         key: ansible-deps-${{ hashFiles('requirements.yml') }}
-        fail-on-cache-miss: true
+
+    - name: Pre-install Ansible Galaxy roles (with retry)
+      shell: bash
+      run: |
+        for i in {1..5}; do
+          if ansible-galaxy install -vv -r requirements.yml; then
+            break
+          else
+            echo "Installation failed, retry in $((i * 10)) seconds…" >&2
+            sleep $((i * 10))
+          fi
+        done
 
     - name: Copy Ansible collections to proper directory
       shell: bash
