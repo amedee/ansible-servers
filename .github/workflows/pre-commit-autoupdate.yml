@@ -1,0 +1,93 @@
+---
+name: 🤖 Pre-commit autoupdate
+
+on: # yamllint disable-line rule:truthy
+  schedule:
+    - cron: '0 3 * * 1'  # Every Monday at 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  autoupdate:
+    name: ⏫ Pre-commit autoupdate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⏬ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 💾 Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+
+      - name: 💾 Cache pre-commit environment
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            pre-commit-${{ runner.os }}-
+
+      - name: 🛠️ Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: 📦 Install pre-commit
+        run: pip install pre-commit
+
+      - name: 🧹 Run pre-commit autoupdate
+        run: pre-commit autoupdate
+
+      - name: 🔍 Extract staged diff
+        id: diff
+        uses: ./.github/actions/extract-staged-diff
+        with:
+          globs: '.pre-commit-config.yaml'
+
+      - name: 💬 Generate commit message
+        id: commit_message
+        if: steps.diff.outputs.has_diff == 'true'
+        uses: ./.github/actions/ai-commit-message
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          diff_content: ${{ steps.diff.outputs.diff_content }}
+          prompt_content: |
+            Write a concise Git commit message describing the staged changes
+            to the configuration of pre-commit hooks in .pre-commit-config.yaml.
+            Say something about the specific hooks that were updated.
+            The commit message must start with a relevant emoji on the first line,
+            which is max 72 characters and cannot end with a punctuation mark.
+            Leave a blank line after the first line.
+            Then add the rest of the commit message explaining the changes.
+            The other lines cannot be longer than 120 characters.
+            The commit message can contain Markdown formatting.
+            The tone of the commit message should be sassy and friendly.
+
+      - name: ✅ Commit changes if .pre-commit-config.yaml changed
+        if: steps.diff.outputs.has_diff == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "${{ steps.commit_message.outputs.message }}" --no-verify
+          git push --force origin HEAD:chore/pre-commit-autoupdate
+
+      - name: 🚀 Create or update PR
+        if: steps.diff.outputs.has_diff == 'true'
+        uses: ./.github/actions/create-or-update-pr
+        with:
+          branch: chore/pre-commit-autoupdate
+          commit_message: ${{ steps.commit_message.outputs.message }}
+          pr_title: "⬆️ Pre-commit autoupdate"
+          pr_body: ${{ steps.commit_message.outputs.message }}
+          github_token: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
+          git_user_name: "github-actions[bot]"
+          git_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
