@@ -47,13 +47,6 @@ jobs:
           prompt_content: |
             Write a concise Git commit message describing the staged updates
             to Ansible roles and collections in requirements.yml.
-            The commit message must start with a relevant emoji on the first line,
-            which is max 72 characters and cannot end with a punctuation mark.
-            Leave a blank line after the first line.
-            Then add the rest of the commit message explaining the changes.
-            The other lines cannot be longer than 120 characters.
-            The commit message can contain Markdown formatting.
-            The tone of the commit message should be sassy and friendly.
 
       - name: 🔁 Commit, push, and PR
         uses: ./.github/actions/create-or-update-pr

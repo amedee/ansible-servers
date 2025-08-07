@@ -64,13 +64,6 @@ jobs:
             Write a concise Git commit message describing the staged changes
             to the configuration of pre-commit hooks in .pre-commit-config.yaml.
             Say something about the specific hooks that were updated.
-            The commit message must start with a relevant emoji on the first line,
-            which is max 72 characters and cannot end with a punctuation mark.
-            Leave a blank line after the first line.
-            Then add the rest of the commit message explaining the changes.
-            The other lines cannot be longer than 120 characters.
-            The commit message can contain Markdown formatting.
-            The tone of the commit message should be sassy and friendly.
 
       - name: ✅ Commit changes if .pre-commit-config.yaml changed
         if: steps.diff.outputs.has_diff == 'true'
