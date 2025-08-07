@@ -42,18 +42,21 @@ runs:
         git config user.email "${{ inputs.git_user_email }}"
         git checkout -B "${{ inputs.branch }}"
 
-        git commit -am "${{ inputs.commit_message }}" || {
-          echo "Nothing to commit."
+        if git diff --cached --quiet; then
+          echo "Nothing staged to commit."
           echo "pushed=false" >> "$GITHUB_OUTPUT"
-          exit 0
-        }
+        else
+          git commit -m "${{ inputs.commit_message }}"
+          REPO_URL="https://x-access-token:${{ inputs.github_token }}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force "$REPO_URL" "${{ inputs.branch }}"
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+        fi
 
         REPO_URL="https://x-access-token:${{ inputs.github_token }}@github.com/${GITHUB_REPOSITORY}.git"
         git push --force "$REPO_URL" "${{ inputs.branch }}"
         echo "pushed=true" >> "$GITHUB_OUTPUT"
 
     - shell: bash
-      if: steps.commit_push.outputs.pushed == 'true'
       env:
         GH_TOKEN: ${{ inputs.github_token }}
       run: |
