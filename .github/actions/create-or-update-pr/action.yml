@@ -38,40 +38,48 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.github_token }}
       run: |
+        set -e
+
         git config user.name "${{ inputs.git_user_name }}"
         git config user.email "${{ inputs.git_user_email }}"
         git checkout -B "${{ inputs.branch }}"
 
         if git diff --cached --quiet; then
-          echo "Nothing staged to commit."
+          echo "🟡 No staged changes to commit."
           echo "pushed=false" >> "$GITHUB_OUTPUT"
         else
+          echo "✅ Committing changes..."
           git commit -m "${{ inputs.commit_message }}"
           REPO_URL="https://x-access-token:${{ inputs.github_token }}@github.com/${GITHUB_REPOSITORY}.git"
           git push --force "$REPO_URL" "${{ inputs.branch }}"
           echo "pushed=true" >> "$GITHUB_OUTPUT"
         fi
 
-        REPO_URL="https://x-access-token:${{ inputs.github_token }}@github.com/${GITHUB_REPOSITORY}.git"
-        git push --force "$REPO_URL" "${{ inputs.branch }}"
-        echo "pushed=true" >> "$GITHUB_OUTPUT"
-
     - shell: bash
       env:
         GH_TOKEN: ${{ inputs.github_token }}
       run: |
+        set -e
+
         REPO="${GITHUB_REPOSITORY}"
         BRANCH="${{ inputs.branch }}"
 
-        if gh pr view --repo "$REPO" --head "$BRANCH" --json number &>/dev/null; then
-          echo "🔄 PR already exists, updating..."
-          PR_NUMBER=$(gh pr view --repo "$REPO" --head "$BRANCH" --json number -q .number)
+        echo "🔍 Checking if PR exists from branch '$BRANCH'..."
+        PR_JSON=$(gh pr list \
+          --repo "$REPO" \
+          --head "$BRANCH" \
+          --json number \
+          --jq '.[0]')
+
+        if [[ -n "$PR_JSON" ]]; then
+          PR_NUMBER=$(echo "$PR_JSON" | jq -r .number)
+          echo "🔄 PR #$PR_NUMBER exists, updating..."
           gh pr edit "$PR_NUMBER" \
             --repo "$REPO" \
             --title "${{ inputs.pr_title }}" \
             --body "${{ inputs.pr_body }}"
         else
-          echo "🆕 Creating new PR..."
+          echo "🆕 No PR found, creating a new one..."
           gh pr create \
             --repo "$REPO" \
             --base main \
