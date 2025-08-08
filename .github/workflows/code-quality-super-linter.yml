@@ -50,7 +50,6 @@ jobs:
           VALIDATE_ANSIBLE: false
           VALIDATE_GIT_COMMITLINT: false
           VALIDATE_NATURAL_LANGUAGE: false
-          VALIDATE_PYTHON_PYINK: false
 
       # Check the PR diff using the current branch and the base branch of the PR
       - uses: GrantBirki/git-diff-action@7420e4d095c27bb23359787640976d60c94fd216 # v2.8.1
