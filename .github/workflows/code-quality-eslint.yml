@@ -1,0 +1,88 @@
+---
+name: 🛠️ Code Quality — ESLint
+
+on: # yamllint disable-line rule:truthy
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - '**/*.js'
+      - '**/*.mjs'
+      - '**/*.cjs'
+      - '**/*.ts'
+      - '**/*.tsx'
+  pull_request:
+    paths:
+      - '**/*.js'
+      - '**/*.mjs'
+      - '**/*.cjs'
+      - '**/*.ts'
+      - '**/*.tsx'
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+
+jobs:
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚡ Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install root dependencies
+        run: npm ci
+
+      - name: 🛠 Install dependencies for custom actions
+        run: |
+          echo "Scanning for action directories with package.json..."
+          for dir in .github/actions/*; do
+            if [ -f "$dir/package.json" ]; then
+              echo "::group::Installing dependencies in $dir"
+              echo "📂 Directory: $dir"
+              echo "📄 package.json contents:"
+              cat "$dir/package.json"
+              echo ""
+              echo "📦 Installing..."
+              npm ci --prefix "$dir"
+              echo "::endgroup::"
+            else
+              echo "Skipping $dir — no package.json found."
+            fi
+          done
+
+      - name: Check ESLint version
+        run: npx eslint --version
+
+      - name: 📦 Cache npm and action node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            .github/actions/**/node_modules
+          key: >
+            ${{ runner.os }}-eslint-
+            ${{ hashFiles('package-lock.json') }}-
+            ${{ hashFiles('.github/actions/**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-eslint-
+
+      - name: 🔍 Run ESLint
+        run: |
+          echo "Starting ESLint scan..."
+          npx eslint \
+            --config .github/linters/eslint.config.js \
+            --max-warnings=0 \
+            --color \
+            '.github/actions/*/*.js'

@@ -1,0 +1,23 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-n": "^17.10.1",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-promise": "^6.5.0",
+    "globals": "^15.15.0",
+    "prettier": "3.5.2",
+    "textlint": "^15.2.0",
+    "textlint-rule-terminology": "^5.2.13"
+  },
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "node-fetch": "^3.3.2"
+  },
+  "prettier": {
+    "singleQuote": false
+  }
+}

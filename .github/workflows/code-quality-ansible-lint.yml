@@ -1,5 +1,5 @@
 ---
-name: 🛠️ Ansible Lint
+name: 🛠️ Code Quality — Ansible Lint
 
 on: # yamllint disable-line rule:truthy
   pull_request:
