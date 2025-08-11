@@ -4,30 +4,30 @@ description: Commit changes, push to a branch, and create or update a pull reque
 
 inputs:
   branch:
-    description: 'Branch to push changes to'
+    description: "Branch to push changes to"
     required: true
   commit_message:
-    description: 'Full commit message'
+    description: "Full commit message"
     required: true
   pr_title:
-    description: 'Title for the pull request'
+    description: "Title for the pull request"
     required: true
   pr_body:
-    description: 'Body for the pull request'
+    description: "Body for the pull request"
     required: true
   github_token:
-    description: 'GitHub token with write access'
+    description: "GitHub token with write access"
     required: true
   git_user_name:
-    description: 'Git user.name to use for commits'
+    description: "Git user.name to use for commits"
     required: true
   git_user_email:
-    description: 'Git user.email to use for commits'
+    description: "Git user.email to use for commits"
     required: true
 
 outputs:
   pushed:
-    description: 'Whether changes were pushed'
+    description: "Whether changes were pushed"
     value: ${{ steps.commit_push.outputs.pushed }}
 
 runs:

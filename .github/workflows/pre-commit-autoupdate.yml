@@ -3,7 +3,7 @@ name: 🤖 Pre-commit autoupdate
 
 on: # yamllint disable-line rule:truthy
   schedule:
-    - cron: '0 3 * * 1'  # Every Monday at 03:00 UTC
+    - cron: "0 3 * * 1" # Every Monday at 03:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -38,7 +38,7 @@ jobs:
       - name: 🛠️ Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: 📦 Install pre-commit
         run: pip install pre-commit
@@ -50,7 +50,7 @@ jobs:
         id: diff
         uses: ./.github/actions/extract-staged-diff
         with:
-          globs: '.pre-commit-config.yaml'
+          globs: ".pre-commit-config.yaml"
 
       - name: 💬 Generate commit message
         id: commit_message

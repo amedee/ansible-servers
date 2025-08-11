@@ -5,15 +5,15 @@ description: Extract git diff for staged files matching given globs
 
 inputs:
   globs:
-    description: 'Glob patterns to diff (space separated)'
-    default: '.'
+    description: "Glob patterns to diff (space separated)"
+    default: "."
 
 outputs:
   has_diff:
-    description: 'true if diff found, false otherwise'
+    description: "true if diff found, false otherwise"
     value: ${{ steps.diff_check.outputs.has_diff }}
   diff_content:
-    description: 'Git diff output'
+    description: "Git diff output"
     value: ${{ steps.diff_check.outputs.diff_content }}
 
 runs:

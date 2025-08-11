@@ -8,7 +8,6 @@ ansible_ssh_common_args: >-
   -o ForwardAgent=yes
   -o StrictHostKeyChecking=accept-new
 ansible_user: root
-
 apt_packages_base:
   - hadori
   - hping3

@@ -6,24 +6,23 @@ on: # yamllint disable-line rule:truthy
     branches-ignore:
       - main
     paths:
-      - '**/*.js'
-      - '**/*.mjs'
-      - '**/*.cjs'
-      - '**/*.ts'
-      - '**/*.tsx'
+      - "**/*.js"
+      - "**/*.mjs"
+      - "**/*.cjs"
+      - "**/*.ts"
+      - "**/*.tsx"
   pull_request:
     paths:
-      - '**/*.js'
-      - '**/*.mjs'
-      - '**/*.cjs'
-      - '**/*.ts'
-      - '**/*.tsx'
+      - "**/*.js"
+      - "**/*.mjs"
+      - "**/*.cjs"
+      - "**/*.ts"
+      - "**/*.tsx"
   workflow_dispatch:
   workflow_call:
 
 permissions:
   contents: read
-
 
 jobs:
   eslint:
@@ -38,7 +37,7 @@ jobs:
       - name: ⚡ Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: 📦 Install root dependencies
         run: npm ci

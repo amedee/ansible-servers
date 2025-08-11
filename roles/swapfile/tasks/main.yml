@@ -1,5 +1,5 @@
 ---
-- name: Fake capabilities to prevent unwanted swapoff  # noqa var-naming
+- name: Fake capabilities to prevent unwanted swapoff # noqa var-naming
   ansible.builtin.set_fact:
     ansible_system_capabilities_enforced: true
     ansible_system_capabilities: []
@@ -26,5 +26,5 @@
 - name: Refresh system facts to restore capability info
   ansible.builtin.setup:
     gather_subset:
-      - '!all'
-      - 'min'
+      - "!all"
+      - "min"

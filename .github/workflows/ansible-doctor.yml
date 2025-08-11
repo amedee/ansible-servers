@@ -38,8 +38,8 @@ jobs:
       - name: 🐍 Setup Python and Install Dependencies
         uses: ./.github/actions/setup-python-pip
         with:
-          python-version: '3.13'
-          requirements-file: 'requirements-docs.txt'
+          python-version: "3.13"
+          requirements-file: "requirements-docs.txt"
 
       - name: Run ansible-doctor
         run: ansible-doctor --force --recursive roles

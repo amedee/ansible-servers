@@ -3,7 +3,7 @@ name: ⬆️ Update Ansible Requirements
 
 on: # yamllint disable-line rule:truthy
   schedule:
-    - cron: '0 5 * * 1'  # Every Monday at 05:00 UTC
+    - cron: "0 5 * * 1" # Every Monday at 05:00 UTC
   workflow_dispatch:
 
 concurrency:
@@ -24,8 +24,8 @@ jobs:
       - name: 🐍 Setup Python and Install Dependencies
         uses: ./.github/actions/setup-python-pip
         with:
-          python-version: '3.13'
-          requirements-file: 'requirements.txt'
+          python-version: "3.13"
+          requirements-file: "requirements.txt"
 
       - name: 🔄 Update requirements.yml
         run: python .github/scripts/update_ansible_requirements.py

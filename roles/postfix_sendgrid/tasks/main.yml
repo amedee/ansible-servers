@@ -13,7 +13,7 @@
     dest: /usr/local/bin/sendgrid_sendmail.py
     owner: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
     group: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
-    mode: '0755'
+    mode: "0755"
 
 - name: Ensure /etc/sendgrid directory exists
   ansible.builtin.file:
@@ -21,7 +21,7 @@
     state: directory
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
 
 - name: Ensure /var/log/sendgrid_sendmail directory exists
   ansible.builtin.file:
@@ -29,7 +29,7 @@
     state: directory
     owner: sendgrid
     group: sendgrid
-    mode: '0755'
+    mode: "0755"
 
 - name: Create /etc/sendgrid/api_key
   ansible.builtin.template:
@@ -37,7 +37,7 @@
     dest: /etc/sendgrid/api_key
     owner: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
     group: "{{ 'sendgrid' if not ansible_check_mode else omit }}"
-    mode: '0600'
+    mode: "0600"
 
 - name: Create virtual environment for SendGrid
   ansible.builtin.command:
@@ -80,5 +80,5 @@
     content: "local0.*    /var/log/sendgrid.log\n"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   notify: Restart rsyslog

@@ -3,7 +3,7 @@ name: 🧹 Cleanup orphaned Gource files
 
 on: # yamllint disable-line rule:truthy
   schedule:
-    - cron: '0 3 * * 1'  # Every Monday at 03:00 UTC
+    - cron: "0 3 * * 1" # Every Monday at 03:00 UTC
   workflow_dispatch:
 
 concurrency:
@@ -21,7 +21,7 @@ jobs:
       - name: Checkout full repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history needed for accurate SHA checks
+          fetch-depth: 0 # Full history needed for accurate SHA checks
 
       - name: Install aws-sdk
         run: npm install aws-sdk

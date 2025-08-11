@@ -4,11 +4,11 @@ description: Setup Python, cache pip packages, and install dependencies from a r
 
 inputs:
   python-version:
-    description: 'Python version to use'
-    default: '3.x'
+    description: "Python version to use"
+    default: "3.x"
   requirements-file:
-    description: 'Path to the requirements file'
-    default: 'requirements.txt'
+    description: "Path to the requirements file"
+    default: "requirements.txt"
 
 runs:
   using: "composite"

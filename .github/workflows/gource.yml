@@ -11,7 +11,7 @@ on: # yamllint disable-line rule:truthy
   workflow_dispatch:
     inputs:
       skip_interval_hours:
-        description: 'Skip interval in hours (default 24 hours)'
+        description: "Skip interval in hours (default 24 hours)"
         required: false
         default: 24
 

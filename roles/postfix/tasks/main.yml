@@ -5,7 +5,7 @@
     dest: /etc/postfix/checks/
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   notify:
     - Restart Postfix
 
@@ -15,7 +15,7 @@
     dest: /etc/postfix/checks/invalid_recipients.pcre
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   notify:
     - Restart Postfix
 
@@ -26,7 +26,7 @@
       /^(.*)-[^@]+@(.*)$/     ${1}@$2
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   notify: Restart Postfix
 
 - name: Build dynamic Postfix settings

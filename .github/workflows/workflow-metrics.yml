@@ -3,7 +3,7 @@ name: 📊 Workflow Metrics
 
 on: # yamllint disable-line rule:truthy
   schedule:
-    - cron: '0 3 * * *'  # Runs daily at 03:00 UTC
+    - cron: "0 3 * * *" # Runs daily at 03:00 UTC
   workflow_dispatch:
 
 concurrency:

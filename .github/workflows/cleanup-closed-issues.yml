@@ -3,7 +3,7 @@ name: 🧹 Cleanup Closed Issues
 
 on: # yamllint disable-line rule:truthy
   schedule:
-    - cron: '0 3 * * 1' # Runs every Monday at 03:00 UTC
+    - cron: "0 3 * * 1" # Runs every Monday at 03:00 UTC
   workflow_dispatch: # Allow manual execution
     inputs:
       dry_run:

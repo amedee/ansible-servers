@@ -22,7 +22,7 @@
 - name: Create apt-backup-duplicity.sh script
   ansible.builtin.copy:
     dest: /usr/local/bin/apt-backup-duplicity.sh
-    mode: '0755'
+    mode: "0755"
     content: |
       #!/bin/bash
       set -x
@@ -35,6 +35,6 @@
 - name: Create APT Post-Invoke hook to run backup script
   ansible.builtin.copy:
     dest: /etc/apt/apt.conf.d/99backup-duplicity-debs
-    mode: '0644'
+    mode: "0644"
     content: |
       DPkg::Post-Invoke { "/usr/local/bin/apt-backup-duplicity.sh"; };

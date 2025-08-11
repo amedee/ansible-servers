@@ -5,7 +5,7 @@ on: # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
       check-mode:
-        description: 'Run in dry-run mode (ansible --check)'
+        description: "Run in dry-run mode (ansible --check)"
         required: false
         default: false
         type: boolean
