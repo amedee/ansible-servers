@@ -46,6 +46,10 @@ jobs:
     needs:
       - ansible-cache
 
+  eslint:
+    name: 🛠️ Code Quality — ESLint
+    uses: ./.github/workflows/code-quality-eslint.yml
+
   validate-configs:
     name: 🛠️ Code Quality — Validate Configs
     uses: ./.github/workflows/code-quality-validate-configs.yml
@@ -69,6 +73,7 @@ jobs:
       - dry-run
       - super-linter
       - ansible-lint
+      - eslint
       - validate-configs
     with:
       check-mode: false
