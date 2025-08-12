@@ -41,7 +41,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         with:
-          secrets: AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY
+          secrets: AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY # pragma: allowlist secret
 
   generate-gource:
     name: Generate Gource video and thumbnail

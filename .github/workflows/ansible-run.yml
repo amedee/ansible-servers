@@ -59,7 +59,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
         with:
-          secrets: SSH_PRIVATE_KEY,VAULT_PASSWORD
+          secrets: SSH_PRIVATE_KEY,VAULT_PASSWORD # pragma: allowlist secret
 
       - name: Restore Ansible cache
         uses: ./.github/actions/restore-ansible-cache
