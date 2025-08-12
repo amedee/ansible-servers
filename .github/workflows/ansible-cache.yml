@@ -22,7 +22,7 @@ jobs:
       ANSIBLE_STDOUT_CALLBACK: yaml
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Clear current roles directory
         run: |
