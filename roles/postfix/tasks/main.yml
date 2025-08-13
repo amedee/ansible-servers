@@ -125,3 +125,25 @@
     - postfix_check_line not in postfix_smtpd_restrictions.stdout
   changed_when: true
   notify: Restart Postfix
+
+- name: Remove sendgrid service from master.cf
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/master.cf
+    regexp: '^sendgrid\b'
+    state: absent
+  notify: Restart Postfix
+
+- name: Create directory /etc/postfix/sasl/
+  ansible.builtin.file:
+    path: /etc/postfix/sasl/
+    state: directory
+    owner: root
+    mode: "755"
+
+- name: Create /etc/postfix/sasl/sasl_passwd from template
+  ansible.builtin.template:
+    src: sasl_passwd.j2
+    dest: /etc/postfix/sasl/sasl_passwd
+    owner: root
+    mode: "600"
+  notify: Update Postfix hashtables

@@ -9,16 +9,16 @@ amedee.be:
   A: 209.38.38.53
 www.amedee.be:
   A: 209.38.38.53
-em6081.amedee.be:
-  CNAME: u44990685.wl186.sendgrid.net.
-s1._domainkey.amedee.be:
-  CNAME: s1.domainkey.u44990685.wl186.sendgrid.net.
-s2._domainkey.amedee.be:
-  CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
 _dmarc.amedee.be:
   TXT: v=DMARC1; p=quarantine;
 _atproto.amedee.be:
   TXT: did=did:plc:ii5acpyq5qnlybvcqutuhbk5
+eoln4dbhigpx6oaxceyo7ec4ch2tm543._domainkey.amedee.be:
+  CNAME: eoln4dbhigpx6oaxceyo7ec4ch2tm543.dkim.amazonses.com
+famuhxhql3jao4k37kzdnbhuxrcmcbvm._domainkey.amedee.be:
+  CNAME: famuhxhql3jao4k37kzdnbhuxrcmcbvm.dkim.amazonses.com
+5jrv53umm6c4zfq4nz2khxskbmlq62my._domainkey.amedee.be:
+  CNAME: 5jrv53umm6c4zfq4nz2khxskbmlq62my.dkim.amazonses.com
 
 # Zone: vangasse.eu
 em980.vangasse.eu:
