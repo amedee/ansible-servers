@@ -9,7 +9,7 @@ repos:
         args: ["--unsafe"]
       - id: check-added-large-files
   - repo: https://github.com/ansible-community/ansible-lint
-    rev: v25.8.0
+    rev: v25.8.2
     hooks:
       - id: ansible-lint
         args: ["-c", ".github/linters/.ansible-lint.yml"]
@@ -27,7 +27,7 @@ repos:
     hooks:
       - id: markdownlint
   - repo: https://github.com/jackdewinter/pymarkdown
-    rev: v0.9.31
+    rev: v0.9.32
     hooks:
       - id: pymarkdown
   - repo: https://github.com/lorenzwalthert/gitignore-tidy
@@ -48,7 +48,7 @@ repos:
     hooks:
       - id: blocklint
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.33.2
+    rev: 0.33.3
     hooks:
       - id: check-github-actions
         args: [--verbose]
