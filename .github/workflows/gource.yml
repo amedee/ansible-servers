@@ -106,7 +106,7 @@ jobs:
 
       - name: Install ffmpeg
         if: ${{ steps.gource-check.outputs.run_job == 'true' }}
-        uses: AnimMouse/setup-ffmpeg@27e66fd2fe1d643b73a7c5cb105f3b4116bfb8db # v1.2.1
+        uses: AnimMouse/setup-ffmpeg@eff53a3f3f78e637c2c8399847b61993d6e277ce # v1.2.2
 
       - name: Generate thumbnail
         if: ${{ steps.gource-check.outputs.run_job == 'true' }}
