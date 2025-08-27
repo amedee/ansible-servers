@@ -5,6 +5,8 @@ Role to configure Postfix.
 ## Table of content
 
 - [Requirements](#requirements)
+- [Default Variables](#default-variables)
+  - [postfix_static_settings](#postfix_static_settings)
 - [Dependencies](#dependencies)
 - [License](#license)
 - [Author](#author)
@@ -14,6 +16,41 @@ Role to configure Postfix.
 ## Requirements
 
 - Minimum Ansible version: `2.1`
+
+## Default Variables
+
+### postfix_static_settings
+
+#### Default value
+
+```YAML
+postfix_static_settings:
+  append_dot_mydomain:
+  biff:
+  body_checks: pcre:/etc/postfix/checks/body_checks.pcre
+  bounce_queue_lifetime: 3d
+  default_transport:
+  header_checks: pcre:/etc/postfix/checks/header_checks.pcre
+  header_size_limit: '4096000'
+  maximal_queue_lifetime: 5d
+  message_size_limit: '52428800'
+  mime_header_checks: pcre:/etc/postfix/checks/mime_header_checks.pcre
+  readme_directory:
+  recipient_canonical_maps: pcre:/etc/postfix/recipient-canonical-maps.pcre
+  recipient_delimiter: '-'
+  relayhost: '[email-smtp.us-east-1.amazonaws.com]:587'
+  smtp_sasl_auth_enable: yes
+  smtp_sasl_password_maps: hash:/etc/postfix/sasl/sasl_passwd
+  smtp_sasl_security_options: noanonymous
+  smtp_tls_CAfile: /etc/ssl/certs/ca-certificates.crt
+  smtp_tls_ciphers: high
+  smtp_tls_note_starttls_offer: yes
+  smtp_tls_security_level: encrypt
+  smtp_use_tls: yes
+  smtpd_sasl_auth_enable: yes
+  smtputf8_enable: yes
+  transport_maps:
+```
 
 ## Dependencies
 
