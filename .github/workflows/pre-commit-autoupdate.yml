@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: ⏬ Checkout repo
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: 💾 Cache pip dependencies
         uses: actions/cache@v4

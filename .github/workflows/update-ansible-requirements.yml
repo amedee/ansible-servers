@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: ⤵️ Checkout
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: 🐍 Setup Python and Install Dependencies
         uses: ./.github/actions/setup-python-pip

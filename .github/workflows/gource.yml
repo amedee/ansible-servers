@@ -32,6 +32,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 1
+          persist-credentials: false
           sparse-checkout: |
             .github/actions/verify-secrets
 
@@ -56,6 +57,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Check if Gource video should be generated
         id: gource-check
@@ -186,6 +188,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Download gource artifacts
         uses: actions/download-artifact@v5

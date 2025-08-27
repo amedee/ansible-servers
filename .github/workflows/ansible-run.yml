@@ -52,6 +52,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: 🔐 Verify secrets are available
         uses: ./.github/actions/verify-secrets
