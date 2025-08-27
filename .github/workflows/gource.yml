@@ -20,8 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
 
 jobs:
   verify-secrets:
@@ -51,6 +50,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       run_upload: ${{ steps.gource-check.outputs.run_job }}
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -180,6 +181,8 @@ jobs:
       - verify-secrets
       - generate-gource
       - upload-artifacts
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     if: needs.generate-gource.outputs.run_upload == 'true'
 

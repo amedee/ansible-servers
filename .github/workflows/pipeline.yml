@@ -21,13 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  actions: read
-  contents: write
-  id-token: write
-  packages: read
-  pull-requests: write
-  security-events: write
-  statuses: write
+  contents: read
 
 jobs:
   ansible-cache:
@@ -36,6 +30,10 @@ jobs:
 
   super-linter:
     name: 🛠️ Code Quality — Super-Linter
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
     uses: ./.github/workflows/code-quality-super-linter.yml
     needs:
       - ansible-cache
@@ -91,6 +89,8 @@ jobs:
 
   gource:
     name: 📽️ Gource
+    permissions:
+      contents: write
     uses: ./.github/workflows/gource.yml
     needs: deploy
     secrets:
