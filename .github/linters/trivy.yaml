@@ -1,0 +1,6 @@
+---
+image:
+  skip-files:
+    - package-lock.json
+  skip-dirs:
+    - .ansible
