@@ -69,10 +69,13 @@ jobs:
 
       - name: ✅ Commit changes if .pre-commit-config.yaml changed
         if: steps.diff.outputs.has_diff == 'true'
+        env:
+          COMMIT_MSG: ${{ steps.commit_message.outputs.message }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "${{ steps.commit_message.outputs.message }}" --no-verify
+          printf '%s\n' "$COMMIT_MSG" > commit-msg.txt
+          git commit --file=commit-msg.txt --no-verify --
           git push --force origin HEAD:chore/pre-commit-autoupdate
 
       - name: 🚀 Create or update PR
