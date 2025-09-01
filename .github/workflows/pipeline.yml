@@ -33,6 +33,7 @@ jobs:
     permissions:
       contents: read
       packages: read
+      pull-requests: read
       statuses: write
     uses: ./.github/workflows/code-quality-super-linter.yml
     needs:
