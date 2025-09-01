@@ -30,9 +30,10 @@ postfix_static_settings:
   body_checks: pcre:/etc/postfix/checks/body_checks.pcre
   bounce_queue_lifetime: 3d
   default_transport:
+  delay_warning_time: '0'
   header_checks: pcre:/etc/postfix/checks/header_checks.pcre
   header_size_limit: '4096000'
-  maximal_queue_lifetime: 5d
+  maximal_queue_lifetime: 30d
   message_size_limit: '52428800'
   mime_header_checks: pcre:/etc/postfix/checks/mime_header_checks.pcre
   readme_directory:
