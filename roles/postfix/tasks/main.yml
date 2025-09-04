@@ -32,7 +32,6 @@
 - name: Build dynamic Postfix settings
   ansible.builtin.set_fact:
     postfix_dynamic_settings:
-      myhostname: "{{ ansible_hostname }}"
       mydestination: >-
         {{
           (['$myhostname', ansible_hostname, 'localhost.localdomain', 'localhost'] +
