@@ -1,5 +1,6 @@
 ---
 postfix_static_settings:
+  alias_database: null
   append_dot_mydomain: null
   biff: null
   body_checks: "pcre:/etc/postfix/checks/body_checks.pcre"
@@ -8,13 +9,16 @@ postfix_static_settings:
   delay_warning_time: "0"
   header_checks: "pcre:/etc/postfix/checks/header_checks.pcre"
   header_size_limit: "4096000"
+  inet_interfaces: null
+  inet_protocols: null
   maximal_queue_lifetime: "30d"
   message_size_limit: "52428800"
   mime_header_checks: "pcre:/etc/postfix/checks/mime_header_checks.pcre"
   readme_directory: null
   recipient_canonical_maps: "pcre:/etc/postfix/recipient-canonical-maps.pcre"
-  recipient_delimiter: "-"
+  recipient_delimiter: "+-"
   relayhost: "[email-smtp.us-east-1.amazonaws.com]:587"
+  smtp_bind_address6: null
   smtp_sasl_auth_enable: "yes"
   smtp_sasl_password_maps: "hash:/etc/postfix/sasl/sasl_passwd" # pragma: allowlist secret
   smtp_sasl_security_options: "noanonymous"
@@ -24,5 +28,7 @@ postfix_static_settings:
   smtp_tls_security_level: "encrypt"
   smtp_use_tls: "yes"
   smtpd_sasl_auth_enable: "yes"
+  smtpd_tls_ciphers: null
   smtputf8_enable: "yes"
+  tls_preempt_cipherlist: null
   transport_maps: null
