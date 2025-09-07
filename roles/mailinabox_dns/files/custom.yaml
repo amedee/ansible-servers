@@ -29,6 +29,12 @@ s2._domainkey.vangasse.eu:
   CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
 _dmarc.vangasse.eu:
   TXT: v=DMARC1; p=quarantine;
+bqyrqwwtpfi3y7t6izgsv4inedogqsck._domainkey.vangasse.eu:
+  CNAME: bqyrqwwtpfi3y7t6izgsv4inedogqsck.dkim.amazonses.com
+m2cauc642ee5cyywnksqos6t7uxnpes6._domainkey.vangasse.eu:
+  CNAME: m2cauc642ee5cyywnksqos6t7uxnpes6.dkim.amazonses.com
+imujtvoqladsuf6clqgxx4iniwuugmwo._domainkey.vangasse.eu:
+  CNAME: imujtvoqladsuf6clqgxx4iniwuugmwo.dkim.amazonses.com
 
 # Zone: box.vangasse.eu
 em5813.box.vangasse.eu:
