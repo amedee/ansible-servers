@@ -5,6 +5,7 @@ amedee.be:
   TXT:
     - openai-domain-verification=dv-CE4I5t0idxqOlBeRFw2m6TwK
     - pinterest-site-verification=25f529bc9ccfe7c40ede802261902e48
+    - v=spf1 include:amazonses.com -all
 "*.amedee.be":
   A: 209.38.38.53
 www.amedee.be:
@@ -21,6 +22,9 @@ famuhxhql3jao4k37kzdnbhuxrcmcbvm._domainkey.amedee.be:
   CNAME: 5jrv53umm6c4zfq4nz2khxskbmlq62my.dkim.amazonses.com
 
 # Zone: vangasse.eu
+vangasse.eu:
+  TXT:
+    - v=spf1 include:amazonses.com -all
 _dmarc.vangasse.eu:
   TXT: v=DMARC1; p=quarantine;
 bqyrqwwtpfi3y7t6izgsv4inedogqsck._domainkey.vangasse.eu:
@@ -31,5 +35,8 @@ imujtvoqladsuf6clqgxx4iniwuugmwo._domainkey.vangasse.eu:
   CNAME: imujtvoqladsuf6clqgxx4iniwuugmwo.dkim.amazonses.com
 
 # Zone: box.vangasse.eu
+box.vangasse.eu:
+  TXT:
+    - v=spf1 include:amazonses.com -all
 _dmarc.box.vangasse.eu:
   TXT: v=DMARC1; p=quarantine;
