@@ -21,12 +21,6 @@ famuhxhql3jao4k37kzdnbhuxrcmcbvm._domainkey.amedee.be:
   CNAME: 5jrv53umm6c4zfq4nz2khxskbmlq62my.dkim.amazonses.com
 
 # Zone: vangasse.eu
-em980.vangasse.eu:
-  CNAME: u44990685.wl186.sendgrid.net.
-s1._domainkey.vangasse.eu:
-  CNAME: s1.domainkey.u44990685.wl186.sendgrid.net.
-s2._domainkey.vangasse.eu:
-  CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
 _dmarc.vangasse.eu:
   TXT: v=DMARC1; p=quarantine;
 bqyrqwwtpfi3y7t6izgsv4inedogqsck._domainkey.vangasse.eu:
@@ -37,11 +31,5 @@ imujtvoqladsuf6clqgxx4iniwuugmwo._domainkey.vangasse.eu:
   CNAME: imujtvoqladsuf6clqgxx4iniwuugmwo.dkim.amazonses.com
 
 # Zone: box.vangasse.eu
-em5813.box.vangasse.eu:
-  CNAME: u44990685.wl186.sendgrid.net.
-s1._domainkey.box.vangasse.eu:
-  CNAME: s1.domainkey.u44990685.wl186.sendgrid.net.
-s2._domainkey.box.vangasse.eu:
-  CNAME: s2.domainkey.u44990685.wl186.sendgrid.net.
 _dmarc.box.vangasse.eu:
   TXT: v=DMARC1; p=quarantine;
