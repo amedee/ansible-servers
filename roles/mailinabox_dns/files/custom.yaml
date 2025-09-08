@@ -1,42 +1,55 @@
----
-# Zone: amedee.be
+# ================================================================
+# DNS Records for amedee.be
+# ================================================================
+
+# --- Basic A and CNAME records ---
 amedee.be:
   A: 209.38.38.53
   TXT:
-    - openai-domain-verification=dv-CE4I5t0idxqOlBeRFw2m6TwK
-    - pinterest-site-verification=25f529bc9ccfe7c40ede802261902e48
-    - v=spf1 include:amazonses.com -all
-"*.amedee.be":
-  A: 209.38.38.53
-www.amedee.be:
-  A: 209.38.38.53
+    - openai-domain-verification=dv-CE4I5t0idxqOlBeRFw2m6TwK        # OpenAI domain verification
+    - pinterest-site-verification=25f529bc9ccfe7c40ede802261902e48  # Pinterest verification
+    - v=spf1 include:amazonses.com -all                              # SPF record for Amazon SES (hardfail)
+'*.amedee.be': 209.38.38.53
+www.amedee.be: 209.38.38.53
+
+# --- Email security ---
 _dmarc.amedee.be:
-  TXT: v=DMARC1; p=quarantine;
+  TXT: v=DMARC1; p=reject; rua=mailto:dmarc-reports@amedee.be; ruf=mailto:dmarc-failures@amedee.be; fo=1
+
+# DKIM keys
+6zrqlk7mvobumihic2jfgic5nrg5ilnr._domainkey.amedee.be:
+  CNAME: 6zrqlk7mvobumihic2jfgic5nrg5ilnr.dkim.amazonses.com.
+igvh67rzjsztvzzio4rfs62n2nf7esen._domainkey.amedee.be:
+  CNAME: igvh67rzjsztvzzio4rfs62n2nf7esen.dkim.amazonses.com.
+uxq7thfsfc6gn4xnknc7fr3usrj5fk6h._domainkey.amedee.be:
+  CNAME: uxq7thfsfc6gn4xnknc7fr3usrj5fk6h.dkim.amazonses.com.
+
+# --- Third-party verifications ---
+_amazonses.amedee.be:
+  TXT: LJ8r8p2RHVUgO6HfaW1QIo8Y4i0Nf8dYgik3Py2U5/M=
 _atproto.amedee.be:
   TXT: did=did:plc:ii5acpyq5qnlybvcqutuhbk5
-eoln4dbhigpx6oaxceyo7ec4ch2tm543._domainkey.amedee.be:
-  CNAME: eoln4dbhigpx6oaxceyo7ec4ch2tm543.dkim.amazonses.com
-famuhxhql3jao4k37kzdnbhuxrcmcbvm._domainkey.amedee.be:
-  CNAME: famuhxhql3jao4k37kzdnbhuxrcmcbvm.dkim.amazonses.com
-5jrv53umm6c4zfq4nz2khxskbmlq62my._domainkey.amedee.be:
-  CNAME: 5jrv53umm6c4zfq4nz2khxskbmlq62my.dkim.amazonses.com
 
-# Zone: vangasse.eu
+
+# ================================================================
+# DNS Records for vangasse.eu
+# ================================================================
+
+# --- Email security ---
 vangasse.eu:
   TXT:
-    - v=spf1 include:amazonses.com -all
+    - v=spf1 include:amazonses.com -all   # SPF record for Amazon SES (hardfail)
 _dmarc.vangasse.eu:
-  TXT: v=DMARC1; p=quarantine;
-bqyrqwwtpfi3y7t6izgsv4inedogqsck._domainkey.vangasse.eu:
-  CNAME: bqyrqwwtpfi3y7t6izgsv4inedogqsck.dkim.amazonses.com
-m2cauc642ee5cyywnksqos6t7uxnpes6._domainkey.vangasse.eu:
-  CNAME: m2cauc642ee5cyywnksqos6t7uxnpes6.dkim.amazonses.com
-imujtvoqladsuf6clqgxx4iniwuugmwo._domainkey.vangasse.eu:
-  CNAME: imujtvoqladsuf6clqgxx4iniwuugmwo.dkim.amazonses.com
+  TXT: v=DMARC1; p=reject; rua=mailto:dmarc-reports@vangasse.eu; ruf=mailto:dmarc-failures@vangasse.eu; fo=1
 
-# Zone: box.vangasse.eu
-box.vangasse.eu:
-  TXT:
-    - v=spf1 include:amazonses.com -all
-_dmarc.box.vangasse.eu:
-  TXT: v=DMARC1; p=quarantine;
+# DKIM keys
+4ktpjpwt5fptr4da7ejnkoyix5wwng4z._domainkey.vangasse.eu:
+  CNAME: 4ktpjpwt5fptr4da7ejnkoyix5wwng4z.dkim.amazonses.com.
+eyowjskkysbie2sxi2hzn2exvjdsc5vc._domainkey.vangasse.eu:
+  CNAME: eyowjskkysbie2sxi2hzn2exvjdsc5vc.dkim.amazonses.com.
+nydgh6lfafbja7p7wcxlcrupanzhua5s._domainkey.vangasse.eu:
+  CNAME: nydgh6lfafbja7p7wcxlcrupanzhua5s.dkim.amazonses.com.
+
+# --- Amazon SES verification ---
+_amazonses.vangasse.eu:
+  TXT: gqXwJ6XtMyeApzXUR1wln3lY3bOgwv/2WEsiDNUM9lc=
