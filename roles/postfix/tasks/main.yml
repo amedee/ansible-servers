@@ -149,8 +149,8 @@
     name: ses
     comment: "Postfix SES transport user"
     shell: /usr/sbin/nologin
-    create_home: no
-    system: yes
+    create_home: false
+    system: true
 
 - name: Deploy SES sendmail script
   ansible.builtin.copy:
