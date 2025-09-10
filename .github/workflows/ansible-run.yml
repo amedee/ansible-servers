@@ -71,21 +71,27 @@ jobs:
       - name: Determine Ansible check mode
         id: set_check_mode
         run: |
-          case "$GITHUB_EVENT" in
-            workflow_call)
-              if [[ "$CHECK_MODE_INPUT" == "true" ]]; then
-                check="--check"
-              else
-                check=""
-              fi
-              ;;
-            workflow_dispatch)
-              check=""
-              ;;
-            *)
-              check="--check"
-              ;;
-          esac
+          # Normalize the input to lowercase
+          normalized="$(echo "${CHECK_MODE_INPUT:-false}" | tr '[:upper:]' '[:lower:]')"
+
+          if [[ "$normalized" == "true" ]]; then
+            # Always dry-run if input explicitly true
+            check="--check"
+          else
+            case "$GITHUB_EVENT" in
+              workflow_dispatch)
+                check=""  # always real run
+                ;;
+              workflow_call|*)
+                # Only real run on main branch, otherwise dry-run
+                if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
+                  check=""
+                else
+                  check="--check"
+                fi
+                ;;
+            esac
+          fi
 
           echo "check_mode=$check" >> "$GITHUB_OUTPUT"
           echo "🛠️ Ansible check mode set to: '$check'"
