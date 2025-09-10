@@ -20,7 +20,7 @@ postfix_static_settings:
   readme_directory: null
   recipient_canonical_maps: "pcre:/etc/postfix/recipient-canonical-maps.pcre"
   recipient_delimiter: "+-"
-  relayhost: "[email-smtp.us-east-1.amazonaws.com]:587"
+  relayhost: null
   smtp_bind_address6: null
   smtp_sasl_auth_enable: "yes"
   smtp_sasl_password_maps: "hash:/etc/postfix/sasl/sasl_passwd" # pragma: allowlist secret
