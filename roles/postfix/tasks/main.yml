@@ -164,6 +164,14 @@
     create_home: no
     system: yes
 
+- name: Deploy SES sendmail script
+  ansible.builtin.copy:
+    src: ses_sendmail.py
+    dest: /usr/local/bin/ses_sendmail.py
+    owner: root
+    group: root
+    mode: '0755'
+
 - name: Create directory /etc/postfix/sasl/
   ansible.builtin.file:
     path: /etc/postfix/sasl/
