@@ -125,11 +125,27 @@
   changed_when: true
   notify: Restart Postfix
 
-- name: Remove sendgrid service from master.cf
+- name: Remove old SES transport main line without marker
   ansible.builtin.lineinfile:
     path: /etc/postfix/master.cf
-    regexp: '^sendgrid\b'
     state: absent
+    regexp: '^ses\s+unix\s+-\s+n\s+n\s+-\s+-\s+pipe$'
+
+- name: Remove old SES transport continuation line without marker
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/master.cf
+    state: absent
+    regexp: '^\s*flags=Rq user=ses argv=/usr/local/bin/ses_wrapper.sh \${recipient}$'
+
+- name: Configure SES transport in Postfix master.cf
+  ansible.builtin.blockinfile:
+    path: /etc/postfix/master.cf
+    marker: "# {mark} ANSIBLE SES TRANSPORT"
+    insertafter: EOF
+    block: |
+      ses       unix  -       n       n       -       -       pipe
+        flags=Rq user=ses argv=/usr/local/bin/ses_wrapper.sh ${recipient}
+    validate: 'postfix check -q %s'
   notify: Restart Postfix
 
 - name: Create directory /etc/postfix/sasl/
