@@ -136,14 +136,6 @@
     validate: 'postfix check -q %s'
   notify: Restart Postfix
 
-- name: Deploy SES wrapper script
-  ansible.builtin.template:
-    src: ses_wrapper.sh.j2
-    dest: /usr/local/bin/ses_wrapper.sh
-    owner: root
-    group: ses
-    mode: '0750'
-
 - name: Ensure SES system user exists
   ansible.builtin.user:
     name: ses
@@ -151,6 +143,14 @@
     shell: /usr/sbin/nologin
     create_home: false
     system: true
+
+- name: Deploy SES wrapper script
+  ansible.builtin.template:
+    src: ses_wrapper.sh.j2
+    dest: /usr/local/bin/ses_wrapper.sh
+    owner: root
+    group: ses
+    mode: '0750'
 
 - name: Deploy SES sendmail script
   ansible.builtin.copy:
