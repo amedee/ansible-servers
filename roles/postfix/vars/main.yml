@@ -22,14 +22,14 @@ postfix_static_settings:
   recipient_delimiter: "+-"
   relayhost: null
   smtp_bind_address6: null
-  smtp_sasl_auth_enable: "yes"
-  smtp_sasl_password_maps: "hash:/etc/postfix/sasl/sasl_passwd" # pragma: allowlist secret
-  smtp_sasl_security_options: "noanonymous"
-  smtp_tls_CAfile: "/etc/ssl/certs/ca-certificates.crt"
-  smtp_tls_ciphers: "high"
-  smtp_tls_note_starttls_offer: "yes"
-  smtp_tls_security_level: "encrypt"
-  smtp_use_tls: "yes"
+  smtp_sasl_auth_enable: null
+  smtp_sasl_password_maps: null
+  smtp_sasl_security_options: null
+  smtp_tls_CAfile: null
+  smtp_tls_ciphers: null
+  smtp_tls_note_starttls_offer: null
+  smtp_tls_security_level: null
+  smtp_use_tls: null
   smtpd_banner: "$myhostname ESMTP"
   smtpd_relay_restrictions: "permit_mynetworks,permit_sasl_authenticated,reject_unauth_destination"
   smtpd_sasl_auth_enable: "yes"
