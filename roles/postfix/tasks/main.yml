@@ -143,13 +143,14 @@
     shell: /usr/sbin/nologin
     create_home: false
     system: true
+  check_mode: false
 
 - name: Deploy SES wrapper script
   ansible.builtin.template:
     src: ses_wrapper.sh.j2
     dest: /usr/local/bin/ses_wrapper.sh
     owner: root
-    group: ses
+    group: "{{ 'ses' if not ansible_check_mode else 'root' }}"
     mode: '0750'
 
 - name: Deploy SES sendmail script
