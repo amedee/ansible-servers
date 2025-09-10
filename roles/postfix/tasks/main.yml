@@ -156,6 +156,14 @@
     group: ses
     mode: '0750'
 
+- name: Ensure SES system user exists
+  ansible.builtin.user:
+    name: ses
+    comment: "Postfix SES transport user"
+    shell: /usr/sbin/nologin
+    create_home: no
+    system: yes
+
 - name: Create directory /etc/postfix/sasl/
   ansible.builtin.file:
     path: /etc/postfix/sasl/
