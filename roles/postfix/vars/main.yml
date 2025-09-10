@@ -36,4 +36,4 @@ postfix_static_settings:
   smtpd_tls_ciphers: null
   smtputf8_enable: "yes"
   tls_preempt_cipherlist: null
-  transport_maps: null
+  transport_maps: "pcre:/etc/postfix/transport.pcre"

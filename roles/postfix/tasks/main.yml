@@ -159,3 +159,12 @@
     owner: root
     group: root
     mode: '0755'
+
+- name: Deploy /etc/postfix/transport.pcre from template
+  ansible.builtin.template:
+    src: transport.pcre.j2
+    dest: /etc/postfix/transport.pcre
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Postfix

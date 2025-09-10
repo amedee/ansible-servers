@@ -1,0 +1,8 @@
+# Local domains handled by Postfix as usual
+/^localhost$/       :
+{% if inventory_hostname in groups['mailservers'] %}
+/^vangasse\.eu$/    :
+/^amedee\.be$/      :
+{% endif %}
+
+/.*/                ses:
