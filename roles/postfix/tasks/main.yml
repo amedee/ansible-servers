@@ -148,6 +148,14 @@
     validate: 'postfix check -q %s'
   notify: Restart Postfix
 
+- name: Deploy SES wrapper script
+  ansible.builtin.template:
+    src: ses_wrapper.sh.j2
+    dest: /usr/local/bin/ses_wrapper.sh
+    owner: root
+    group: ses
+    mode: '0750'
+
 - name: Create directory /etc/postfix/sasl/
   ansible.builtin.file:
     path: /etc/postfix/sasl/
