@@ -125,18 +125,6 @@
   changed_when: true
   notify: Restart Postfix
 
-- name: Remove old SES transport main line without marker
-  ansible.builtin.lineinfile:
-    path: /etc/postfix/master.cf
-    state: absent
-    regexp: '^ses\s+unix\s+-\s+n\s+n\s+-\s+-\s+pipe$'
-
-- name: Remove old SES transport continuation line without marker
-  ansible.builtin.lineinfile:
-    path: /etc/postfix/master.cf
-    state: absent
-    regexp: '^\s*flags=Rq user=ses argv=/usr/local/bin/ses_wrapper.sh \${recipient}$'
-
 - name: Configure SES transport in Postfix master.cf
   ansible.builtin.blockinfile:
     path: /etc/postfix/master.cf
