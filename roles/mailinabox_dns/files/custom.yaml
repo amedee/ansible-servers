@@ -6,9 +6,9 @@
 amedee.be:
   A: 209.38.38.53
   TXT:
-    - openai-domain-verification=dv-CE4I5t0idxqOlBeRFw2m6TwK        # OpenAI domain verification
-    - pinterest-site-verification=25f529bc9ccfe7c40ede802261902e48  # Pinterest verification
-    - v=spf1 include:amazonses.com -all                              # SPF record for Amazon SES (hardfail)
+    - openai-domain-verification=dv-CE4I5t0idxqOlBeRFw2m6TwK
+    - pinterest-site-verification=25f529bc9ccfe7c40ede802261902e48
+    - v=spf1 include:amazonses.com -all
 '*.amedee.be': 209.38.38.53
 www.amedee.be: 209.38.38.53
 
@@ -38,7 +38,7 @@ _atproto.amedee.be:
 # --- Email security ---
 vangasse.eu:
   TXT:
-    - v=spf1 include:amazonses.com -all   # SPF record for Amazon SES (hardfail)
+    - v=spf1 include:amazonses.com -all
 _dmarc.vangasse.eu:
   TXT: v=DMARC1; p=reject; rua=mailto:dmarc-reports@vangasse.eu; ruf=mailto:dmarc-failures@vangasse.eu; fo=1
 
