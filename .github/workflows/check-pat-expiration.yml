@@ -39,12 +39,29 @@ jobs:
           echo "Token '$TOKEN_NAME' expires in $DAYS_LEFT day(s)"
 
           if [ "$DAYS_LEFT" -le "$ALERT_DAYS" ]; then
+            TITLE="⚠️ Fine-Grained PAT '$TOKEN_NAME' Expiring Soon"
             echo "::warning::Token '$TOKEN_NAME' will expire in $DAYS_LEFT day(s)"
-            gh issue list --repo "$REPO" --state open --search "GH_FINEGRAINED_PAT expiration" | grep . || \
-              gh issue create --repo "$REPO" \
-                --title "⚠️ Fine-Grained PAT '$TOKEN_NAME' Expiring Soon" \
-                --body "Your token \`$TOKEN_NAME\` will expire in $DAYS_LEFT day(s). Please generate a new one." \
+
+            # Find an open issue with the same title and extract its number
+            ISSUE_NUMBER=$(gh issue list \
+              --repo "$REPO" \
+              --state open \
+              --json number,title \
+              --jq ".[] | select(.title==\"$TITLE\") | .number")
+
+            if [ -n "$ISSUE_NUMBER" ]; then
+              echo "Existing issue #$ISSUE_NUMBER found. Adding comment."
+              gh issue comment "$ISSUE_NUMBER" \
+                --repo "$REPO" \
+                --body "🔔 Reminder: Token \`$TOKEN_NAME\` will expire in **$DAYS_LEFT** day(s)."
+            else
+              echo "No existing issue found. Creating a new one."
+              gh issue create \
+                --repo "$REPO" \
+                --title "$TITLE" \
+                --body "Your token \`$TOKEN_NAME\` will expire in **$DAYS_LEFT** day(s). Please generate a new one." \
                 --label "maintenance"
+            fi
           else
             echo "Token is still valid."
           fi
