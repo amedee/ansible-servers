@@ -56,9 +56,9 @@ jobs:
             --json number,title \
             --jq ".[] | select(.title==\"$TITLE\") | .number")
 
-          # Determine "main" issue (first one) and any duplicates
-          MAIN_ISSUE=$(echo "$ISSUE_NUMBERS" | head -n1)
-          DUPLICATES=$(echo "$ISSUE_NUMBERS" | tail -n +2)
+          # Sort numerically and pick the lowest number as main
+          MAIN_ISSUE=$(echo "$ISSUE_NUMBERS" | sort -n | head -n1)
+          DUPLICATES=$(echo "$ISSUE_NUMBERS" | sort -n | tail -n +2)
 
           if [ "$DAYS_LEFT" -le "$ALERT_DAYS" ]; then
             # Token is expiring or expired
