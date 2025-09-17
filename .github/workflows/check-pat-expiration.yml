@@ -24,10 +24,8 @@ jobs:
           REPO="${{ github.repository }}"
           TOKEN_NAME="GH_FINEGRAINED_PAT"
           ALERT_DAYS=14
-          # Simulate expiration tracking with a static date
-          # Replace this with a manual update each time you create a new token
           # Format: YYYY-MM-DD
-          TOKEN_EXPIRY="2025-09-16"
+          TOKEN_EXPIRY="${{ secrets.GH_FINEGRAINED_PAT_EXPIRY }}"
 
           TODAY=$(date +%s)
           EXPIRY_DATE=$(date -d "$TOKEN_EXPIRY" +%s)
