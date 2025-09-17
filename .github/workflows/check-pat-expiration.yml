@@ -23,10 +23,7 @@ jobs:
         run: |
           REPO="${{ github.repository }}"
           TOKEN_NAME="GH_FINEGRAINED_PAT"
-
-          # Optional: set your alert threshold in days
           ALERT_DAYS=14
-
           # Simulate expiration tracking with a static date
           # Replace this with a manual update each time you create a new token
           # Format: YYYY-MM-DD
@@ -36,18 +33,19 @@ jobs:
           EXPIRY_DATE=$(date -d "$TOKEN_EXPIRY" +%s)
           DAYS_LEFT=$(( (EXPIRY_DATE - TODAY) / 86400 ))
 
+          TITLE="⚠️ Fine-Grained PAT '$TOKEN_NAME' Expiring Soon"
+
           echo "Token '$TOKEN_NAME' expires in $DAYS_LEFT day(s)"
 
-          if [ "$DAYS_LEFT" -le "$ALERT_DAYS" ]; then
-            TITLE="⚠️ Fine-Grained PAT '$TOKEN_NAME' Expiring Soon"
-            echo "::warning::Token '$TOKEN_NAME' will expire in $DAYS_LEFT day(s)"
+          # Look up an open issue with the same title
+          ISSUE_NUMBER=$(gh issue list \
+            --repo "$REPO" \
+            --state open \
+            --json number,title \
+            --jq ".[] | select(.title==\"$TITLE\") | .number")
 
-            # Find an open issue with the same title and extract its number
-            ISSUE_NUMBER=$(gh issue list \
-              --repo "$REPO" \
-              --state open \
-              --json number,title \
-              --jq ".[] | select(.title==\"$TITLE\") | .number")
+          if [ "$DAYS_LEFT" -le "$ALERT_DAYS" ]; then
+            echo "::warning::Token '$TOKEN_NAME' will expire in $DAYS_LEFT day(s)"
 
             if [ -n "$ISSUE_NUMBER" ]; then
               echo "Existing issue #$ISSUE_NUMBER found. Adding comment."
@@ -62,8 +60,17 @@ jobs:
                 --body "Your token \`$TOKEN_NAME\` will expire in **$DAYS_LEFT** day(s). Please generate a new one." \
                 --label "maintenance"
             fi
+
           else
             echo "Token is still valid."
+
+            if [ -n "$ISSUE_NUMBER" ]; then
+              echo "Closing existing issue #$ISSUE_NUMBER because the token is valid again."
+              gh issue comment "$ISSUE_NUMBER" \
+                --repo "$REPO" \
+                --body "✅ Token \`$TOKEN_NAME\` has been renewed (now **$DAYS_LEFT** day(s) left). Closing this issue."
+              gh issue close "$ISSUE_NUMBER" --repo "$REPO"
+            fi
           fi
 
           {
