@@ -37,21 +37,35 @@ jobs:
 
           echo "Token '$TOKEN_NAME' expires in $DAYS_LEFT day(s)"
 
-          # Look up an open issue with the same title
-          ISSUE_NUMBER=$(gh issue list \
+          # Find all open issues with the same title
+          ISSUE_NUMBERS=$(gh issue list \
             --repo "$REPO" \
             --state open \
             --json number,title \
             --jq ".[] | select(.title==\"$TITLE\") | .number")
 
+          # Determine "main" issue (first one) and any duplicates
+          MAIN_ISSUE=$(echo "$ISSUE_NUMBERS" | head -n1)
+          DUPLICATES=$(echo "$ISSUE_NUMBERS" | tail -n +2)
+
           if [ "$DAYS_LEFT" -le "$ALERT_DAYS" ]; then
             echo "::warning::Token '$TOKEN_NAME' will expire in $DAYS_LEFT day(s)"
 
-            if [ -n "$ISSUE_NUMBER" ]; then
-              echo "Existing issue #$ISSUE_NUMBER found. Adding comment."
-              gh issue comment "$ISSUE_NUMBER" \
+            if [ -n "$MAIN_ISSUE" ]; then
+              echo "Adding comment to main issue #$MAIN_ISSUE"
+              gh issue comment "$MAIN_ISSUE" \
                 --repo "$REPO" \
                 --body "🔔 Reminder: Token \`$TOKEN_NAME\` will expire in **$DAYS_LEFT** day(s)."
+
+              # Close any duplicate issues
+              for ISSUE in $DUPLICATES; do
+                echo "Closing duplicate issue #$ISSUE"
+                gh issue comment "$ISSUE" \
+                  --repo "$REPO" \
+                  --body "🔁 This issue duplicates #$MAIN_ISSUE. Closing it."
+                gh issue close "$ISSUE" --repo "$REPO"
+              done
+
             else
               echo "No existing issue found. Creating a new one."
               gh issue create \
@@ -64,13 +78,14 @@ jobs:
           else
             echo "Token is still valid."
 
-            if [ -n "$ISSUE_NUMBER" ]; then
-              echo "Closing existing issue #$ISSUE_NUMBER because the token is valid again."
-              gh issue comment "$ISSUE_NUMBER" \
+            # Close any open issues since token is valid again
+            for ISSUE in $ISSUE_NUMBERS; do
+              echo "Closing issue #$ISSUE because the token is valid again."
+              gh issue comment "$ISSUE" \
                 --repo "$REPO" \
                 --body "✅ Token \`$TOKEN_NAME\` has been renewed (now **$DAYS_LEFT** day(s) left). Closing this issue."
-              gh issue close "$ISSUE_NUMBER" --repo "$REPO"
-            fi
+              gh issue close "$ISSUE" --repo "$REPO"
+            done
           fi
 
           {
@@ -83,3 +98,4 @@ jobs:
               echo "- ✅ Token is still valid."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+      
