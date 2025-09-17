@@ -33,9 +33,21 @@ jobs:
           EXPIRY_DATE=$(date -d "$TOKEN_EXPIRY" +%s)
           DAYS_LEFT=$(( (EXPIRY_DATE - TODAY) / 86400 ))
 
-          TITLE="⚠️ Fine-Grained PAT '$TOKEN_NAME' Expiring Soon"
+          # Human-friendly messages
+          if [ "$DAYS_LEFT" -lt 0 ]; then
+            DAYS_AGO=$(( -DAYS_LEFT ))
+            ALERT_MESSAGE="⚠️ Token has expired $DAYS_AGO day(s) ago!"
+            COMMENT_SUFFIX="expired $DAYS_AGO day(s) ago"
+          elif [ "$DAYS_LEFT" -eq 0 ]; then
+            ALERT_MESSAGE="⚠️ Token expires today!"
+            COMMENT_SUFFIX="expires today"
+          else
+            ALERT_MESSAGE="⚠️ Token will expire in $DAYS_LEFT day(s)!"
+            COMMENT_SUFFIX="will expire in **$DAYS_LEFT** day(s)"
+          fi
 
-          echo "Token '$TOKEN_NAME' expires in $DAYS_LEFT day(s)"
+          TITLE="⚠️ Fine-Grained PAT '$TOKEN_NAME' Expiring Soon"
+          echo "$ALERT_MESSAGE"
 
           # Find all open issues with the same title
           ISSUE_NUMBERS=$(gh issue list \
@@ -49,15 +61,14 @@ jobs:
           DUPLICATES=$(echo "$ISSUE_NUMBERS" | tail -n +2)
 
           if [ "$DAYS_LEFT" -le "$ALERT_DAYS" ]; then
-            echo "::warning::Token '$TOKEN_NAME' will expire in $DAYS_LEFT day(s)"
-
+            # Token is expiring or expired
             if [ -n "$MAIN_ISSUE" ]; then
               echo "Adding comment to main issue #$MAIN_ISSUE"
               gh issue comment "$MAIN_ISSUE" \
                 --repo "$REPO" \
-                --body "🔔 Reminder: Token \`$TOKEN_NAME\` will expire in **$DAYS_LEFT** day(s)."
+                --body "🔔 Reminder: Token \`$TOKEN_NAME\` $COMMENT_SUFFIX."
 
-              # Close any duplicate issues
+              # Close duplicates
               for ISSUE in $DUPLICATES; do
                 echo "Closing duplicate issue #$ISSUE"
                 gh issue comment "$ISSUE" \
@@ -65,20 +76,18 @@ jobs:
                   --body "🔁 This issue duplicates #$MAIN_ISSUE. Closing it."
                 gh issue close "$ISSUE" --repo "$REPO"
               done
-
             else
               echo "No existing issue found. Creating a new one."
               gh issue create \
                 --repo "$REPO" \
                 --title "$TITLE" \
-                --body "Your token \`$TOKEN_NAME\` will expire in **$DAYS_LEFT** day(s). Please generate a new one." \
+                --body "Your token \`$TOKEN_NAME\` $COMMENT_SUFFIX. Please generate a new one." \
                 --label "maintenance"
             fi
-
           else
-            echo "Token is still valid."
+            # Token is still valid
+            echo "Token is valid (not expiring soon)."
 
-            # Close any open issues since token is valid again
             for ISSUE in $ISSUE_NUMBERS; do
               echo "Closing issue #$ISSUE because the token is valid again."
               gh issue comment "$ISSUE" \
@@ -88,14 +97,15 @@ jobs:
             done
           fi
 
+          # GitHub Step Summary
           {
             echo "### 🧪 PAT Expiration Check"
             echo "- Token name: \`$TOKEN_NAME\`"
-            echo "- Days until expiration: **$DAYS_LEFT**"
-            if [ "$DAYS_LEFT" -le "$ALERT_DAYS" ]; then
-              echo "- ⚠️ **ALERT**: Token expires soon!"
+            if [ "$DAYS_LEFT" -lt 0 ]; then
+              echo "- ❌ Token expired $DAYS_AGO day(s) ago."
+            elif [ "$DAYS_LEFT" -eq 0 ]; then
+              echo "- ⚠️ Token expires today!"
             else
-              echo "- ✅ Token is still valid."
+              echo "- Days until expiration: **$DAYS_LEFT**"
             fi
           } >> "$GITHUB_STEP_SUMMARY"
-      
