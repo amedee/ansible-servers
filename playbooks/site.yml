@@ -10,7 +10,8 @@
   roles:
     - swapfile
     - localepurge
-    - debops.debops.etckeeper
+    - role: debops.debops.etckeeper
+      etckeeper__enabled: true
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
