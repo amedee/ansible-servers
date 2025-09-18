@@ -1,11 +1,18 @@
 ---
+- name: Ensure /etc/postfix/checks/ directory exists
+  ansible.builtin.file:
+    path: /etc/postfix/checks/
+    state: directory
+    owner: root
+    mode: '0755'
+
 - name: Copy Postfix checks files
   ansible.builtin.copy:
-    src: etc/postfix/checks/
+    src: "{{ item }}"
     dest: /etc/postfix/checks/
     owner: root
-    group: root
-    mode: "0644"
+    mode: '0644'
+  with_fileglob: "*.pcre"
   notify:
     - Restart Postfix
 

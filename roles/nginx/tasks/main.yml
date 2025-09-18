@@ -1,11 +1,18 @@
 ---
-- name: Copy website config files
+- name: Copy gzip config file
   ansible.builtin.copy:
-    src: etc/nginx/
-    dest: /etc/nginx/
+    src: gzip.conf
+    dest: /etc/nginx/conf.d/
     owner: root
-    mode: u=rw,go=r
-    directory_mode: u=rwx,go=rx
+    mode: '0644'
+  notify: Restart nginx
+
+- name: Copy website config file
+  ansible.builtin.copy:
+    src: amedee.be
+    dest: /etc/nginx/sites-available/
+    owner: root
+    mode: '0644'
   notify: Restart nginx
 
 - name: Delete DigitalOcean website config

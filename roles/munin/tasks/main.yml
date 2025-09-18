@@ -1,10 +1,11 @@
 ---
 - name: Add munin host configurations
   ansible.builtin.copy:
-    src: etc/munin/munin-conf.d/
+    src: "{{ item }}"
     dest: /etc/munin/munin-conf.d/
     owner: root
-    mode: u=rw,go=r
+    mode: '0644'
+  with_fileglob: "*"
   notify: Restart munin
 
 - name: Remove duplicate munin host configuration
