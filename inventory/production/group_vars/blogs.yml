@@ -126,6 +126,7 @@ wp_plugins_install:
   - jetpack-protect
   - performance-lab
   - plugin-report
+  - public-post-preview
   - redirection
   - redis-cache
   - syntaxhighlighter
