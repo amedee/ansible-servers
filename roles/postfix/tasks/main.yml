@@ -30,7 +30,7 @@
   ansible.builtin.copy:
     dest: /etc/postfix/sender-canonical-maps.pcre
     content: |
-      /^(.+)@box\.vangasse\.eu$/    $1@vangasse.eu
+      /^.+$/    amedee@vangasse.eu
     owner: root
     group: root
     mode: "0644"
