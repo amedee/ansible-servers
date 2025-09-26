@@ -47,6 +47,7 @@ postfix_static_settings:
   recipient_delimiter: +-
   relayhost:
   smtp_bind_address6:
+  smtp_generic_maps: pcre:/etc/postfix/generic.pcre
   smtp_sasl_auth_enable:
   smtp_sasl_password_maps:
   smtp_sasl_security_options:
