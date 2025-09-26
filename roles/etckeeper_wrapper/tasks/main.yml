@@ -1,0 +1,10 @@
+---
+- name: Ensure etckeeper git user/email is configured safely
+  community.general.git_config:
+    name: "{{ item.key }}"
+    scope: system
+    value: "{{ item.value }}"
+  loop:
+    - {key: user.name, value: "{{ etckeeper__vcs_user | default('root') }}"}
+    - {key: user.email, value: "{{ etckeeper__vcs_email | default('root@localhost') }}"}
+  when: (etckeeper__enabled | default(false) | bool) and (etckeeper__vcs | default('git') == 'git')
