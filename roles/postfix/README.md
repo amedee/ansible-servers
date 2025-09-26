@@ -46,6 +46,7 @@ postfix_static_settings:
   recipient_canonical_maps: pcre:/etc/postfix/recipient-canonical-maps.pcre
   recipient_delimiter: +-
   relayhost:
+  sender_canonical_maps: pcre:/etc/postfix/sender-canonical-maps.pcre
   smtp_bind_address6:
   smtp_sasl_auth_enable:
   smtp_sasl_password_maps:
