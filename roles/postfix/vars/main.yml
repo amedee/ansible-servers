@@ -22,6 +22,7 @@ postfix_static_settings:
   recipient_delimiter: "+-"
   relayhost: null
   smtp_bind_address6: null
+  smtp_generic_maps: pcre:/etc/postfix/generic.pcre
   smtp_sasl_auth_enable: null
   smtp_sasl_password_maps: null
   smtp_sasl_security_options: null

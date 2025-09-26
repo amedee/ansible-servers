@@ -1,0 +1,2 @@
+# Rewrite all @box.vangasse.eu senders to @vangasse.eu
+/^(.+)@box\.vangasse\.eu$/    $1@vangasse.eu

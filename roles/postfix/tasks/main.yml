@@ -12,7 +12,16 @@
     dest: /etc/postfix/checks/
     owner: root
     mode: '0644'
-  with_fileglob: "*.pcre"
+  with_fileglob: "*_checks.pcre"
+  notify:
+    - Restart Postfix
+
+- name: Copy Postfix generic map
+  ansible.builtin.copy:
+    src: generic.pcre
+    dest: /etc/postfix/generic.pcre
+    owner: root
+    mode: '0644'
   notify:
     - Restart Postfix
 
