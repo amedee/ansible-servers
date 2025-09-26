@@ -95,11 +95,17 @@
   ansible.builtin.set_fact:
     postfix_check_line: "check_recipient_access pcre:/etc/postfix/checks/invalid_recipients.pcre"
 
+- name: Set default smtpd_recipient_restrictions if empty
+  ansible.builtin.set_fact:
+    postfix_old_list: ["permit_mynetworks", "reject_unauth_destination"]
+  when: postfix_smtpd_restrictions.stdout | length == 0
+
 - name: Parse current smtpd_recipient_restrictions into list
   ansible.builtin.set_fact:
     postfix_old_list: "{{ postfix_smtpd_restrictions.stdout.split(',') | map('trim') | list }}"
   when:
     - postfix_smtpd_restrictions.stdout is defined
+    - postfix_smtpd_restrictions.stdout | length > 0
 
 - name: Prepare new smtpd_recipient_restrictions list
   ansible.builtin.set_fact:
@@ -116,9 +122,7 @@
   when:
     - not ansible_check_mode
     - postfix_old_list is defined
-    - postfix_smtpd_restrictions.stdout is defined
-    - postfix_smtpd_restrictions.stdout | length > 0
-    - postfix_check_line not in postfix_smtpd_restrictions.stdout
+    - postfix_check_line not in postfix_old_list
 
 - name: Update smtpd_recipient_restrictions using postconf
   ansible.builtin.command: >
@@ -126,9 +130,7 @@
   when:
     - not ansible_check_mode
     - postfix_new_list is defined
-    - postfix_smtpd_restrictions.stdout is defined
-    - postfix_smtpd_restrictions.stdout | length > 0
-    - postfix_check_line not in postfix_smtpd_restrictions.stdout
+    - postfix_check_line not in postfix_old_list
   changed_when: true
   notify: Restart Postfix
 

@@ -1,3 +1,4 @@
+/^(?!.*@(amedee\.be|vangasse\.eu)$)/    REJECT
 {% for address in postfix_invalid_recipients -%}
 /^{{ address | replace('.', '\\.') }}$/ REJECT Invalid recipient
 {% endfor %}
