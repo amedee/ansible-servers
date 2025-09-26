@@ -12,7 +12,7 @@
     dest: /etc/postfix/checks/
     owner: root
     mode: '0644'
-  with_fileglob: "*.pcre"
+  with_fileglob: "*_checks.pcre"
   notify:
     - Restart Postfix
 
@@ -25,6 +25,16 @@
     mode: "0644"
   notify:
     - Restart Postfix
+
+- name: Ensure sender canonical PCRE map exists
+  ansible.builtin.copy:
+    dest: /etc/postfix/sender-canonical-maps.pcre
+    content: |
+      /^(.+)@box\.vangasse\.eu$/    $1@vangasse.eu
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Postfix
 
 - name: Ensure recipient canonical PCRE map exists
   ansible.builtin.copy:
