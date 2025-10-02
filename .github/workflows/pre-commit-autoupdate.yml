@@ -19,7 +19,7 @@ jobs:
       - name: ⏬ Checkout repo
         uses: actions/checkout@v5
         with:
-          persist-credentials: false
+          persist-credentials: true
 
       - name: 💾 Cache pip dependencies
         uses: actions/cache@v4
