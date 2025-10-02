@@ -124,6 +124,7 @@ wp_plugins_install:
   - jetpack
   - jetpack-boost
   - jetpack-protect
+  - merpress
   - performance-lab
   - plugin-report
   - public-post-preview
