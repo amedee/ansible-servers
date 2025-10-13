@@ -49,6 +49,6 @@ jobs:
           jq '.runs = [ { tool: .runs[0].tool, results: [ .runs[] | .results ] | add } ]' results.sarif > merged.sarif
 
       - name: Upload SARIF results file
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: merged.sarif
