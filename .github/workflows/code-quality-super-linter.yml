@@ -49,7 +49,11 @@ jobs:
         env:
           CREATE_LOG_FILE: true
           FAIL_ON_CONFLICTING_TOOLS_ENABLED: true
+          FIX_BIOME_FORMAT: true
+          FIX_BIOME_LINT: true
           FIX_GITHUB_ACTIONS_ZIZMOR: true
+          FIX_JSON_PRETTIER: true
+          FIX_PYTHON_RUFF_FORMAT: true
           FIX_SHELL_SHFMT: true
           FIX_YAML_PRETTIER: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
