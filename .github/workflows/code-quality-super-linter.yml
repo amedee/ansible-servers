@@ -87,18 +87,58 @@ jobs:
           YAML_CONFIG_FILE: ".yamllint.yml"
         continue-on-error: true
 
-      # Check the PR diff using the current branch and the base branch of the PR
-      - uses: GrantBirki/git-diff-action@7420e4d095c27bb23359787640976d60c94fd216 # v2.8.1
-        name: git-diff-action
-        id: git-diff-action
-        with:
-          base_branch: origin/${{ github.head_ref || github.ref_name }}
-          raw_diff_file_output: diff.txt
-
-      - name: Attach diff to summary
+      - name: Check if there are changes
+        id: changes
         run: |
           {
-            echo "### Super-Linter Diff"
+            # Determine base commit dynamically
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              BASE=HEAD^2
+            else
+              BASE=HEAD^1
+            fi
+            echo "base_commit=$BASE"
+
+            # Check if there is a diff
+            if git diff --quiet "$BASE"; then
+              echo "has_changes=false"
+            else
+              echo "has_changes=true"
+            fi
+          } >> "$GITHUB_OUTPUT"
+
+      - name: 📤 Extract staged git diff
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: GrantBirki/git-diff-action@7420e4d095c27bb23359787640976d60c94fd216 # v2.8.1
+        id: get_diff
+        with:
+          base_branch: ${{ steps.changes.outputs.base_commit }}
+          file_output_only: "true"
+          raw_diff_file_output: diff.txt
+          search_path: "."
+
+      - name: 🧠 Prepare diff outputs
+        if: steps.changes.outputs.has_changes == 'true'
+        id: diff_outputs
+        run: |
+          {
+            if [ -s diff.txt ]; then
+              echo "has_diff=true"
+              # Trim for safety: replace newlines with \n and escape % for safe output
+              echo "diff_content<<EOF"
+              cat diff.txt
+              echo "EOF"
+            else
+              echo "has_diff=false"
+              echo "diff_content="
+            fi
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Attach diff to summary
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          {
+            echo "### Diff"
             echo ""
             if [ -f diff.txt ]; then
               echo '```diff'
@@ -106,6 +146,29 @@ jobs:
               echo '```'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 🤖 Generate AI commit message
+        if: steps.changes.outputs.has_changes == 'true'
+        id: ai_commit
+        uses: ./.github/actions/ai-commit-message
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          diff_content: ${{ steps.diff_outputs.outputs.diff_content }}
+          prompt_content: |
+            Write a concise Git commit message describing the staged changes.
+
+      - name: 🔁 Commit, push, and PR
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: ./.github/actions/create-or-update-pr
+        with:
+          branch: chore/super-linter
+          commit_message: ${{ steps.ai_commit.outputs.message }}
+          pr_title: "⬆️ Super-Linter"
+          pr_body: ${{ steps.ai_commit.outputs.message }}
+          github_token: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
+          git_user_name: "github-actions[bot]"
+          git_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Fail workflow if super-linter failed
         env:

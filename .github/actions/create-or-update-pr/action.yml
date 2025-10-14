@@ -43,6 +43,7 @@ runs:
         git config user.name "${{ inputs.git_user_name }}"
         git config user.email "${{ inputs.git_user_email }}"
         git checkout -B "${{ inputs.branch }}"
+        git add .
 
         if git diff --cached --quiet; then
           echo "🟡 No staged changes to commit."
