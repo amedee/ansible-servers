@@ -41,44 +41,65 @@ jobs:
       - name: 🧹 Run pre-commit autoupdate
         run: pre-commit autoupdate
 
-      - name: 🔍 Extract staged diff
-        id: diff
-        uses: ./.github/actions/extract-staged-diff
+      - name: 📤 Extract staged git diff
+        uses: GrantBirki/git-diff-action@7420e4d095c27bb23359787640976d60c94fd216 # v2.8.1
+        id: get_diff
         with:
-          globs: ".pre-commit-config.yaml"
+          base_branch: HEAD^1
+          file_output_only: "true"
+          raw_diff_file_output: diff.txt
+          search_path: ".pre-commit-config.yaml"
 
-      - name: 💬 Generate commit message
-        id: commit_message
-        if: steps.diff.outputs.has_diff == 'true'
+      - name: 🧠 Prepare diff outputs
+        id: diff_outputs
+        run: |
+          {
+            if [ -s diff.txt ]; then
+              echo "has_diff=true"
+              # Trim for safety: replace newlines with \n and escape % for safe output
+              echo "diff_content<<EOF"
+              cat diff.txt
+              echo "EOF"
+            else
+              echo "has_diff=false"
+              echo "diff_content="
+            fi
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Attach diff to summary
+        if: steps.diff_outputs.outputs.has_diff == 'true'
+        run: |
+          {
+            echo "### Diff"
+            echo ""
+            if [ -f diff.txt ]; then
+              echo '```diff'
+              cat diff.txt
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 🤖 Generate AI commit message
+        id: ai_commit
+        if: steps.diff_outputs.outputs.has_diff == 'true'
         uses: ./.github/actions/ai-commit-message
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
-          diff_content: ${{ steps.diff.outputs.diff_content }}
+          diff_content: ${{ steps.diff_outputs.outputs.diff_content }}
           prompt_content: |
             Write a concise Git commit message describing the staged changes
             to the configuration of pre-commit hooks in .pre-commit-config.yaml.
             Say something about the specific hooks that were updated.
 
-      - name: ✅ Commit changes if .pre-commit-config.yaml changed
-        if: steps.diff.outputs.has_diff == 'true'
-        env:
-          COMMIT_MSG: ${{ steps.commit_message.outputs.message }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          printf '%s\n' "$COMMIT_MSG" > commit-msg.txt
-          git commit --file=commit-msg.txt --no-verify --
-          git push --force origin HEAD:chore/pre-commit-autoupdate
-
-      - name: 🚀 Create or update PR
-        if: steps.diff.outputs.has_diff == 'true'
+      - name: 🔁 Commit, push, and PR
         uses: ./.github/actions/create-or-update-pr
+        if: steps.diff_outputs.outputs.has_diff == 'true'
         with:
           branch: chore/pre-commit-autoupdate
-          commit_message: ${{ steps.commit_message.outputs.message }}
+          commit_message: ${{ steps.ai_commit.outputs.message }}
           pr_title: "⬆️ Pre-commit autoupdate"
-          pr_body: ${{ steps.commit_message.outputs.message }}
+          pr_body: ${{ steps.ai_commit.outputs.message }}
           github_token: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
           git_user_name: "github-actions[bot]"
           git_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
