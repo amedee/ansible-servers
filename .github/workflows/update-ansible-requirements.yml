@@ -32,29 +32,75 @@ jobs:
       - name: 🔄 Update requirements.yml
         run: python .github/scripts/update_ansible_requirements.py
 
+      - name: Check if there are changes
+        id: changes
+        run: |
+          # Detect any changes in working tree
+          if git diff --exit-code --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: 📤 Extract staged git diff
-        uses: ./.github/actions/extract-staged-diff
-        id: get_diff
-        with:
-          globs: "requirements.yml"
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git diff --ignore-all-space > diff.txt
+
+      - name: 🧠 Prepare diff outputs
+        id: diff_outputs
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          if [ -s diff.txt ]; then
+            echo "has_diff=true" >> "$GITHUB_OUTPUT"
+            printf "diff_content<<EOF\n%s\nEOF\n" "$(cat diff.txt)" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_diff=false" >> "$GITHUB_OUTPUT"
+            echo "diff_content=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Attach diff to summary
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          {
+            echo "### 🔍 Diff"
+            echo
+            echo '```diff'
+            if [ -s diff.txt ]; then
+              cat diff.txt
+            else
+              echo "# No diff file"
+            fi
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: 🤖 Generate AI commit message
         id: ai_commit
-        if: steps.get_diff.outputs.has_diff == 'true'
+        if: steps.diff_outputs.outputs.has_diff == 'true'
         uses: ./.github/actions/ai-commit-message
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
-          diff_content: ${{ steps.get_diff.outputs.diff_content }}
+          diff_content: ${{ steps.diff_outputs.outputs.diff_content }}
           prompt_content: |
             Write a concise Git commit message describing the staged updates
             to Ansible roles and collections in requirements.yml.
 
+      - name: Ensure commit message exists
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          AI_MESSAGE: ${{ steps.ai_commit.outputs.message }}
+        run: |
+          if [ -z "$AI_MESSAGE" ]; then
+            echo "AI commit message missing. Aborting workflow."
+            exit 1
+          fi
+
       - name: 🔁 Commit, push, and PR
         uses: ./.github/actions/create-or-update-pr
-        if: steps.get_diff.outputs.has_diff == 'true'
+        if: steps.diff_outputs.outputs.has_diff == 'true'
         with:
-          branch: ansible-requirements-update
+          branch: chore/ansible-requirements
           commit_message: ${{ steps.ai_commit.outputs.message }}
           pr_title: "⬆️ Update Ansible requirements"
           pr_body: ${{ steps.ai_commit.outputs.message }}

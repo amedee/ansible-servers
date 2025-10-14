@@ -9,6 +9,11 @@ on: # yamllint disable-line rule:truthy
       - reopened
       - synchronize
   workflow_call:
+    secrets:
+      OPENROUTER_API_KEY:
+        required: true
+      ANSIBLE_DEP_UPDATER_TOKEN:
+        required: true
   workflow_dispatch:
 
 concurrency:
@@ -87,25 +92,86 @@ jobs:
           YAML_CONFIG_FILE: ".yamllint.yml"
         continue-on-error: true
 
-      # Check the PR diff using the current branch and the base branch of the PR
-      - uses: GrantBirki/git-diff-action@7420e4d095c27bb23359787640976d60c94fd216 # v2.8.1
-        name: git-diff-action
-        id: git-diff-action
-        with:
-          base_branch: origin/${{ github.head_ref || github.ref_name }}
-          raw_diff_file_output: diff.txt
+      - name: Check if there are changes
+        id: changes
+        run: |
+          # Detect any changes in working tree
+          if git diff --exit-code --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 📤 Extract staged git diff
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git diff --ignore-all-space > diff.txt
+
+      - name: 🧠 Prepare diff outputs
+        id: diff_outputs
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          if [ -s diff.txt ]; then
+            echo "has_diff=true" >> "$GITHUB_OUTPUT"
+            printf "diff_content<<EOF\n%s\nEOF\n" "$(cat diff.txt)" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_diff=false" >> "$GITHUB_OUTPUT"
+            echo "diff_content=" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Attach diff to summary
+        if: steps.changes.outputs.has_changes == 'true'
         run: |
           {
-            echo "### Super-Linter Diff"
-            echo ""
-            if [ -f diff.txt ]; then
-              echo '```diff'
+            echo "### 🔍 Diff"
+            echo
+            echo '```diff'
+            if [ -s diff.txt ]; then
               cat diff.txt
-              echo '```'
+            else
+              echo "# No diff file"
             fi
-          } >> "$GITHUB_STEP_SUMMARY"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: 🤖 Generate AI commit message
+        if: steps.changes.outputs.has_changes == 'true'
+        id: ai_commit
+        uses: ./.github/actions/ai-commit-message
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          diff_content: ${{ steps.diff_outputs.outputs.diff_content }}
+          prompt_content: |
+            Write a concise Git commit message describing the staged changes.
+
+      - name: Ensure commit message exists
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          AI_MESSAGE: ${{ steps.ai_commit.outputs.message }}
+        run: |
+          if [ -z "$AI_MESSAGE" ]; then
+            echo "AI commit message missing. Aborting workflow."
+            exit 1
+          fi
+
+      - name: 🔁 Commit, push, and PR
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: ./.github/actions/create-or-update-pr
+        with:
+          branch: chore/super-linter
+          commit_message: ${{ steps.ai_commit.outputs.message }}
+          pr_title: "⬆️ Super-Linter"
+          pr_body: |
+            ## 🤖 Automated Super-Linter Fixes
+
+            ${{ steps.ai_commit.outputs.message }}
+
+            ---
+            **Diff included in workflow summary.**
+          github_token: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
+          git_user_name: "github-actions[bot]"
+          git_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Fail workflow if super-linter failed
         env:

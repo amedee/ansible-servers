@@ -41,44 +41,79 @@ jobs:
       - name: 🧹 Run pre-commit autoupdate
         run: pre-commit autoupdate
 
-      - name: 🔍 Extract staged diff
-        id: diff
-        uses: ./.github/actions/extract-staged-diff
-        with:
-          globs: ".pre-commit-config.yaml"
+      - name: Check if there are changes
+        id: changes
+        run: |
+          # Detect any changes in working tree
+          if git diff --exit-code --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: 💬 Generate commit message
-        id: commit_message
-        if: steps.diff.outputs.has_diff == 'true'
+      - name: 📤 Extract staged git diff
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git diff --ignore-all-space > diff.txt
+
+      - name: 🧠 Prepare diff outputs
+        id: diff_outputs
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          if [ -s diff.txt ]; then
+            echo "has_diff=true" >> "$GITHUB_OUTPUT"
+            printf "diff_content<<EOF\n%s\nEOF\n" "$(cat diff.txt)" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_diff=false" >> "$GITHUB_OUTPUT"
+            echo "diff_content=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Attach diff to summary
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          {
+            echo "### 🔍 Diff"
+            echo
+            echo '```diff'
+            if [ -s diff.txt ]; then
+              cat diff.txt
+            else
+              echo "# No diff file"
+            fi
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: 🤖 Generate AI commit message
+        id: ai_commit
+        if: steps.diff_outputs.outputs.has_diff == 'true'
         uses: ./.github/actions/ai-commit-message
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
-          diff_content: ${{ steps.diff.outputs.diff_content }}
+          diff_content: ${{ steps.diff_outputs.outputs.diff_content }}
           prompt_content: |
             Write a concise Git commit message describing the staged changes
             to the configuration of pre-commit hooks in .pre-commit-config.yaml.
             Say something about the specific hooks that were updated.
 
-      - name: ✅ Commit changes if .pre-commit-config.yaml changed
-        if: steps.diff.outputs.has_diff == 'true'
+      - name: Ensure commit message exists
+        if: steps.changes.outputs.has_changes == 'true'
         env:
-          COMMIT_MSG: ${{ steps.commit_message.outputs.message }}
+          AI_MESSAGE: ${{ steps.ai_commit.outputs.message }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          printf '%s\n' "$COMMIT_MSG" > commit-msg.txt
-          git commit --file=commit-msg.txt --no-verify --
-          git push --force origin HEAD:chore/pre-commit-autoupdate
+          if [ -z "$AI_MESSAGE" ]; then
+            echo "AI commit message missing. Aborting workflow."
+            exit 1
+          fi
 
-      - name: 🚀 Create or update PR
-        if: steps.diff.outputs.has_diff == 'true'
+      - name: 🔁 Commit, push, and PR
         uses: ./.github/actions/create-or-update-pr
+        if: steps.diff_outputs.outputs.has_diff == 'true'
         with:
           branch: chore/pre-commit-autoupdate
-          commit_message: ${{ steps.commit_message.outputs.message }}
+          commit_message: ${{ steps.ai_commit.outputs.message }}
           pr_title: "⬆️ Pre-commit autoupdate"
-          pr_body: ${{ steps.commit_message.outputs.message }}
+          pr_body: ${{ steps.ai_commit.outputs.message }}
           github_token: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
           git_user_name: "github-actions[bot]"
           git_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
