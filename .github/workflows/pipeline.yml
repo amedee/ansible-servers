@@ -36,6 +36,9 @@ jobs:
       pull-requests: read
       statuses: write
     uses: ./.github/workflows/code-quality-super-linter.yml
+    secrets:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      ANSIBLE_DEP_UPDATER_TOKEN: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
     needs:
       - ansible-cache
 
