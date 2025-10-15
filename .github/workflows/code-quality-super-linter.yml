@@ -45,20 +45,27 @@ jobs:
       - name: Run Super-linter
         id: super-linter
         # yamllint disable-line rule:line-length
-        uses: super-linter/super-linter/slim@ffde3b2b33b745cb612d787f669ef9442b1339a6 # v8.1.0
+        uses: super-linter/super-linter/slim@7bba2eeb89d01dc9bfd93c497477a57e72c83240 # v8.2.0
         env:
           CREATE_LOG_FILE: true
           FAIL_ON_CONFLICTING_TOOLS_ENABLED: true
+          FIX_BIOME_FORMAT: true
+          FIX_BIOME_LINT: true
           FIX_GITHUB_ACTIONS_ZIZMOR: true
+          FIX_JSON_PRETTIER: true
+          FIX_PYTHON_RUFF_FORMAT: true
           FIX_SHELL_SHFMT: true
           FIX_YAML_PRETTIER: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_ANSIBLE: false
+          VALIDATE_CSS_STYLELINT: false
           VALIDATE_GIT_COMMITLINT: false
           VALIDATE_JAVASCRIPT_ES: false
+          VALIDATE_JAVASCRIPT_PRETTIER: false
           VALIDATE_JSON: false
           VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_PYTHON_BLACK: false
         continue-on-error: true
 
       # Check the PR diff using the current branch and the base branch of the PR

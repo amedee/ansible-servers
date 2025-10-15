@@ -9,7 +9,7 @@ repos:
         args: ["--unsafe"]
       - id: check-added-large-files
   - repo: https://github.com/ansible-community/ansible-lint
-    rev: v25.9.1
+    rev: v25.9.2
     hooks:
       - id: ansible-lint
         args: ["-c", ".github/linters/.ansible-lint.yml"]
@@ -53,7 +53,7 @@ repos:
       - id: check-github-actions
         args: [--verbose]
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.7
+    rev: v1.7.8
     hooks:
       - id: actionlint
   - repo: https://github.com/jorisroovers/gitlint
