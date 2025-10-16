@@ -68,16 +68,18 @@ jobs:
       - name: 🧠 Prepare diff outputs
         id: diff_outputs
         run: |
-          if [ -s diff.txt ]; then
-            echo "has_diff=true" >> $GITHUB_OUTPUT
-            # Trim for safety: replace newlines with \n and escape % for safe output
-            echo "diff_content<<EOF" >> $GITHUB_OUTPUT
-            cat diff.txt >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-          else
-            echo "has_diff=false" >> $GITHUB_OUTPUT
-            echo "diff_content=" >> $GITHUB_OUTPUT
-          fi
+          {
+            if [ -s diff.txt ]; then
+              echo "has_diff=true"
+              # Trim for safety: replace newlines with \n and escape % for safe output
+              echo "diff_content<<EOF"
+              cat diff.txt
+              echo "EOF"
+            else
+              echo "has_diff=false"
+              echo "diff_content="
+            fi
+          } >> "$GITHUB_OUTPUT"
 
       - name: Attach diff to summary
         if: steps.diff_outputs.outputs.has_diff == 'true'
