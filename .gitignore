@@ -6,6 +6,10 @@
 .idea/
 .logs/
 .vagrant/
+diff.txt
 dist/
+github_conf/
 node_modules/
+report/
 roles/geerlingguy.*/
+super-linter-output/

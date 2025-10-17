@@ -58,6 +58,8 @@ jobs:
           FIX_YAML_PRETTIER: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
+          LINTER_RULES_PATH: "."
+          PYTHON_PYLINT_CONFIG_FILE: ".pylintrc"
           VALIDATE_ANSIBLE: false
           VALIDATE_CSS_STYLELINT: false
           VALIDATE_GIT_COMMITLINT: false

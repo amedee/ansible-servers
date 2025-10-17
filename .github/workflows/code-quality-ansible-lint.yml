@@ -36,5 +36,3 @@ jobs:
 
       - name: Run ansible-lint
         uses: ansible/ansible-lint@d7cd7cfa2469536527aceaef9ef2ec6f2fb331cb # v25.9.2
-        with:
-          args: "-c .github/linters/.ansible-lint.yml"

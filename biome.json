@@ -1,5 +1,17 @@
 {
   "files": {
-    "includes": ["!.ansible/", "!.github/actions/ai-commit-message/dist/"]
+    "includes": [
+      "**",
+      "!**/.ansible/**",
+      "!**/dist/**",
+      "!**/node_modules/**",
+      "!**/.git/**",
+      "!**/vendor/**",
+      "!**/build/**",
+      "!**/tmp/**",
+      "!**/.venv/**",
+      "!**/.github/actions/**"
+    ],
+    "maxSize": 1048576
   }
 }

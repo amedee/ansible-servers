@@ -83,7 +83,6 @@ jobs:
         run: |
           echo "Starting ESLint scan..."
           npx eslint \
-            --config .github/linters/eslint.config.js \
             --max-warnings=0 \
             --color \
             '.github/actions/*/*.js'
