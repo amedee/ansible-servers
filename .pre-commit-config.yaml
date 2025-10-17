@@ -12,7 +12,6 @@ repos:
     rev: v25.9.2
     hooks:
       - id: ansible-lint
-        args: ["-c", ".github/linters/.ansible-lint.yml"]
   - repo: https://github.com/IamTheFij/ansible-pre-commit
     rev: v1.0.1
     hooks:
@@ -67,6 +66,7 @@ repos:
 
 exclude: |
   (?x)(
+    .ansible/|
     .vagrant/|
     dist/|
     node_modules/
