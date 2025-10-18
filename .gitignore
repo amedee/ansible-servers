@@ -6,6 +6,8 @@
 .idea/
 .logs/
 .vagrant/
+diff.txt
 dist/
 node_modules/
+report/
 roles/geerlingguy.*/
