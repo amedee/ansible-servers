@@ -91,9 +91,7 @@ async function fetchCommitMessageWithRetry(
 					`OpenRouter API error after ${retries} attempts: ${error.message}`,
 				);
 			}
-			await new Promise((res) =>
-				setTimeout(res, delay * 2 ** (attempt - 1)),
-			);
+			await new Promise((res) => setTimeout(res, delay * 2 ** (attempt - 1)));
 		}
 	}
 }
