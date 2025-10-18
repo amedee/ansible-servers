@@ -5,7 +5,7 @@
 | BASH                       | Pass ✅           |
 | BASH_EXEC                  | Pass ✅           |
 | BIOME_FORMAT               | Pass ✅           |
-| BIOME_LINT                 | Pass ✅           |
+| BIOME_LINT                 | Fail ❌           |
 | CHECKOV                    | Pass ✅           |
 | GITHUB_ACTIONS             | Pass ✅           |
 | GITHUB_ACTIONS_ZIZMOR      | Pass ✅           |
@@ -16,7 +16,7 @@
 | MARKDOWN                   | Pass ✅           |
 | MARKDOWN_PRETTIER          | Pass ✅           |
 | PRE_COMMIT                 | Pass ✅           |
-| PYTHON_PYLINT              | Pass ✅           |
+| PYTHON_PYLINT              | Fail ❌           |
 | PYTHON_FLAKE8              | Pass ✅           |
 | PYTHON_ISORT               | Pass ✅           |
 | PYTHON_MYPY                | Pass ✅           |
@@ -27,4 +27,4 @@
 | YAML                       | Pass ✅           |
 | YAML_PRETTIER              | Pass ✅           |
 
-All files and directories linted successfully
+Super-linter detected linting errors
