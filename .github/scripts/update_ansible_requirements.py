@@ -65,10 +65,7 @@ def get_latest_galaxy_version(namespace, name, item_type):
         str or None: Latest stable version string, or None if not found.
     """
     if item_type == "role":
-        url = (
-            f"https://galaxy.ansible.com/api/v1/roles/"
-            f"?namespace={namespace}&name={name}"
-        )
+        url = f"https://galaxy.ansible.com/api/v1/roles/?namespace={namespace}&name={name}"
     else:
         url = (
             f"https://galaxy.ansible.com"
@@ -97,10 +94,7 @@ for entry in REQUIREMENTS.get("roles", []):
         ns, nm = match.groups()
         latest_version = get_latest_galaxy_version(ns, nm, "role")
         if latest_version and latest_version != entry["version"]:
-            print(
-                f"⬆️ Updating role {entry['name']} from "
-                f"{entry['version']} to {latest_version}"
-            )
+            print(f"⬆️ Updating role {entry['name']} from {entry['version']} to {latest_version}")
             entry["version"] = latest_version
 
 for entry in REQUIREMENTS.get("collections", []):
@@ -108,10 +102,7 @@ for entry in REQUIREMENTS.get("collections", []):
         ns, nm = entry["name"].split(".")
         latest_version = get_latest_galaxy_version(ns, nm, "collection")
         if latest_version and latest_version != entry["version"]:
-            print(
-                f"⬆️ Updating collection {entry['name']} from "
-                f"{entry['version']} to {latest_version}"
-            )
+            print(f"⬆️ Updating collection {entry['name']} from {entry['version']} to {latest_version}")
             entry["version"] = latest_version
 
 with open("requirements.yml", "w", encoding="utf-8") as f:

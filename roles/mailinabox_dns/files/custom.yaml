@@ -9,7 +9,7 @@ amedee.be:
     - openai-domain-verification=dv-CE4I5t0idxqOlBeRFw2m6TwK
     - pinterest-site-verification=25f529bc9ccfe7c40ede802261902e48
     - v=spf1 include:amazonses.com -all
-'*.amedee.be': 209.38.38.53
+"*.amedee.be": 209.38.38.53
 www.amedee.be: 209.38.38.53
 
 # --- Email security ---
@@ -29,7 +29,6 @@ _amazonses.amedee.be:
   TXT: LJ8r8p2RHVUgO6HfaW1QIo8Y4i0Nf8dYgik3Py2U5/M=
 _atproto.amedee.be:
   TXT: did=did:plc:ii5acpyq5qnlybvcqutuhbk5
-
 
 # ================================================================
 # DNS Records for vangasse.eu

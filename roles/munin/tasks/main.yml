@@ -4,7 +4,7 @@
     src: "{{ item }}"
     dest: /etc/munin/munin-conf.d/
     owner: root
-    mode: '0644'
+    mode: "0644"
   with_fileglob: "*"
   notify: Restart munin
 
