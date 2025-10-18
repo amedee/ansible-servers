@@ -1,5 +1,5 @@
 {
   "files": {
-    "includes": ["!.ansible/", "!.github/actions/ai-commit-message/dist/"]
+    "includes": ["**", "!.ansible/", "!.github/actions/ai-commit-message/dist/"]
   }
 }

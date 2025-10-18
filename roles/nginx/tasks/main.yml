@@ -4,7 +4,7 @@
     src: gzip.conf
     dest: /etc/nginx/conf.d/
     owner: root
-    mode: '0644'
+    mode: "0644"
   notify: Restart nginx
 
 - name: Copy website config file
@@ -12,7 +12,7 @@
     src: amedee.be
     dest: /etc/nginx/sites-available/
     owner: root
-    mode: '0644'
+    mode: "0644"
   notify: Restart nginx
 
 - name: Delete DigitalOcean website config
