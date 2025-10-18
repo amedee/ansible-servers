@@ -68,16 +68,38 @@ jobs:
           VALIDATE_PYTHON_BLACK: false
         continue-on-error: true
 
+      - name: Check if there are changes
+        id: changes
+        run: |
+          {
+            # Determine base commit dynamically
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              BASE=HEAD^2
+            else
+              BASE=HEAD^1
+            fi
+            echo "base_commit=$BASE"
+
+            # Check if there is a diff
+            if git diff --quiet "$BASE"; then
+              echo "has_changes=false"
+            else
+              echo "has_changes=true"
+            fi
+          } >> "$GITHUB_OUTPUT"
+
       - name: 📤 Extract staged git diff
+        if: steps.changes.outputs.has_changes == 'true'
         uses: GrantBirki/git-diff-action@7420e4d095c27bb23359787640976d60c94fd216 # v2.8.1
         id: get_diff
         with:
-          base_branch: HEAD^1
+          base_branch: ${{ steps.changes.outputs.base_commit }}
           file_output_only: "true"
           raw_diff_file_output: diff.txt
           search_path: "."
 
       - name: 🧠 Prepare diff outputs
+        if: steps.changes.outputs.has_changes == 'true'
         id: diff_outputs
         run: |
           {
@@ -94,7 +116,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Attach diff to summary
-        if: steps.diff_outputs.outputs.has_diff == 'true'
+        if: steps.changes.outputs.has_changes == 'true'
         run: |
           {
             echo "### Diff"
@@ -107,8 +129,8 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: 🤖 Generate AI commit message
+        if: steps.changes.outputs.has_changes == 'true'
         id: ai_commit
-        if: steps.diff_outputs.outputs.has_diff == 'true'
         uses: ./.github/actions/ai-commit-message
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -118,8 +140,8 @@ jobs:
             Write a concise Git commit message describing the staged changes.
 
       - name: 🔁 Commit, push, and PR
+        if: steps.changes.outputs.has_changes == 'true'
         uses: ./.github/actions/create-or-update-pr
-        if: steps.diff_outputs.outputs.has_diff == 'true'
         with:
           branch: chore/super-linter
           commit_message: ${{ steps.ai_commit.outputs.message }}
