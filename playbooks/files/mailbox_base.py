@@ -24,9 +24,7 @@ def run(*args: str) -> List[str]:
     Returns a list of output lines.
     """
     # nosemgrep: dangerous-subprocess-use-audit, dangerous-subprocess-use-tainted-env-args
-    result = subprocess.run(
-        args, capture_output=True, text=True, check=True
-    )  # nosec B603
+    result = subprocess.run(args, capture_output=True, text=True, check=True)  # nosec B603
     return result.stdout.strip().splitlines()
 
 
@@ -74,11 +72,7 @@ def _order_folders(seen: Dict[str, str], preferred_order: List[str]) -> List[str
                 ordered.append(val)
 
     extras = sorted(
-        [
-            value.capitalize()
-            for value in seen.values()
-            if value.capitalize() not in ordered
-        ],
+        [value.capitalize() for value in seen.values() if value.capitalize() not in ordered],
         key=str.casefold,
     )
 
@@ -123,9 +117,7 @@ def get_mailbox_stat_map(mailbox_user: str, metric: str) -> Dict[str, int]:
     Return a dictionary mapping mailbox names to the requested metric,
     as reported by Dovecot's doveadm tool.
     """
-    output = run(
-        "doveadm", "-f", "tab", "mailbox", "status", "-u", mailbox_user, metric, "*"
-    )
+    output = run("doveadm", "-f", "tab", "mailbox", "status", "-u", mailbox_user, metric, "*")
     result: Dict[str, int] = {}
     for line in output:
         try:
@@ -178,9 +170,7 @@ def run_plugin(metric: str, metric_label: str) -> None:
     cache_ttl = int(os.environ.get("mailbox_cache_ttl", 86400))
     preferred_order = ["Inbox", "Archive", "Drafts", "Sent", "Spam", "Trash"]
 
-    folders = get_top_level_folders(
-        mailbox_user, cache_file, preferred_order, cache_ttl
-    )
+    folders = get_top_level_folders(mailbox_user, cache_file, preferred_order, cache_ttl)
 
     if len(sys.argv) == 1:
         output_values(folders, mailbox_user, metric)
