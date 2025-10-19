@@ -49,6 +49,10 @@ jobs:
     name: 🛠️ Code Quality — ESLint
     uses: ./.github/workflows/code-quality-eslint.yml
 
+  pylint:
+    name: 🛠️ Code Quality — Pylint
+    uses: ./.github/workflows/code-quality-pylint.yml
+
   validate-configs:
     name: 🛠️ Code Quality — Validate Configs
     uses: ./.github/workflows/code-quality-validate-configs.yml
@@ -73,6 +77,7 @@ jobs:
       - super-linter
       - ansible-lint
       - eslint
+      - pylint
       - validate-configs
     with:
       check-mode: false

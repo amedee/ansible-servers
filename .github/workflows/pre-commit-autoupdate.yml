@@ -21,13 +21,11 @@ jobs:
         with:
           persist-credentials: true
 
-      - name: 💾 Cache pip dependencies
-        uses: actions/cache@v4
+      - name: 🐍 Setup Python and Install Dependencies
+        uses: ./.github/actions/setup-python-pip
         with:
-          path: ~/.cache/pip
-          key: pip-${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
-          restore-keys: |
-            pip-${{ runner.os }}-
+          python-version: "3.13"
+          requirements-file: "requirements.txt"
 
       - name: 💾 Cache pre-commit environment
         uses: actions/cache@v4
@@ -36,11 +34,6 @@ jobs:
           key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: |
             pre-commit-${{ runner.os }}-
-
-      - name: 🛠️ Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.x"
 
       - name: 📦 Install pre-commit
         run: pip install pre-commit

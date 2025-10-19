@@ -13,16 +13,19 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@v5
+    - name: 🛠️ Set up Python
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ inputs.python-version }}
 
-    - uses: actions/cache@v4
+    - name: 💾 Cache pip dependencies
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: pip-cache-${{ hashFiles(inputs.requirements-file) }}
         restore-keys: |
           pip-cache-
 
-    - run: pip install -r ${{ inputs.requirements-file }}
+    - name: 📦 Install dependencies from requirements file
+      run: pip install -r ${{ inputs.requirements-file }}
       shell: bash
