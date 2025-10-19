@@ -1,0 +1,46 @@
+---
+name: 🛠️ Code Quality — pylint
+
+on: # yamllint disable-line rule:truthy
+  pull_request:
+    types:
+      - opened
+      - ready_for_review
+      - reopened
+      - synchronize
+  workflow_call:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ format(
+    'pylint-{0}-{1}',
+    github.workflow,
+    github.event_name == 'pull_request' && github.head_ref || github.ref) }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Pylint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: 🐍 Setup Python and Install Dependencies
+        uses: ./.github/actions/setup-python-pip
+        with:
+          python-version: "3.13"
+          requirements-file: "requirements.txt"
+
+      - name: Run pylint
+        uses: dciborow/action-pylint@cf6c9bcd79e4aa70e2fbeaf6332d741eb1e0bff8 # v0.1.1
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          glob_pattern: ".github roles"
+          level: warning
+          reporter: github-check
