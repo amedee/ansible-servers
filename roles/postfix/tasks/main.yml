@@ -4,14 +4,14 @@
     path: /etc/postfix/checks/
     state: directory
     owner: root
-    mode: '0755'
+    mode: "0755"
 
 - name: Copy Postfix checks files
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/postfix/checks/
     owner: root
-    mode: '0644'
+    mode: "0644"
   with_fileglob: "*_checks.pcre"
   notify:
     - Restart Postfix
@@ -152,7 +152,7 @@
     block: |
       ses       unix  -       n       n       -       -       pipe
         flags=Rq user=ses argv=/usr/local/bin/ses_wrapper.sh ${recipient}
-    validate: 'postfix check -q %s'
+    validate: "postfix check -q %s"
   notify: Restart Postfix
 
 - name: Ensure SES system user exists
@@ -170,7 +170,7 @@
     dest: /usr/local/bin/ses_wrapper.sh
     owner: root
     group: "{{ 'ses' if not ansible_check_mode else 'root' }}"
-    mode: '0750'
+    mode: "0750"
 
 - name: Deploy SES sendmail script
   ansible.builtin.copy:
@@ -178,7 +178,7 @@
     dest: /usr/local/bin/ses_sendmail.py
     owner: root
     group: root
-    mode: '0755'
+    mode: "0755"
 
 - name: Deploy /etc/postfix/transport.pcre from template
   ansible.builtin.template:
@@ -186,5 +186,5 @@
     dest: /etc/postfix/transport.pcre
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
   notify: Restart Postfix
