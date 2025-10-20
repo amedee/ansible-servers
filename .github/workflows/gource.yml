@@ -94,9 +94,8 @@ jobs:
 
             const fileChanged = lastCommit.files.some(f => f.filename === workflowPath);
 
-            if (fileChanged || !successfulRun || ((now - new Date(successfulRun.created_at)) / 1000 > skipIntervalSeconds)) {
-              runJob = true;
-            }
+            const age = (now - new Date(successfulRun.created_at)) / 1000;
+            runJob = fileChanged || !successfulRun || age > skipIntervalSeconds;
 
             core.setOutput('run_job', runJob.toString());
 
