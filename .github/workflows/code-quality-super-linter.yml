@@ -69,6 +69,7 @@ jobs:
           VALIDATE_PYTHON: false
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_PYTHON_PYLINT: false
+          YAML_CONFIG_FILE: ".yamllint.yml"
         continue-on-error: true
 
       # Check the PR diff using the current branch and the base branch of the PR
