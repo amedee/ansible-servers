@@ -26,7 +26,7 @@ uxq7thfsfc6gn4xnknc7fr3usrj5fk6h._domainkey.amedee.be:
 
 # --- Third-party verifications ---
 _amazonses.amedee.be:
-  TXT: LJ8r8p2RHVUgO6HfaW1QIo8Y4i0Nf8dYgik3Py2U5/M=
+  TXT: LJ8r8p2RHVUgO6HfaW1QIo8Y4i0Nf8dYgik3Py2U5/M= # pragma: allowlist secret
 _atproto.amedee.be:
   TXT: did=did:plc:ii5acpyq5qnlybvcqutuhbk5
 
@@ -51,4 +51,4 @@ nydgh6lfafbja7p7wcxlcrupanzhua5s._domainkey.vangasse.eu:
 
 # --- Amazon SES verification ---
 _amazonses.vangasse.eu:
-  TXT: gqXwJ6XtMyeApzXUR1wln3lY3bOgwv/2WEsiDNUM9lc=
+  TXT: gqXwJ6XtMyeApzXUR1wln3lY3bOgwv/2WEsiDNUM9lc= # pragma: allowlist secret
