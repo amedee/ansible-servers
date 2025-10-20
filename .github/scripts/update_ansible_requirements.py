@@ -74,7 +74,7 @@ def get_latest_galaxy_version(namespace, name, item_type):
         )
 
     try:
-        resp = requests.get(url)
+        resp = requests.get(url, timeout=10.0, headers={"Accept": "application/json"})
         resp.raise_for_status()
         json_data = resp.json()
     except (requests.RequestException, ValueError) as error:
