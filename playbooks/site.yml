@@ -54,7 +54,7 @@
 - name: Configure WordPress servers
   hosts: blogs
   roles:
-    - mysql
+    - mysql_config
     - redis
     - nginx
     - letsencrypt

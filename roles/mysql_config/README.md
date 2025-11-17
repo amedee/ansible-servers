@@ -1,4 +1,4 @@
-# mysql
+# mysql_config
 
 Role to configure a MySQL database server.
 
