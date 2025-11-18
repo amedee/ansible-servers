@@ -1,0 +1,19 @@
+{
+  "rules": {
+    "terminology": true,
+    "no-todo": true,
+    "sentence-length": [
+      120,
+      { "ignoreAcronyms": true, "ignoreUrls": true }
+    ]
+  },
+  "plugins": {
+    "markdown": true
+  },
+  "ignores": [
+    ".ansible/",
+    "node_modules/",
+    "venv/"
+  ],
+  "formatter": "stylish"
+}

@@ -1,0 +1,22 @@
+# Ignore Python virtualenvs
+venv/
+**/venv/
+
+# Ignore Node dependencies
+node_modules/
+**/node_modules/
+
+# Ignore downloaded Ansible roles
+.ansible/
+.ansible/**
+**/.ansible/**
+**/roles/geerlingguy.*/
+**/roles/rolehippie.*/
+
+# Ignore everything in hidden dist-info folders (from venv)
+**/*.dist-info/**
+
+# Ignore common build/CI directories
+dist/
+build/
+coverage/
