@@ -2,7 +2,7 @@
 
 Role to configure APT keyrings.
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)

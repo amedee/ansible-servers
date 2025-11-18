@@ -2,7 +2,7 @@
 
 Role to configure my WordPress blog.
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)

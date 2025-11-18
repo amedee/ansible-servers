@@ -2,7 +2,7 @@
 
 Merges two dicts into a third one using combine()
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)

@@ -2,7 +2,7 @@
 
 Wrapper role for `debops.debops.swapfile` because it doesn't run `swapon --all`.
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)

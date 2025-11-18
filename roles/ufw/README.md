@@ -2,7 +2,7 @@
 
 Role to configure UFW for mailinabox.
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)

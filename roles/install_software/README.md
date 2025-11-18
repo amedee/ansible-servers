@@ -2,7 +2,7 @@
 
 Role to configure install software on all of my servers.
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)

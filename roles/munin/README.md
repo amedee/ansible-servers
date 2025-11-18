@@ -2,7 +2,7 @@
 
 Role to configure munin.
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)

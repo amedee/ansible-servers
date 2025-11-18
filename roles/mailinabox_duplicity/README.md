@@ -2,7 +2,7 @@
 
 Role to do configuration of duplicity backup of mailinabox.
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)

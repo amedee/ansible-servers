@@ -2,7 +2,7 @@
 
 Wrapper role to configure etckeeper.
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)

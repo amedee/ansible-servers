@@ -2,7 +2,7 @@
 
 Role to do DNS configuration of mailinabox.
 
-## Table of content
+## Table of contents
 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)
