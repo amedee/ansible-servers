@@ -2,9 +2,11 @@ import * as core from "@actions/core";
 import fetch from "node-fetch";
 
 const MODELS = [
-  "mistralai/devstral-small-2505:free", // primary
-  "openai/gpt-oss-20b:free", // fallback 1
-  "moonshotai/kimi-dev-72b:free", // fallback 2
+  "mistralai/mistral-small-3.2-24b-instruct:free",
+  "mistralai/mistral-small-3.1-24b-instruct:free",
+  "mistralai/mistral-small-24b-instruct-2501:free",
+  "openai/gpt-oss-20b:free",
+  "moonshotai/kimi-dev-72b:free",
   // Add more fallback models here if you want
 ];
 

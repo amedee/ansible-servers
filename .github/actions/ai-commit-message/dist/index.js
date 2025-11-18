@@ -35142,16 +35142,18 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 
 
 const MODELS = [
-  "mistralai/devstral-small-2505:free", // primary
-  "openai/gpt-oss-20b:free", // fallback 1
-  "moonshotai/kimi-dev-72b:free" // fallback 2
+  "mistralai/mistral-small-3.2-24b-instruct:free",
+  "mistralai/mistral-small-3.1-24b-instruct:free",
+  "mistralai/mistral-small-24b-instruct-2501:free",
+  "openai/gpt-oss-20b:free",
+  "moonshotai/kimi-dev-72b:free",
   // Add more fallback models here if you want
-]
+];
 
-const index_URL = "https://openrouter.ai/api/v1/chat/completions"
+const index_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-const HTTP_TOO_MANY_REQUESTS = 429
-const HTTP_SERVICE_UNAVAILABLE = 503
+const HTTP_TOO_MANY_REQUESTS = 429;
+const HTTP_SERVICE_UNAVAILABLE = 503;
 
 const INSTRUCTIONS = `
 The commit message must start with a relevant emoji on the first line,
@@ -35162,34 +35164,34 @@ The other lines cannot be longer than 120 characters.
 The commit message can contain Markdown formatting.
 The tone of the commit message should be sassy and friendly.
 IMPORTANT: Only output the final commit message. Do NOT include any explanations or internal reasoning.
-`.trim()
+`.trim();
 
 /**
  * Generate the prompt message body for OpenRouter API.
  */
-function buildRequestBody (promptMessage, diff, model) {
-  const fullPrompt = `${promptMessage}\n\n${INSTRUCTIONS}`
+function buildRequestBody(promptMessage, diff, model) {
+  const fullPrompt = `${promptMessage}\n\n${INSTRUCTIONS}`;
 
   return {
     model,
     messages: [
       {
         role: "user",
-        content: `${fullPrompt}\n\n${diff}`
-      }
+        content: `${fullPrompt}\n\n${diff}`,
+      },
     ],
-    temperature: 0.7
-  }
+    temperature: 0.7,
+  };
 }
 
 /**
  * Call the OpenRouter API with retry logic for transient errors.
  */
-async function fetchCommitMessageWithRetry (
+async function fetchCommitMessageWithRetry(
   body,
   token,
   retries = 5,
-  delay = 1000
+  delay = 1000,
 ) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
@@ -35199,41 +35201,41 @@ async function fetchCommitMessageWithRetry (
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           "HTTP-Referer": `https://github.com/${process.env.GITHUB_REPOSITORY}`,
-          "X-Title": "AI Commit Message"
+          "X-Title": "AI Commit Message",
         },
-        body: JSON.stringify(body)
-      })
+        body: JSON.stringify(body),
+      });
 
       if (response.ok) {
-        const json = await response.json()
-        return json.choices?.[0]?.message?.content || ""
+        const json = await response.json();
+        return json.choices?.[0]?.message?.content || "";
       }
 
       if (
         [HTTP_TOO_MANY_REQUESTS, HTTP_SERVICE_UNAVAILABLE].includes(
-          response.status
+          response.status,
         )
       ) {
-        const backoff = delay * Math.pow(2, attempt - 1)
+        const backoff = delay * Math.pow(2, attempt - 1);
         core.warning(
-          `Attempt ${attempt} failed with ${response.status} ${response.statusText}, retrying in ${backoff}ms...`
-        )
-        await new Promise((res) => setTimeout(res, backoff))
+          `Attempt ${attempt} failed with ${response.status} ${response.statusText}, retrying in ${backoff}ms...`,
+        );
+        await new Promise((res) => setTimeout(res, backoff));
       } else {
-        const text = await response.text()
+        const text = await response.text();
         throw new Error(
-          `OpenRouter API error: ${response.status} ${response.statusText} — ${text}`
-        )
+          `OpenRouter API error: ${response.status} ${response.statusText} — ${text}`,
+        );
       }
     } catch (error) {
       if (attempt === retries) {
         throw new Error(
-          `OpenRouter API error after ${retries} attempts: ${error.message}`
-        )
+          `OpenRouter API error after ${retries} attempts: ${error.message}`,
+        );
       }
       await new Promise((res) =>
-        setTimeout(res, delay * Math.pow(2, attempt - 1))
-      )
+        setTimeout(res, delay * Math.pow(2, attempt - 1)),
+      );
     }
   }
 }
@@ -35241,76 +35243,76 @@ async function fetchCommitMessageWithRetry (
 /**
  * Clean and truncate the commit message.
  */
-function sanitizeMessage (message) {
-  const cleaned = message.replace(/`/g, "")
-  const lines = cleaned.split("\n")
+function sanitizeMessage(message) {
+  const cleaned = message.replace(/`/g, "");
+  const lines = cleaned.split("\n");
   if (lines.length > 0) {
-    lines[0] = lines[0].slice(0, 72)
+    lines[0] = lines[0].slice(0, 72);
   }
-  return lines.join("\n")
+  return lines.join("\n");
 }
 
 /**
  * Try fetching commit message with a specified model.
  */
-async function tryFetchWithModel (promptMessage, diffContent, token, model) {
-  const body = buildRequestBody(promptMessage, diffContent, model)
-  return await fetchCommitMessageWithRetry(body, token)
+async function tryFetchWithModel(promptMessage, diffContent, token, model) {
+  const body = buildRequestBody(promptMessage, diffContent, model);
+  return await fetchCommitMessageWithRetry(body, token);
 }
 
 /**
  * Output the commit message to console and set the action output.
  */
-function outputMessage (modelName, message) {
-  const finalMessage = sanitizeMessage(message)
+function outputMessage(modelName, message) {
+  const finalMessage = sanitizeMessage(message);
   core.info(
-    `🤖 Using commit message from model "${modelName}":\n${finalMessage}`
-  )
-  core.setOutput("message", finalMessage)
+    `🤖 Using commit message from model "${modelName}":\n${finalMessage}`,
+  );
+  core.setOutput("message", finalMessage);
 }
 
 /**
  * Main entrypoint for the action.
  */
-async function run () {
-  const diffContent = core.getInput("diff_content")
-  const promptMessage = core.getInput("prompt_content")
-  const token = process.env.OPENROUTER_API_KEY
+async function run() {
+  const diffContent = core.getInput("diff_content");
+  const promptMessage = core.getInput("prompt_content");
+  const token = process.env.OPENROUTER_API_KEY;
 
   if (!token) {
-    core.setFailed("❌ OPENROUTER_API_KEY is not set")
-    return
+    core.setFailed("❌ OPENROUTER_API_KEY is not set");
+    return;
   }
 
   if (!diffContent) {
-    core.setFailed("❌ diff_content input is empty")
-    return
+    core.setFailed("❌ diff_content input is empty");
+    return;
   }
 
-  let lastError = null
+  let lastError = null;
   for (const model of MODELS) {
     try {
       const message = await tryFetchWithModel(
         promptMessage,
         diffContent,
         token,
-        model
-      )
-      if (!message) throw new Error(`No message generated by model ${model}`)
-      outputMessage(model, message)
-      return // success, exit early
+        model,
+      );
+      if (!message) throw new Error(`No message generated by model ${model}`);
+      outputMessage(model, message);
+      return; // success, exit early
     } catch (error) {
-      core.warning(`Model ${model} failed: ${error.message}`)
-      lastError = error
+      core.warning(`Model ${model} failed: ${error.message}`);
+      lastError = error;
     }
   }
 
   core.setFailed(
-    `All models failed. Last error: ${lastError?.message || "unknown error"}`
-  )
+    `All models failed. Last error: ${lastError?.message || "unknown error"}`,
+  );
 }
 
-run()
+run();
 
 })();
 
