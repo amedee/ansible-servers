@@ -117,7 +117,6 @@ wp_db_password: !vault |
 wp_plugins_install:
   - activitypub
   - akismet
-  - better-robots-txt
   - editorial-calendar
   - google-site-kit
   - health-check
@@ -135,6 +134,7 @@ wp_plugins_install:
   - wordfence
   - wp-youtube-lyte
 wp_plugins_uninstall:
+  - better-robots-txt
   - hello
 wp_themes_install:
   - neve
