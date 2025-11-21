@@ -4,7 +4,7 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv: >-
-      {{ ['wp', 'theme', 'install'] +
+      {{ [php_bin, wp_cli_bin, 'theme', 'install'] +
           wp_themes_install +
           ['--path=' + webserver_directory] }}
   register: wp_theme_install
@@ -18,7 +18,8 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv:
-      - wp
+      - "{{ php_bin }}"
+      - "{{ wp_cli_bin }}"
       - theme
       - auto-updates
       - enable
@@ -36,7 +37,8 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv:
-      - wp
+      - "{{ php_bin }}"
+      - "{{ wp_cli_bin }}"
       - theme
       - activate
       - "{{ wp_fallback_theme }}"
@@ -50,7 +52,7 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv: >-
-      {{ ['wp', 'theme', 'delete'] +
+      {{ [php_bin, wp_cli_bin, 'theme', 'delete'] +
           wp_themes_uninstall +
           ['--path=' + webserver_directory] }}
   register: wp_theme_delete

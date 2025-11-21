@@ -4,7 +4,8 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv:
-      - wp
+      - "{{ php_bin }}"
+      - "{{ wp_cli_bin }}"
       - config
       - get
       - "{{ item.name }}"
@@ -18,7 +19,8 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv:
-      - wp
+      - "{{ php_bin }}"
+      - "{{ wp_cli_bin }}"
       - config
       - set
       - "{{ item.name }}"

@@ -4,7 +4,7 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv: >-
-      {{ ['wp', 'plugin', 'install'] +
+      {{ [php_bin, wp_cli_bin, 'plugin', 'install'] +
           wp_plugins_install +
           ['--activate', '--path=' + webserver_directory] }}
   when: wp_plugins_install | length > 0
@@ -16,7 +16,8 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv:
-      - wp
+      - "{{ php_bin }}"
+      - "{{ wp_cli_bin }}"
       - plugin
       - auto-updates
       - enable
@@ -34,7 +35,7 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv: >-
-      {{ ['wp', 'plugin', 'deactivate'] +
+      {{ [php_bin, wp_cli_bin, 'plugin', 'deactivate'] +
           wp_plugins_uninstall +
           ['--uninstall', '--path=' + webserver_directory] }}
   register: wp_plugin_deactivate
