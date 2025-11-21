@@ -143,3 +143,8 @@ wp_themes_uninstall:
   - twentytwentythree
   - twentytwentyfour
 wp_fallback_theme: neve
+
+php_version: "8.4"
+php_bin: "/usr/bin/php{{ php_version }}"
+
+wp_cli_bin: "/usr/local/bin/wp"

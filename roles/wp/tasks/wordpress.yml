@@ -18,7 +18,8 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv:
-      - wp
+      - "{{ php_bin }}"
+      - "{{ wp_cli_bin }}"
       - core
       - download
       - "--path={{ webserver_directory }}"
@@ -36,7 +37,8 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv:
-      - wp
+      - "{{ php_bin }}"
+      - "{{ wp_cli_bin }}"
       - config
       - create
       - "--dbname={{ wp_db_name }}"
@@ -65,7 +67,8 @@
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv:
-      - wp
+      - "{{ php_bin }}"
+      - "{{ wp_cli_bin }}"
       - redis
       - status
       - "--path={{ webserver_directory }}"
