@@ -1,7 +1,7 @@
 {
-  "threshold": 5,
-  "reporters": ["html", "console", "markdown"],
-  "ignore": ["/github/workspace/.ansible/**"],
-  "absolute": true,
-  "gitignore": true
+	"threshold": 5,
+	"reporters": ["html", "console", "markdown"],
+	"ignore": ["/github/workspace/.ansible/**"],
+	"absolute": true,
+	"gitignore": true
 }
