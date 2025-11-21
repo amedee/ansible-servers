@@ -2,11 +2,12 @@ import * as core from "@actions/core";
 import fetch from "node-fetch";
 
 const MODELS = [
+  "google/gemma-3-27b-it:free",
+  "meta-llama/llama-3.3-70b-instruct:free",
   "mistralai/mistral-small-3.2-24b-instruct:free",
-  "mistralai/mistral-small-3.1-24b-instruct:free",
-  "mistralai/mistral-small-24b-instruct-2501:free",
   "openai/gpt-oss-20b:free",
-  "moonshotai/kimi-dev-72b:free",
+  "tngtech/deepseek-r1t2-chimera:free",
+  "x-ai/grok-4.1-fast:free",
   // Add more fallback models here if you want
 ];
 
