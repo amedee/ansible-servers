@@ -13,6 +13,9 @@
     "textlint": "^15.4.0",
     "textlint-rule-terminology": "^5.2.16"
   },
+  "overrides": {
+    "glob": "10.5.0"
+  },
   "dependencies": {
     "@actions/core": "^1.11.1",
     "node-fetch": "^3.3.2"
