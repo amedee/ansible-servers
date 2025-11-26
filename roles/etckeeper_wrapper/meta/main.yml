@@ -16,3 +16,6 @@ dependencies:
   - role: debops.debops.etckeeper
     vars:
       etckeeper__enabled: true
+      etckeeper__vcs: git
+      etckeeper__vcs_user: root
+      etckeeper__vcs_email: "root@{{ ansible_hostname }}"

@@ -7,8 +7,8 @@
     - name: Gather minimal facts for swapfile, postfix, install_software, ufw, munin-node
       ansible.builtin.setup:
         filter:
-          - ansible_os_family
           - ansible_hostname
+          - ansible_os_family
           - ansible_system_capabilities
           - ansible_system_capabilities_enforced
           - ansible_virtualization_role
