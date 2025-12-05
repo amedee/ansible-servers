@@ -135,7 +135,8 @@ jobs:
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: 🤖 Generate AI commit message
-        if: steps.changes.outputs.has_changes == 'true'
+        if: ${{ steps.changes.outputs.has_changes == 'true' &&
+                github.event_name != 'pull_request' }}
         id: ai_commit
         uses: ./.github/actions/ai-commit-message
         env:
@@ -146,7 +147,8 @@ jobs:
             Write a concise Git commit message describing the staged changes.
 
       - name: Ensure commit message exists
-        if: steps.changes.outputs.has_changes == 'true'
+        if: ${{ steps.changes.outputs.has_changes == 'true' &&
+                github.event_name != 'pull_request' }}
         env:
           AI_MESSAGE: ${{ steps.ai_commit.outputs.message }}
         run: |
@@ -156,7 +158,8 @@ jobs:
           fi
 
       - name: 🔁 Commit, push, and PR
-        if: steps.changes.outputs.has_changes == 'true'
+        if: ${{ steps.changes.outputs.has_changes == 'true' &&
+                github.event_name != 'pull_request' }}
         uses: ./.github/actions/create-or-update-pr
         with:
           branch: chore/super-linter
