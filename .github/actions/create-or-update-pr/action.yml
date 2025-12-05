@@ -37,12 +37,17 @@ runs:
       id: commit_push
       env:
         GH_TOKEN: ${{ inputs.github_token }}
+        INPUTS_GIT_USER_NAME: ${{ inputs.git_user_name }}
+        INPUTS_GIT_USER_EMAIL: ${{ inputs.git_user_email }}
+        INPUTS_BRANCH: ${{ inputs.branch }}
+        INPUTS_COMMIT_MESSAGE: ${{ inputs.commit_message }}
+        INPUTS_GITHUB_TOKEN: ${{ inputs.github_token }}
       run: |
         set -e
 
-        git config user.name "${{ inputs.git_user_name }}"
-        git config user.email "${{ inputs.git_user_email }}"
-        git checkout -B "${{ inputs.branch }}"
+        git config user.name "${INPUTS_GIT_USER_NAME}"
+        git config user.email "${INPUTS_GIT_USER_EMAIL}"
+        git checkout -B "${INPUTS_BRANCH}"
         git add .
 
         if git diff --cached --quiet; then
@@ -50,20 +55,23 @@ runs:
           echo "pushed=false" >> "$GITHUB_OUTPUT"
         else
           echo "✅ Committing changes..."
-          git commit -m "${{ inputs.commit_message }}"
-          REPO_URL="https://x-access-token:${{ inputs.github_token }}@github.com/${GITHUB_REPOSITORY}.git"
-          git push --force "$REPO_URL" "${{ inputs.branch }}"
+          git commit -m "${INPUTS_COMMIT_MESSAGE}"
+          REPO_URL="https://x-access-token:${INPUTS_GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force "$REPO_URL" "${INPUTS_BRANCH}"
           echo "pushed=true" >> "$GITHUB_OUTPUT"
         fi
 
     - shell: bash
       env:
         GH_TOKEN: ${{ inputs.github_token }}
+        INPUTS_BRANCH: ${{ inputs.branch }}
+        INPUTS_PR_TITLE: ${{ inputs.pr_title }}
+        INPUTS_PR_BODY: ${{ inputs.pr_body }}
       run: |
         set -e
 
         REPO="${GITHUB_REPOSITORY}"
-        BRANCH="${{ inputs.branch }}"
+        BRANCH="${INPUTS_BRANCH}"
 
         echo "🔍 Checking if PR exists from branch '$BRANCH'..."
         PR_JSON=$(gh pr list \
@@ -77,14 +85,14 @@ runs:
           echo "🔄 PR #$PR_NUMBER exists, updating..."
           gh pr edit "$PR_NUMBER" \
             --repo "$REPO" \
-            --title "${{ inputs.pr_title }}" \
-            --body "${{ inputs.pr_body }}"
+            --title "${INPUTS_PR_TITLE}" \
+            --body "${INPUTS_PR_BODY}"
         else
           echo "🆕 No PR found, creating a new one..."
           gh pr create \
             --repo "$REPO" \
             --base main \
             --head "$BRANCH" \
-            --title "${{ inputs.pr_title }}" \
-            --body "${{ inputs.pr_body }}"
+            --title "${INPUTS_PR_TITLE}" \
+            --body "${INPUTS_PR_BODY}"
         fi

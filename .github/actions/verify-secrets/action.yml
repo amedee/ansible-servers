@@ -13,4 +13,7 @@ runs:
     - name: Run secret check
       shell: bash
       run: |
-        $GITHUB_ACTION_PATH/entrypoint.sh "${{ inputs.secrets }}"
+        $GITHUB_ACTION_PATH/entrypoint.sh "${INPUTS_SECRETS}"
+
+      env:
+        INPUTS_SECRETS: ${{ inputs.secrets }}

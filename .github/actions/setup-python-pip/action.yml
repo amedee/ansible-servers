@@ -27,5 +27,8 @@ runs:
           pip-cache-
 
     - name: 📦 Install dependencies from requirements file
-      run: pip install -r ${{ inputs.requirements-file }}
+      run: pip install -r ${INPUTS_REQUIREMENTS_FILE}
       shell: bash
+
+      env:
+        INPUTS_REQUIREMENTS_FILE: ${{ inputs.requirements-file }}
