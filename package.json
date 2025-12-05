@@ -9,8 +9,8 @@
 		"eslint-plugin-prettier": "^5.5.4",
 		"eslint-plugin-promise": "^7.2.1",
 		"globals": "^16.5.0",
-		"prettier": "3.6.2",
-		"textlint": "^15.4.0",
+		"prettier": "3.7.4",
+		"textlint": "^15.4.1",
 		"textlint-rule-terminology": "^5.2.16"
 	},
 	"overrides": {
