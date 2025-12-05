@@ -9,7 +9,7 @@ repos:
         args: ["--unsafe"]
       - id: check-added-large-files
   - repo: https://github.com/ansible-community/ansible-lint
-    rev: v25.11.1
+    rev: v25.12.0
     hooks:
       - id: ansible-lint
   - repo: https://github.com/IamTheFij/ansible-pre-commit
