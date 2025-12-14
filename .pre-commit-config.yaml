@@ -13,7 +13,7 @@ repos:
         args: ["--unsafe"]
       - id: check-added-large-files
   - repo: https://github.com/ansible-community/ansible-lint
-    rev: v25.12.0
+    rev: v25.12.1
     hooks:
       - id: ansible-lint
   - repo: https://github.com/IamTheFij/ansible-pre-commit
@@ -26,7 +26,7 @@ repos:
       - id: md-toc
         args: [-p, cmark, -l6]
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.46.0
+    rev: v0.47.0
     hooks:
       - id: markdownlint
   - repo: https://github.com/jackdewinter/pymarkdown
