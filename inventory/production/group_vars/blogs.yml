@@ -119,7 +119,6 @@ wp_plugins_install:
   - akismet
   - editorial-calendar
   - google-site-kit
-  - health-check
   - jetpack
   - jetpack-boost
   - jetpack-protect
@@ -135,6 +134,7 @@ wp_plugins_install:
   - wp-youtube-lyte
 wp_plugins_uninstall:
   - better-robots-txt
+  - health-check
   - hello
 wp_themes_install:
   - neve
