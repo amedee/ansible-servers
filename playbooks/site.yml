@@ -25,6 +25,14 @@
       ansible.builtin.hostname:
         name: "{{ hostname }}"
 
+    - name: Disable APT Phasing
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/99disable-phasing
+        content: 'APT::Get::Always-Include-Phased-Updates "true";'
+        owner: root
+        group: root
+        mode: "0644"
+
   roles:
     - swapfile
     - localepurge
