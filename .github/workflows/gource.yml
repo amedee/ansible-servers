@@ -141,7 +141,7 @@ jobs:
 
     steps:
       - name: Download gource artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: gource-assets
           path: ./gource
@@ -193,7 +193,7 @@ jobs:
           persist-credentials: false
 
       - name: Download gource artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: gource-assets
           path: ./gource
