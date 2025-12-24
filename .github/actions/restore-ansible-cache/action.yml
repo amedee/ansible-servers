@@ -6,7 +6,7 @@ runs:
   using: "composite"
   steps:
     - name: Restore Ansible roles and collections cache
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: |
           .ansible/
