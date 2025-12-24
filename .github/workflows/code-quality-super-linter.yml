@@ -50,7 +50,7 @@ jobs:
       - name: Run Super-linter
         id: super-linter
         # yamllint disable-line rule:line-length
-        uses: super-linter/super-linter/slim@2bdd90ed3262e023ac84bf8fe35dc480721fc1f2 # v8.2.1
+        uses: super-linter/super-linter/slim@47984f49b4e87383eed97890fe2dca6063bbd9c3 # v8.3.1
         env:
           CREATE_LOG_FILE: true
           FAIL_ON_CONFLICTING_TOOLS_ENABLED: true
