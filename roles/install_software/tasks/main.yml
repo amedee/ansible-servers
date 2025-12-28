@@ -1,11 +1,11 @@
 ---
-- name: Install all APT preferences (*.pref)
+- name: Install APT preferences
   ansible.builtin.copy:
-    content: "{{ lookup('file', item) }}"
-    dest: "/etc/apt/preferences.d/{{ item | basename }}"
+    src: "{{ item }}"
+    dest: /etc/apt/preferences.d/
     owner: root
-    mode: u=rw,go=r
-  loop: "{{ query('fileglob', playbook_dir + '/files/apt_prefs/*.pref') }}"
+    mode: "0644"
+  with_fileglob: "*.pref"
 
 - name: Configure deb822-format APT repositories
   ansible.builtin.deb822_repository:
