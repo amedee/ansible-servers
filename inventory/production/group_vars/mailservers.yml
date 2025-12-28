@@ -25,7 +25,7 @@ cron__group_jobs:
     special_time: daily
     job: /usr/local/bin/extract_image_attachments.sh
     custom_files:
-      - src: extract_image_attachments.sh
+      - src: files/mailservers/extract_image_attachments.sh
         dest: /usr/local/bin/extract_image_attachments.sh
         owner: root
         mode: "u=rwx,go=rx"
