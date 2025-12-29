@@ -35,4 +35,4 @@ jobs:
         uses: ./.github/actions/restore-ansible-cache
 
       - name: Run ansible-lint
-        uses: ansible/ansible-lint@61a8e7bad82cc7aee6d0981ea59831a95745795a # v25.11.1
+        uses: ansible/ansible-lint@a2bc8b8b13a80802215856c56823d85007d3baf5 # v25.12.2
