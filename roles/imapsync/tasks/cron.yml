@@ -1,0 +1,20 @@
+---
+- name: Configure cron job for imapsync
+  ansible.builtin.set_fact:
+    cron__jobs: >-
+      {{
+        (cron__jobs | default({}))
+        | combine({
+            'imapsync': {
+              'jobs': [
+                {
+                  'job': imapsync_script_path,
+                  'minute': imapsync_cron_minute,
+                  'hour': imapsync_cron_hour,
+                  'state': 'present'
+                }
+              ]
+            }
+          })
+      }}
+  # noqa: var-naming

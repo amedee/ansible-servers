@@ -1,0 +1,12 @@
+---
+- name: Install imapsync prerequisites and binary
+  ansible.builtin.import_tasks: install.yml
+
+- name: Install imapsync credentials and sync script
+  ansible.builtin.import_tasks: config.yml
+
+- name: Configure logrotate for imapsync logs
+  ansible.builtin.import_tasks: logrotate.yml
+
+- name: Configure cron job for imapsync
+  ansible.builtin.import_tasks: cron.yml

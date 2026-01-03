@@ -1,0 +1,30 @@
+#!/bin/bash
+# shellcheck disable=SC1091,SC2154,SC2288
+set -euo pipefail
+
+source "{{ imapsync_creds_path }}"
+
+# MIAB Inbox → Gmail Inbox (move)
+"{{ imapsync_install_path }}" \
+  --host1 "$miab_host" --user1 "$miab_user" --password1 "$miab_pass" \
+  --gmail2 --user2 "$gmail_user" --password2 "$gmail_pass" \
+  --ssl1 --port1 993 \
+  --folder INBOX --automap \
+  --delete1 --expunge1 \
+  --nofoldersizes --nofoldersizesatend \
+  --nolog \
+  >> "{{ imapsync_log_file }}" 2>&1
+
+# Gmail Spam → MIAB Spam (move)
+"{{ imapsync_install_path }}" \
+  --gmail1 --user1 "$gmail_user" --password1 "$gmail_pass" \
+  --host2 "$miab_host" --user2 "$miab_user" --password2 "$miab_pass" \
+  --ssl2 --port2 993 \
+  --folder "[Gmail]/Spam" \
+  --regextrans2 's/\[Gmail\]\/Spam/Spam/' \
+  --minage 7 \
+  --automap \
+  --delete1 --expunge1 \
+  --nofoldersizes --nofoldersizesatend \
+  --nolog \
+  >> "{{ imapsync_log_file }}" 2>&1

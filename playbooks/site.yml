@@ -79,9 +79,10 @@
           - ansible_os_family
 
   roles:
+    - debops.debops.environment
+    - imapsync
     - mailinabox_dns
     - mailinabox_duplicity
-    - debops.debops.environment
     - munin
     - ufw
 

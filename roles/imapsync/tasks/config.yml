@@ -1,0 +1,16 @@
+---
+- name: Install imapsync credentials
+  ansible.builtin.template:
+    src: imapsync-creds.j2
+    dest: "{{ imapsync_creds_path }}"
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Install imapsync sync script
+  ansible.builtin.template:
+    src: imapsync-sync.sh.j2
+    dest: "{{ imapsync_script_path }}"
+    owner: root
+    group: root
+    mode: '0750'

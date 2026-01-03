@@ -1,0 +1,29 @@
+---
+- name: Install imapsync prerequisites
+  ansible.builtin.apt:
+    name:
+      - libauthen-ntlm-perl
+      - libcrypt-ssleay-perl
+      - libdata-uniqid-perl
+      - libdigest-hmac-perl
+      - libencode-imaputf7-perl
+      - libfile-copy-recursive-perl
+      - libio-compress-perl
+      - libio-socket-inet6-perl
+      - libio-socket-ssl-perl
+      - libio-tee-perl
+      - libmail-imapclient-perl
+      - libmodule-scandeps-perl
+      - libpar-packer-perl
+      - libregexp-common-perl
+      - libterm-readkey-perl
+      - libunicode-string-perl
+      - wget
+    state: present
+    update_cache: true
+
+- name: Install imapsync script
+  ansible.builtin.get_url:
+    url: "{{ imapsync_upstream_url }}"
+    dest: "{{ imapsync_install_path }}"
+    mode: '0755'
