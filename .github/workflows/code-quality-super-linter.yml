@@ -97,7 +97,7 @@ jobs:
         id: changes
         run: |
           # Detect any changes in working tree
-          if git diff --exit-code --quiet; then
+          if git diff --ignore-all-space --exit-code --quiet; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           else
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
