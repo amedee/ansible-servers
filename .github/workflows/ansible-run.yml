@@ -98,7 +98,7 @@ jobs:
 
       - name: Deploy changes to servers
         # yamllint disable-line rule:line-length
-        uses: dawidd6/action-ansible-playbook@3363d6aa333ecb41ef01579bc5eb4412b3d6802f # v5
+        uses: dawidd6/action-ansible-playbook@e8303e5fa5b52015d59fd5bc8c968943bd5f349c # v6
         env:
           ANSIBLE_STDOUT_CALLBACK: default
           ANSIBLE_RESULT_FORMAT: yaml
