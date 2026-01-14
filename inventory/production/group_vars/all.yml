@@ -91,20 +91,6 @@ logrotate__config:
     postrotate: |
       systemctl restart rsyslog
       systemctl restart postfix
-  - filename: sendgrid
-    logs:
-      - /var/log/sendgrid.log
-    options: |
-      monthly
-      rotate 24
-      missingok
-      notifempty
-      compress
-      delaycompress
-      extension log
-      create 0640 root root
-    postrotate: |
-      systemctl restart rsyslog
 
 munin_node_allowed_ips:
   - ^127\.0\.0\.1$
