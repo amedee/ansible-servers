@@ -1,9 +1,9 @@
 ---
 - name: Configure cron job for imapsync
   ansible.builtin.set_fact:
-    cron__jobs: >-
+    cron__dependent_jobs: >-
       {{
-        (cron__jobs | default({}))
+        (cron__dependent_jobs | default({}))
         | combine({
             'imapsync': {
               'jobs': [

@@ -49,8 +49,6 @@
     - install_software
     - debops.debops.reboot
 
-    - debops.debops.cron
-
     - role: merge_vars
       merge_vars_from_1: munin_node_config_base
       merge_vars_from_2: munin_node_config_extra
@@ -66,7 +64,6 @@
     - munin_node
 
     - postfix
-    - debops.debops.logrotate
 
 - name: Configure Mail-in-a-Box servers
   hosts: mailservers
@@ -100,3 +97,11 @@
         - id: 63AF7AA15067C05616FDDD88A3A2E8F226F0BC06
     - debops.debops.wpcli
     - wp
+
+- name: Finalize cron and logrotate configuration
+  hosts: all
+  gather_facts: false
+
+  roles:
+    - debops.debops.cron
+    - debops.debops.logrotate

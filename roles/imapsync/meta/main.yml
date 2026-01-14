@@ -11,7 +11,3 @@ galaxy_info:
       versions:
         - jammy
         - noble
-
-dependencies:
-  - role: debops.debops.cron
-  - role: debops.debops.logrotate
