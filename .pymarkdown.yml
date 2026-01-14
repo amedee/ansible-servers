@@ -1,0 +1,4 @@
+---
+plugins:
+  no-duplicate-heading:
+    siblings_only: true

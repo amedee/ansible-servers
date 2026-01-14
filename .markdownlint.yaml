@@ -1,0 +1,4 @@
+---
+# Duplication is allowed for headings with different parents
+no-duplicate-heading:
+  siblings_only: true
