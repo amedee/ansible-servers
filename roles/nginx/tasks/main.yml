@@ -36,3 +36,6 @@
     owner: "{{ webserver_user }}"
     group: "{{ webserver_user }}"
     mode: u=rwx,go=rx
+
+- name: Configure logrotate for nginx logs
+  ansible.builtin.import_tasks: logrotate.yml

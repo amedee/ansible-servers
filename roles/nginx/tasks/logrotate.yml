@@ -1,9 +1,9 @@
 ---
-- name: Add imapsync logrotate dependent config
+- name: Add nginx logrotate dependent config
   ansible.builtin.set_fact:
     logrotate__dependent_config: >-
       {{
         (logrotate__dependent_config | default([]))
-        + imapsync_logrotate__dependent_config
+        + nginx_logrotate__dependent_config
       }}
   # noqa: var-naming

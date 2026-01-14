@@ -9,7 +9,7 @@ imapsync_cron_hour: "*"
 
 imapsync_log_file: /var/log/imapsync.log
 
-imapsync__logrotate__dependent_config:
+imapsync_logrotate__dependent_config:
   - filename: 'imapsync'
     log: '{{ imapsync_log_file }}'
     options: |
