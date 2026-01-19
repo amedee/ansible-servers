@@ -5,11 +5,11 @@ roles:
 
 collections:
   - name: amazon.aws
-    version: 10.1.2
+    version: 11.0.0
   - name: ansible.posix
     version: 2.1.0
   - name: ansible.utils
-    version: 6.0.0
+    version: 6.0.1
   - name: community.docker
     version: 5.0.5
   - name: community.general
