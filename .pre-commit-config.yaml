@@ -13,7 +13,7 @@ repos:
         args: ["--unsafe"]
       - id: check-added-large-files
   - repo: https://github.com/ansible-community/ansible-lint
-    rev: v26.1.0
+    rev: v26.1.1
     hooks:
       - id: ansible-lint
   - repo: https://github.com/IamTheFij/ansible-pre-commit
@@ -47,7 +47,7 @@ repos:
     hooks:
       - id: gitleaks
   - repo: https://github.com/PrincetonUniversity/blocklint
-    rev: v0.2.5
+    rev: v0.3.0
     hooks:
       - id: blocklint
   - repo: https://github.com/python-jsonschema/check-jsonschema
