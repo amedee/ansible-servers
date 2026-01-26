@@ -1,20 +1,39 @@
----
 roles:
   - name: geerlingguy.munin-node
     version: 1.4.0
 
 collections:
   - name: amazon.aws
+    source: https://github.com/ansible-collections/amazon.aws.git
+    type: git
     version: 11.0.0
+
   - name: ansible.posix
+    source: https://github.com/ansible-collections/ansible.posix.git
+    type: git
     version: 2.1.0
+
   - name: ansible.utils
-    version: 6.0.1
+    source: https://github.com/ansible-collections/ansible.utils.git
+    type: git
+    version: v6.0.1
+
   - name: community.docker
+    source: https://github.com/ansible-collections/community.docker.git
+    type: git
     version: 5.0.5
+
   - name: community.general
+    source: https://github.com/ansible-collections/community.general.git
+    type: git
     version: 12.2.0
+
   - name: community.mysql
+    source: https://github.com/ansible-collections/community.mysql.git
+    type: git
     version: 4.0.1
+
   - name: debops.debops
-    version: 3.2.5
+    source: https://github.com/debops/debops.git
+    type: git
+    version: v3.2.5

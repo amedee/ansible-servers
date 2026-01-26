@@ -37,6 +37,9 @@ jobs:
           python-version: "3.13"
           requirements-file: "requirements.txt"
 
+      - name: Restore Ansible cache
+        uses: ./.github/actions/restore-ansible-cache
+
       - name: 💾 Cache pre-commit environments
         uses: actions/cache@v5
         with:
