@@ -5,7 +5,7 @@ roles:
 
 collections:
   - name: amazon.aws
-    version: 11.0.0
+    version: 11.1.0
   - name: ansible.posix
     version: 2.1.0
   - name: ansible.utils
