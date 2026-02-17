@@ -9,6 +9,17 @@ inputs:
   prompt_content:
     description: "Prompt message describing what the AI should do"
     required: true
+  models:
+    required: false
+    description: "Comma-separated list of OpenRouter models"
+    default: >
+      google/gemma-3-27b-it:free,
+      meta-llama/llama-3.3-70b-instruct:free,
+      mistralai/mistral-small-3.1-24b-instruct:free,
+      openai/gpt-oss-20b:free,
+      deepseek/deepseek-r1-0528:free,
+      openrouter/aurora-alpha,
+      arcee-ai/trinity-large-preview:free
 
 outputs:
   message:

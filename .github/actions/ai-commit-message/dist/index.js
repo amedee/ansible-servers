@@ -35141,16 +35141,6 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 
 
 
-const MODELS = [
-  "google/gemma-3-27b-it:free",
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "mistralai/mistral-small-3.2-24b-instruct:free",
-  "openai/gpt-oss-20b:free",
-  "tngtech/deepseek-r1t2-chimera:free",
-  "x-ai/grok-4.1-fast:free",
-  // Add more fallback models here if you want
-];
-
 const index_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 const HTTP_TOO_MANY_REQUESTS = 429;
@@ -35273,6 +35263,23 @@ function outputMessage(modelName, message) {
 }
 
 /**
+ * Retrieve the list of models from the action input.
+ * Expects a comma-separated string. Throws if no models are defined.
+ */
+function getModels() {
+  const input = core.getInput("models");
+
+  if (!input) {
+    throw new Error("No models provided via 'models' input");
+  }
+
+  return input
+      .split(",")
+      .map((m) => m.trim())
+      .filter(Boolean);
+}
+
+/**
  * Main entrypoint for the action.
  */
 async function run() {
@@ -35291,7 +35298,8 @@ async function run() {
   }
 
   let lastError = null;
-  for (const model of MODELS) {
+  const models = getModels();
+  for (const model of models) {
     try {
       const message = await tryFetchWithModel(
         promptMessage,
