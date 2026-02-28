@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # yamllint disable-line rule:line-length
-      - uses: yykamei/github-workflows-metrics@a32a347d2259058e6d1eac8f063dfb2c2c23c258 # v0.4.1
+      - uses: yykamei/github-workflows-metrics@c94c2fb86eb5ce55d308a0b9c8be895f7273b07f # v0.4.2
         with:
           only: pipeline.yml
           status: success
