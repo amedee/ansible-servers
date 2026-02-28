@@ -14,7 +14,7 @@
 #  4. Do not change the SPAM-ID numbers. We use these numbers to help track false rejections.
 #  5. if you modify this file, indicate such on the line below, so that people can be aware that the filter is not an original version.
 
-# This entry will reject messages with attachments that could be dangerous, and will inform the sender of what type of attachemnt was rejected.
+# This entry will reject messages with attachments that could be dangerous, and will inform the sender of what type of attachment was rejected.
 /^\s*Content-(Disposition|Type).*name\s*=\s*"?(.+\.(ad[ep]|asd|ba[st]|c[ho]m|cmd|cpl|crt|dbx|dll|exe|hlp|hta|in[fs]|isp|js|jse|lnk|md[etw]|ms[cipt]|nws|ocx|ops|pcd|pi|pif|prf|reg|scf|scr|sct|sh[bms]|swf|uue|vb|vb[esx]|vxd|wab|ws[cfh]))"?\s*$/	REJECT Files attached to emails that contain or end in "$3" are prohibited on this server as they may contain viruses. The file named "$2" was rejected.
 
 # This will filter our certain types of attachments that can be considered dangerous.
