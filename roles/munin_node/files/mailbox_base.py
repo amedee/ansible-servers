@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Munin plugin base module for visualizing mailbox statistics (size, message count, etc.) via `doveadm` for a Mail-in-a-Box server."""
+"""Base module for Munin plugins that gather mailbox stats using `doveadm`."""
 
 from __future__ import annotations  # pylint: disable=E0611
 
