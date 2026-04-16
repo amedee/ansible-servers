@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Munin plugin for graphing the number of messages per mail folder.
-"""
+"""Munin plugin for graphing the number of messages per mail folder."""
 
 import sys
 from pathlib import Path
