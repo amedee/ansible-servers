@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""
-Munin plugin base module for visualizing mailbox statistics (size, message count, etc.)
-via `doveadm` for a Mail-in-a-Box server.
-"""
+"""Munin plugin base module for visualizing mailbox statistics (size, message count, etc.) via `doveadm` for a Mail-in-a-Box server."""
 
 from __future__ import annotations  # pylint: disable=E0611
 
@@ -20,6 +17,7 @@ from typing import DefaultDict, Dict, List, Optional
 def run(*args: str) -> List[str]:
     """
     Run a shell command safely, avoiding shell injection by passing arguments directly.
+    
     Accepts multiple string arguments as command and parameters.
     Returns a list of output lines.
     """
