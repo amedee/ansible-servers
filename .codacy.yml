@@ -11,3 +11,7 @@ engines:
       - .vagrant/
       - dist/
       - node_modules/
+
+  pydocstyle:
+    enabled: true
+    config: .pydocstyle
