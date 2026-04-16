@@ -38,9 +38,16 @@ jobs:
       - name: 📦 Install pre-commit
         run: pip install pre-commit
 
-      - name: Refresh pre-commit repos
+      - name: 🔄 Refresh cached git repos (fix tag issues)
         run: |
-          find ~/.cache/pre-commit -maxdepth 3 -type d -name '.git' -exec git -C {} fetch --tags \;
+          if [ -d ~/.cache/pre-commit ]; then
+            echo "Refreshing cached pre-commit repos..."
+            find ~/.cache/pre-commit -type d -name ".git" | while read -r gitdir; do
+              repo="$(dirname "$gitdir")"
+              echo "Updating $repo"
+              git -C "$repo" fetch --tags --force --prune
+            done
+          fi
 
       - name: 🧹 Run pre-commit autoupdate
         run: pre-commit autoupdate
