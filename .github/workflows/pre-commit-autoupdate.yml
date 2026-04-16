@@ -42,20 +42,7 @@ jobs:
       - name: 📦 Install pre-commit
         run: pip install pre-commit
 
-      - name: 🔄 Refresh cached git repos (fix tag issues)
-        run: |
-          if [ -d ~/.cache/pre-commit ]; then
-            echo "Refreshing cached pre-commit repos..."
-            find ~/.cache/pre-commit -type d -name ".git" | while read -r gitdir; do
-              repo="$(dirname "$gitdir")"
-              echo "Updating $repo"
-              git -C "$repo" fetch --tags --force --prune
-            done
-          fi
-
       - name: 🧹 Run pre-commit autoupdate
-        env:
-          PRE_COMMIT_ALLOW_UNREACHABLE_TAGS: "1"
         run: pre-commit autoupdate
 
       - name: Check if there are changes
