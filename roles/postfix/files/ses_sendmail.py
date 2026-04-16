@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-SES sendmail wrapper.
+"""SES sendmail wrapper.
 
 Reads a raw email from stdin and submits it to Amazon SES using the
 `send_raw_email` API call. Designed to be called by Postfix as a transport.
@@ -47,8 +46,7 @@ def extract_recipients(msg: Message) -> List[str]:
 
 
 def send_via_ses(msg: Message, recipients: List[str]) -> str:
-    """
-    Send a raw email message via Amazon SES.
+    """Send a raw email message via Amazon SES.
 
     :param msg: Email Message object.
     :param recipients: List of recipients.
