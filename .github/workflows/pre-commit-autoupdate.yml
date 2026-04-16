@@ -50,6 +50,8 @@ jobs:
           fi
 
       - name: 🧹 Run pre-commit autoupdate
+        env:
+          PRE_COMMIT_ALLOW_UNREACHABLE_TAGS: "1"
         run: pre-commit autoupdate
 
       - name: Check if there are changes
