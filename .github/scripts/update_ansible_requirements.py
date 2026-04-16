@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Script to update Ansible role and collection versions in requirements.yml.
-"""
+"""Script to update Ansible role and collection versions in requirements.yml."""
 
 import re
 
@@ -53,16 +51,18 @@ def _get_collection_latest_version(json_data):
 
 
 def get_latest_galaxy_version(namespace, name, item_type):
-    """
-    Fetch the latest version of a role or collection from Ansible Galaxy.
+    """Fetch the latest version of a role or collection from Ansible Galaxy.
 
-    Args:
+    Args
+    ----
         namespace (str): Namespace or author name.
         name (str): Role or collection name.
         item_type (str): Either 'role' or 'collection'.
 
-    Returns:
+    Returns
+    -------
         str or None: Latest stable version string, or None if not found.
+
     """
     if item_type == "role":
         url = f"https://galaxy.ansible.com/api/v1/roles/?namespace={namespace}&name={name}"
