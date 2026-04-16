@@ -29,9 +29,7 @@ def run(*args: str) -> List[str]:
 
 
 def safe_name(name: str) -> str:
-    """
-    Convert a folder name to a lowercase, Munin-safe identifier (only a-z, 0-9, _).
-    """
+    """Convert a folder name to a lowercase, Munin-safe identifier (only a-z, 0-9, _)."""
     return re.sub(r"[^a-z0-9]", "_", name.lower())
 
 
@@ -96,6 +94,7 @@ def get_top_level_folders(
 ) -> List[str]:
     """
     Return a list of top-level folders for the mailbox user.
+    
     Ensures 'Inbox' is always first and shown capitalized.
     Applies preferred order next (case-insensitive), then all others in alphabetical order.
     Results are cached for performance.
@@ -113,10 +112,7 @@ def get_top_level_folders(
 
 
 def get_mailbox_stat_map(mailbox_user: str, metric: str) -> Dict[str, int]:
-    """
-    Return a dictionary mapping mailbox names to the requested metric,
-    as reported by Dovecot's doveadm tool.
-    """
+    """Return a dictionary mapping mailbox names to the requested metric, as reported by Dovecot's doveadm tool."""
     output = run("doveadm", "-f", "tab", "mailbox", "status", "-u", mailbox_user, metric, "*")
     result: Dict[str, int] = {}
     for line in output:
@@ -129,9 +125,7 @@ def get_mailbox_stat_map(mailbox_user: str, metric: str) -> Dict[str, int]:
 
 
 def output_config(folders: List[str], metric_label: str) -> None:
-    """
-    Output Munin config block for this plugin, describing each folder and graph details.
-    """
+    """Output Munin config block for this plugin, describing each folder and graph details."""
     for folder in folders:
         print(f"{safe_name(folder)}.label {folder.capitalize()}")
     print(
@@ -147,9 +141,7 @@ graph_total total"""
 
 
 def output_values(folders: List[str], mailbox_user: str, metric: str) -> None:
-    """
-    Output Munin values block: metric of each top-level folder (including subfolders).
-    """
+    """Output Munin values block: metric of each top-level folder (including subfolders)."""
     folder_map = {f.lower(): f for f in folders}
     stat_map = get_mailbox_stat_map(mailbox_user, metric)
     totals: DefaultDict[str, int] = defaultdict(int)
