@@ -38,6 +38,10 @@ jobs:
       - name: 📦 Install pre-commit
         run: pip install pre-commit
 
+      - name: Refresh pre-commit repos
+        run: |
+          find ~/.cache/pre-commit -maxdepth 3 -type d -name '.git' -exec git -C {} fetch --tags \;
+
       - name: 🧹 Run pre-commit autoupdate
         run: pre-commit autoupdate
 
