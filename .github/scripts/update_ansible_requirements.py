@@ -51,8 +51,7 @@ def _get_collection_latest_version(json_data):
 
 
 def get_latest_galaxy_version(namespace, name, item_type):
-    """
-    Fetch the latest version of a role or collection from Ansible Galaxy.
+    """Fetch the latest version of a role or collection from Ansible Galaxy.
 
     Args
     ----
