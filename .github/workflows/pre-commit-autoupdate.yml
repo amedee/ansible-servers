@@ -5,6 +5,10 @@ on: # yamllint disable-line rule:truthy
   schedule:
     - cron: "0 3 * * 1" # Every Monday at 03:00 UTC
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/pre-commit-autoupdate.yml"
+      - ".pre-commit-config.yaml"
 
 permissions:
   contents: write
