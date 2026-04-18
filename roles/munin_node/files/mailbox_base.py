@@ -16,7 +16,7 @@ from typing import DefaultDict, Dict, List, Optional
 
 def run(*args: str) -> List[str]:
     """Run a shell command safely, avoiding shell injection by passing arguments directly.
-    
+
     Accepts multiple string arguments as command and parameters.
     Returns a list of output lines.
     """
@@ -90,7 +90,7 @@ def get_top_level_folders(
     ttl: int,
 ) -> List[str]:
     """Return a list of top-level folders for the mailbox user.
-    
+
     Ensures 'Inbox' is always first and shown capitalized.
     Applies preferred order next (case-insensitive), then all others in alphabetical order.
     Results are cached for performance.
