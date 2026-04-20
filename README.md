@@ -1,15 +1,39 @@
 # ansible-servers
 
-Ansible playbooks to configure my servers:
+Infrastructure-as-Code for my personal production servers, fully managed with Ansible.
 
-- [amedee.be]: based on DigitalOcean's [1-Click LEMP Droplet][lemp droplet]
-- [box.vangasse.eu]: Standard Ubuntu 22.04 LTS droplet with [Mail-in-a-Box][mailinabox]
+This repository contains Ansible playbooks used to provision and maintain
+self‑hosted services that I run in production, with a focus on reproducibility,
+automation, and secure defaults.
 
-Deploy with
+## ✨ Managed systems
+
+- **[amedee.be]**
+  Personal technical blog, deployed on a DigitalOcean LEMP stack
+  (based on DigitalOcean’s [1‑Click LEMP Droplet][lemp droplet], extended and hardened)
+
+- **[box.vangasse.eu]**
+  Mail server (Postfix, Dovecot, etc.) running on Ubuntu 22.04 LTS
+  Bootstrapped using [Mail‑in‑a‑Box][mailinabox],
+  with additional configuration and automation
+
+## 🛠 Design goals
+
+- Idempotent and repeatable server configuration
+- Minimal manual intervention after provisioning
+- Clear separation between roles and responsibilities
+- Automation over ad‑hoc fixes
+- Preference for maintainability over cleverness
+
+## 🚀 Deployment
 
 ```shell
 ansible-playbook playbooks/site.yml
 ```
+
+## ✅ Continuous Integration & Code Quality
+
+This repository uses CI to continuously validate configuration quality:
 
 [![Deployment Status][deployment-badge]][deployment-status]
 [![Codacy Badge][codacy-badge]][codacy-grade]
@@ -19,9 +43,9 @@ ansible-playbook playbooks/site.yml
 
 ## 🔍 Repository History
 
-[![Gource thumbnail][gource-thumbnail]][gource-video]
+Timelapse visualisation of how this infrastructure codebase evolved over time.
 
-> Click to watch a timelapse of this repository’s evolution.
+[![Gource thumbnail][gource-thumbnail]][gource-video]
 
 ## References
 
