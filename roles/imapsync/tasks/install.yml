@@ -27,3 +27,8 @@
     url: "{{ imapsync_upstream_url }}"
     dest: "{{ imapsync_install_path }}"
     mode: '0755'
+    timeout: 30
+  retries: 3
+  delay: 10
+  register: imapsync_download
+  until: imapsync_download is succeeded
