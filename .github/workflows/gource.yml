@@ -110,6 +110,7 @@ jobs:
     needs:
       - generate-gource
     runs-on: ubuntu-latest
+    environment: production
     strategy:
       matrix:
         artifact:

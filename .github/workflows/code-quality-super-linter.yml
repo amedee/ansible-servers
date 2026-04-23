@@ -30,6 +30,7 @@ jobs:
   lint:
     name: Super-linter
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       contents: read
       pull-requests: read

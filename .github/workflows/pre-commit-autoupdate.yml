@@ -18,6 +18,7 @@ jobs:
   autoupdate:
     name: ⏫ Pre-commit autoupdate
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
       - name: ⏬ Checkout repo

@@ -16,6 +16,7 @@ permissions:
 jobs:
   check-token-expiration:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Check PAT expiration via GitHub API
         env:

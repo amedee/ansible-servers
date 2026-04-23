@@ -35,6 +35,7 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
       - name: Install GitHub CLI

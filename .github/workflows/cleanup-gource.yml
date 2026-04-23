@@ -16,6 +16,7 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
       - name: Checkout full repository
