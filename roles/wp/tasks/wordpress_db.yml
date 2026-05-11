@@ -1,13 +1,13 @@
 ---
 - name: "Create database '{{ wp_db_name }}'"
-  community.mysql.mysql_db:
+  ansible.mysql.mysql_db:
     name: "{{ wp_db_name }}"
     state: present
     login_user: root
     login_unix_socket: /run/mysqld/mysqld.sock
 
 - name: "Create database user '{{ wp_db_user }}'"
-  community.mysql.mysql_user:
+  ansible.mysql.mysql_user:
     name: "{{ wp_db_user }}"
     password: "{{ wp_db_password }}"
     priv: "{{ wp_db_name }}.*:ALL"
@@ -17,7 +17,7 @@
     login_unix_socket: /run/mysqld/mysqld.sock
 
 - name: Check if WordPress tables exist
-  community.mysql.mysql_query:
+  ansible.mysql.mysql_query:
     login_db: "{{ wp_db_name }}"
     query: SHOW TABLES FROM {{ wp_db_name }} LIKE 'wp_posts';
     login_unix_socket: /run/mysqld/mysqld.sock
@@ -41,7 +41,7 @@
   when:
     - not ansible_check_mode
     - (wp_posts.get('rowcount', [0]) | first | int) == 0
-  community.mysql.mysql_db:
+  ansible.mysql.mysql_db:
     name: "{{ wp_db_name }}"
     state: import
     target: "/tmp/{{ wp_db_name }}.sql.xz"
