@@ -11,7 +11,7 @@
   register: wp_plugin_install
   changed_when: "'Installing' in wp_plugin_install.stdout"
 
-- name: Ensure plugin auto-updates are enabled for {{ item }}
+- name: Ensure WordPress plugin auto-updates are enabled
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:

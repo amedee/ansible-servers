@@ -13,7 +13,7 @@
     wp_theme_install.rc != 0 and
     'Theme already installed' not in wp_theme_install.stdout
 
-- name: Ensure theme auto-updates are enabled for {{ item }}
+- name: Ensure WordPress theme auto-updates are enabled
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
