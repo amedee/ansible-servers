@@ -16,6 +16,8 @@ if [[ -n "${CHECK_MODE:-}" ]]; then
   ansible_args+=("$CHECK_MODE")
 fi
 
+mkdir --parents ~/.ssh/controlmasters
+
 cleanup() {
   shred -u "$VAULT_FILE" 2>/dev/null || rm -f "$VAULT_FILE"
   ssh-agent -k >/dev/null 2>&1 || true
