@@ -39,18 +39,28 @@ printf '%s\n' "${SSH_PRIVATE_KEY}" | tr -d '\r' | ssh-add - >/dev/null
 export ANSIBLE_CONFIG=ansible.cfg
 export ANSIBLE_STDOUT_CALLBACK=json
 
+RETRY_PATTERNS=(
+  "SSH:UNREACHABLE!|FAILED.*ssh"
+  "SSH:Connection (timed out|refused|reset)"
+  "NET:Could not resolve hostname|No route to host"
+  "SSH:SSH connection"
+  "DNS:Temporary failure in name resolution"
+)
+
 is_retryable_ssh_error() {
-  grep -Eqi \
-  'UNREACHABLE!|FAILED.*ssh|Connection (timed out|refused|reset)|' \
-  "$1" || return 1
+  local log_file="$1"
 
-  grep -Eqi \
-  'Could not resolve hostname|No route to host|SSH connection|' \
-  "$1" || return 1
+  for rule in "${RETRY_PATTERNS[@]}"; do
+    category="${rule%%:*}"
+    pattern="${rule#*:}"
 
-  grep -Eqi \
-  'Temporary failure in name resolution' \
-  "$1"
+    if grep -Eqi "$pattern" "$log_file"; then
+      echo "🔁 Retry triggered by: $category"
+      return 0
+    fi
+  done
+
+  return 1
 }
 
 print_ssh_context() {
