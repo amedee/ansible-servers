@@ -42,8 +42,6 @@ jobs:
       ANSIBLE_CONFIG: ansible.cfg
       ANSIBLE_STDOUT_CALLBACK: yaml
       CHECK_MODE_INPUT: ${{ inputs.check-mode }}
-      GITHUB_EVENT: ${{ github.event_name }}
-      GITHUB_REF: ${{ github.ref }}
 
     steps:
       - name: Collect Workflow Telemetry
@@ -71,23 +69,20 @@ jobs:
             # Always dry-run if input explicitly true
             check="--check"
           else
-            case "$GITHUB_EVENT" in
-              workflow_dispatch)
-                check=""  # always real run
-                ;;
-              workflow_call|*)
-                # Only real run on main branch, otherwise dry-run
-                if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
-                  check=""
-                else
-                  check="--check"
-                fi
-                ;;
-            esac
+            if [[ "$GITHUB_EVENT" == "workflow_dispatch" ]]; then
+              echo "check_mode=" >> "$GITHUB_OUTPUT"
+            elif [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
+              echo "check_mode=" >> "$GITHUB_OUTPUT"
+            else
+              echo "check_mode=--check" >> "$GITHUB_OUTPUT"
+            fi
           fi
 
           echo "check_mode=$check" >> "$GITHUB_OUTPUT"
           echo "🛠️ Ansible check mode set to: '$check'"
+        env:
+          GITHUB_EVENT: ${{ github.event_name }}
+          GITHUB_REF: ${{ github.ref }}
 
       - name: Deploy changes to servers
         shell: bash
