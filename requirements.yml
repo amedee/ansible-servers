@@ -5,16 +5,16 @@ roles:
 
 collections:
   - name: amazon.aws
-    version: 11.2.0
+    version: 11.3.0
   - name: ansible.posix
-    version: 2.1.0
+    version: 2.2.0
   - name: ansible.utils
     version: 6.0.2
   - name: community.docker
-    version: 5.2.0
+    version: 5.2.1
   - name: community.general
-    version: 12.6.0
+    version: 13.0.1
   - name: community.mysql
-    version: 5.0.0
+    version: 5.0.2
   - name: debops.debops
     version: 3.3.0
