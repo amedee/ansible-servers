@@ -35154,6 +35154,7 @@ Then add the rest of the commit message explaining the changes.
 The other lines cannot be longer than 120 characters.
 The commit message can contain Markdown formatting.
 The tone of the commit message should be sassy and friendly.
+This is a single developer project, so never use plural 'we' or 'our'.
 IMPORTANT: Only output the final commit message. Do NOT include any explanations or internal reasoning.
 `.trim();
 
