@@ -93,14 +93,6 @@ jobs:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
 
-  ansible-doctor:
-    name: 📚 Ansible Role Docs
-    uses: ./.github/workflows/ansible-doctor.yml
-    needs: deploy
-    secrets:
-      ANSIBLE_DEP_UPDATER_TOKEN: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-
   gource:
     name: 📽️ Gource
     permissions:

@@ -2,12 +2,12 @@
 name: 📚 Ansible Role Docs
 
 on: # yamllint disable-line rule:truthy
-  workflow_call:
-    secrets:
-      ANSIBLE_DEP_UPDATER_TOKEN:
-        required: true
-      OPENROUTER_API_KEY:
-        required: true
+  push:
+    branches:
+      - main
+    paths:
+      - "roles/**/defaults/main.yml"
+      - "roles/**/meta/main.yml"
   workflow_dispatch:
 
 concurrency:
