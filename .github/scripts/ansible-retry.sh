@@ -13,21 +13,21 @@ readonly JITTER_MAX=5
 umask 077
 VAULT_FILE="$(mktemp)"
 if [[ -n "${CHECK_MODE:-}" ]]; then
-  ansible_args+=("$CHECK_MODE")
+	ansible_args+=("$CHECK_MODE")
 fi
 
 mkdir --parents ~/.ssh/controlmasters
 
 cleanup() {
-  shred -u "$VAULT_FILE" 2>/dev/null || rm -f "$VAULT_FILE"
-  ssh-agent -k >/dev/null 2>&1 || true
+	shred -u "$VAULT_FILE" 2>/dev/null || rm -f "$VAULT_FILE"
+	ssh-agent -k >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 
 # -----------------------------
 # 🔐 Vault password handling
 # -----------------------------
-echo "${VAULT_PASSWORD}" > "$VAULT_FILE"
+echo "${VAULT_PASSWORD}" >"$VAULT_FILE"
 chmod 600 "$VAULT_FILE"
 
 # -----------------------------
@@ -40,81 +40,81 @@ export ANSIBLE_CONFIG=ansible.cfg
 export ANSIBLE_STDOUT_CALLBACK=json
 
 RETRY_PATTERNS=(
-  "SSH:UNREACHABLE!|FAILED.*ssh"
-  "SSH:Connection (timed out|refused|reset)"
-  "NET:Could not resolve hostname|No route to host"
-  "SSH:SSH connection"
-  "DNS:Temporary failure in name resolution"
+	"SSH:UNREACHABLE!|FAILED.*ssh"
+	"SSH:Connection (timed out|refused|reset)"
+	"NET:Could not resolve hostname|No route to host"
+	"SSH:SSH connection"
+	"DNS:Temporary failure in name resolution"
 )
 
 is_retryable_ssh_error() {
-  local log_file="$1"
+	local log_file="$1"
 
-  for rule in "${RETRY_PATTERNS[@]}"; do
-    category="${rule%%:*}"
-    pattern="${rule#*:}"
+	for rule in "${RETRY_PATTERNS[@]}"; do
+		category="${rule%%:*}"
+		pattern="${rule#*:}"
 
-    if grep -Eqi "$pattern" "$log_file"; then
-      echo "🔁 Retry triggered by: $category"
-      return 0
-    fi
-  done
+		if grep -Eqi "$pattern" "$log_file"; then
+			echo "🔁 Retry triggered by: $category"
+			return 0
+		fi
+	done
 
-  return 1
+	return 1
 }
 
 print_ssh_context() {
-  echo "----- SSH/network failure context -----"
-  grep -Ei \
-    'UNREACHABLE|ssh|timeout|refused|reset|No route|Temporary failure' \
-    "$1" || true
-  echo "----------------------------------------"
+	echo "----- SSH/network failure context -----"
+	grep -Ei \
+		'UNREACHABLE|ssh|timeout|refused|reset|No route|Temporary failure' \
+		"$1" || true
+	echo "----------------------------------------"
 }
 
 for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
-  echo "🚀 Ansible attempt $attempt/$MAX_ATTEMPTS"
+	echo "🚀 Ansible attempt $attempt/$MAX_ATTEMPTS"
 
-  LOG=$(mktemp)
+	LOG=$(mktemp)
 
-  if ansible-playbook playbooks/site.yml \
-    --inventory inventory/production \
-    --limit "$ANSIBLE_HOST" \
-    "${ansible_args[@]}" \
-    --vault-password-file "$VAULT_FILE" \
-    -vv 2>&1 | tee "$LOG"; then
+	if ansible-playbook playbooks/site.yml \
+		--inventory inventory/production \
+		--limit "$ANSIBLE_HOST" \
+		"${ansible_args[@]}" \
+		--vault-password-file "$VAULT_FILE" \
+		-vv 2>&1 | tee "$LOG"; then
 
-    echo "✅ Success on attempt $attempt"
-    exit 0
-  fi
+		echo "✅ Success on attempt $attempt"
+		exit 0
+	fi
 
-  echo "❌ Attempt $attempt failed"
+	echo "❌ Attempt $attempt failed"
 
-  # -------------------------------------------------
-  # 🚨 Decide retry vs fail immediately
-  # -------------------------------------------------
-  if ! is_retryable_ssh_error "$LOG"; then
-    echo "💥 Non-retryable failure detected — not retrying"
-    print_ssh_context "$LOG"
-    exit 1
-  fi
+	# -------------------------------------------------
+	# 🚨 Decide retry vs fail immediately
+	# -------------------------------------------------
+	if ! is_retryable_ssh_error "$LOG"; then
+		echo "💥 Non-retryable failure detected — not retrying"
+		print_ssh_context "$LOG"
+		exit 1
+	fi
 
-  # -------------------------------------------------
-  # 🔍 SSH/network failure (retryable)
-  # -------------------------------------------------
-  print_ssh_context "$LOG"
+	# -------------------------------------------------
+	# 🔍 SSH/network failure (retryable)
+	# -------------------------------------------------
+	print_ssh_context "$LOG"
 
-  if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
-    JITTER=$((RANDOM % JITTER_MAX))
-    WAIT=$((BASE_SLEEP + JITTER))
+	if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
+		JITTER=$((RANDOM % JITTER_MAX))
+		WAIT=$((BASE_SLEEP + JITTER))
 
-    echo "🔁 Retryable SSH issue detected"
-    echo "⏳ Sleeping ${WAIT}s (base=${BASE_SLEEP}, jitter=${JITTER})"
+		echo "🔁 Retryable SSH issue detected"
+		echo "⏳ Sleeping ${WAIT}s (base=${BASE_SLEEP}, jitter=${JITTER})"
 
-    sleep "$WAIT"
-    BASE_SLEEP=$((BASE_SLEEP * 2))
-    continue
-  fi
+		sleep "$WAIT"
+		BASE_SLEEP=$((BASE_SLEEP * 2))
+		continue
+	fi
 
-  echo "💥 Max retries reached"
-  exit 1
+	echo "💥 Max retries reached"
+	exit 1
 done
