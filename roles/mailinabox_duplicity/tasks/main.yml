@@ -4,7 +4,7 @@
     path: /home/user-data/backup
     state: directory
     owner: root
-    mode: u=rw,go=r
+    mode: "0700"
 
 - name: Check if backup.py exists
   ansible.builtin.stat:
@@ -16,7 +16,8 @@
     src: custom.yaml.j2
     dest: /home/user-data/backup/custom.yaml
     owner: root
-    mode: u=rw,go=r
+    mode: "0600"
+  no_log: true
   notify: Perform backup
 
 - name: Create apt-backup-duplicity.sh script
