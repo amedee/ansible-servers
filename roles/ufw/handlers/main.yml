@@ -1,0 +1,4 @@
+---
+- name: Reload UFW
+  ansible.builtin.command: ufw reload
+  changed_when: false
