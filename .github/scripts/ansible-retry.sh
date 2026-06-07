@@ -9,6 +9,7 @@ set -euo pipefail
 readonly MAX_ATTEMPTS=5
 readonly BASE_SLEEP=5
 readonly JITTER_MAX=5
+WAIT=$BASE_SLEEP
 
 umask 077
 VAULT_FILE="$(mktemp)"
@@ -105,13 +106,13 @@ for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
 
 	if [ "$attempt" -lt "$MAX_ATTEMPTS" ]; then
 		JITTER=$((RANDOM % JITTER_MAX))
-		WAIT=$((BASE_SLEEP + JITTER))
+		WAIT=$((WAIT + JITTER))
 
 		echo "🔁 Retryable SSH issue detected"
 		echo "⏳ Sleeping ${WAIT}s (base=${BASE_SLEEP}, jitter=${JITTER})"
 
 		sleep "$WAIT"
-		BASE_SLEEP=$((BASE_SLEEP * 2))
+		WAIT=$((WAIT * 2))
 		continue
 	fi
 
