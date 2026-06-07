@@ -46,6 +46,7 @@
       - "--dbpass={{ wp_db_password }}"
       - "--dbhost={{ wp_db_host }}"
       - "--path={{ webserver_directory }}"
+  no_log: true
   register: wp_core_download
   changed_when: true
 
@@ -100,6 +101,7 @@
     access_key: "{{ aws_access_key }}"
     secret_key: "{{ aws_secret_key }}"
     region: us-east-1
+  no_log: true
   register: wp_s3_download
 
 - name: Stat archive file

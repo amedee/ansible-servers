@@ -15,6 +15,7 @@
     access_key: "{{ aws_access_key }}"
     secret_key: "{{ aws_secret_key }}"
     region: us-east-1
+  no_log: true
 
 - name: Extract letsencrypt backup on the remote machine
   when: not (letsencrypt_config.stat.exists and letsencrypt_config.stat.isreg)

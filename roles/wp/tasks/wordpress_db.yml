@@ -15,6 +15,7 @@
     state: present
     login_user: root
     login_unix_socket: /run/mysqld/mysqld.sock
+  no_log: true
 
 - name: Check if WordPress tables exist
   ansible.mysql.mysql_query:
@@ -36,6 +37,7 @@
     access_key: "{{ aws_access_key }}"
     secret_key: "{{ aws_secret_key }}"
     region: us-east-1
+  no_log: true
 
 - name: Import database dump
   when:
