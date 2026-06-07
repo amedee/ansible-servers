@@ -7,7 +7,7 @@ on: # yamllint disable-line rule:truthy
     - cron: "0 3 * * 0" # Every Sunday at 03:00 UTC
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}
   cancel-in-progress: true
 
 permissions:
@@ -24,3 +24,10 @@ jobs:
       - name: Delete workflow runs
         # yamllint disable-line rule:line-length
         uses: Mattraks/delete-workflow-runs@b3018382ca039b53d238908238bd35d1fb14f8ee # v2.1.0
+      - name: Purge deleted branches
+        # yamllint disable-line rule:line-length
+        uses: Mattraks/delete-workflow-runs@b3018382ca039b53d238908238bd35d1fb14f8ee # v2.1.0
+        with:
+          check_branch_existence: true
+          keep_minimum_runs: 0
+          retain_days: 0
