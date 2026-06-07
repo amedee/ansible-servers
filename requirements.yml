@@ -14,7 +14,7 @@ collections:
     version: 5.2.1
   - name: community.general
     version: 13.0.1
-  - name: community.mysql
-    version: 5.0.2
+  - name: ansible.mysql
+    version: 5.0.1
   - name: debops.debops
     version: 3.3.0
