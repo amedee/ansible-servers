@@ -1,7 +1,9 @@
 #!/bin/bash
+set -euo pipefail
 
 # Generate the current date and time in the format YYYY-MM-DD_HH-MM-SS
 timestamp="$(date +'%Y-%m-%d_%H-%M-%S')"
+mkdir --parents logs
 
 vagrant up --provision --provider=virtualbox 2>&1 | tee "logs/vagrant_$timestamp.log"
 ansible-galaxy install -r requirements.yml

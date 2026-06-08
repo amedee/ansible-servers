@@ -10,6 +10,7 @@ readonly MAX_ATTEMPTS=5
 readonly BASE_SLEEP=5
 readonly JITTER_MAX=5
 WAIT=$BASE_SLEEP
+ansible_args=()
 
 umask 077
 VAULT_FILE="$(mktemp)"
