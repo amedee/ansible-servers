@@ -4,7 +4,7 @@
   gather_facts: false
 
   pre_tasks:
-    - name: Gather minimal facts for swapfile, postfix, install_software, ufw, munin-node
+    - name: Gather minimal facts for swapfile, postfix, ufw, munin-node
       ansible.builtin.setup:
         filter:
           - ansible_hostname
@@ -16,10 +16,6 @@
           - virtual
           - hardware
           - network
-
-    - name: Gather package facts for install_software
-      ansible.builtin.package_facts:
-        manager: auto
 
     - name: Set hostname
       ansible.builtin.hostname:

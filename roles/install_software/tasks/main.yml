@@ -67,16 +67,15 @@
 - name: Gather installed package facts
   ansible.builtin.package_facts:
     manager: auto
+  when: hold_grub_packages | default(false)
 
 - name: Hold all "grub-" packages (only in staging)
-  ansible.builtin.command: "apt-mark hold {{ item }}"
-  # yamllint disable-line rule:line-length
-  with_items: "{{ ansible_facts.packages.keys() | select('match', '^grub-') | list }}"
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop: "{{ (ansible_facts.packages | default({})).keys() | select('match', '^grub-') | list }}"
   when:
     - hold_grub_packages | default(false)
-    - item in ansible_facts.packages
-    - "'hold' not in ansible_facts.packages[item]"
-  changed_when: true
 
 - name: Remove unneeded APT packages
   ansible.builtin.apt:
