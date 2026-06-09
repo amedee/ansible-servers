@@ -8,6 +8,7 @@ on: # yamllint disable-line rule:truthy
     paths:
       - "**"
       - "!*.md"
+      - "!.github/workflows/gource.yml"
       - "!.pre-commit-config.yaml"
       - "!Vagrantfile"
       - "!deploy_to_staging.sh"
@@ -92,13 +93,3 @@ jobs:
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
-
-  gource:
-    name: 📽️ Gource
-    permissions:
-      contents: write
-    uses: ./.github/workflows/gource.yml
-    needs: deploy
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
