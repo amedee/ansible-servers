@@ -67,7 +67,7 @@ Timelapse visualisation of how this infrastructure codebase evolved over time.
 [codefactor-status]: https://www.codefactor.io/repository/github/amedee/ansible-servers
 [license-badge]: https://img.shields.io/badge/License-MIT-yellow.svg
 [license-link]: https://opensource.org/licenses/MIT
-[checks files]: roles/postfix/files/etc/postfix/checks
+[checks files]: roles/postfix/files/checks
 [securitysage]: https://web.archive.org/web/20070106001401/http://www.securitysage.com:80/guides/postfix_uce.html
 [gource-thumbnail]: https://gource-by-amedee.s3.amazonaws.com/gource-latest.gif
 [gource-video]: https://gource-by-amedee.s3.amazonaws.com/gource-latest.mp4
