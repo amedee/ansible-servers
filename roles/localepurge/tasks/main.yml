@@ -15,4 +15,5 @@
     create: true
     line: "{{ locale }}"
     owner: root
-    mode: u=rw,go=r
+    group: root
+    mode: "0644"

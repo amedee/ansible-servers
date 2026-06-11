@@ -4,6 +4,7 @@
     path: /home/user-data/backup
     state: directory
     owner: root
+    group: root
     mode: "0700"
 
 - name: Check if backup.py exists
@@ -16,26 +17,23 @@
     src: custom.yaml.j2
     dest: /home/user-data/backup/custom.yaml
     owner: root
+    group: root
     mode: "0600"
   no_log: true
   notify: Perform backup
 
 - name: Create apt-backup-duplicity.sh script
   ansible.builtin.copy:
+    src: apt-backup-duplicity.sh
     dest: /usr/local/bin/apt-backup-duplicity.sh
+    owner: root
+    group: root
     mode: "0755"
-    content: |
-      #!/bin/bash
-      set -x
-
-      mkdir -p /var/backups/debs/duplicity
-
-      cp -vn /var/cache/apt/archives/duplicity_*.deb /var/backups/debs/duplicity/ 2>/dev/null || true
-      cp -vn /root/duplicity_*.deb /var/backups/debs/duplicity/ 2>/dev/null || true
 
 - name: Create APT Post-Invoke hook to run backup script
   ansible.builtin.copy:
+    src: 99backup-duplicity-debs
     dest: /etc/apt/apt.conf.d/99backup-duplicity-debs
+    owner: root
+    group: root
     mode: "0644"
-    content: |
-      DPkg::Post-Invoke { "/usr/local/bin/apt-backup-duplicity.sh"; };

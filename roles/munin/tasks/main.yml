@@ -1,11 +1,11 @@
 ---
 - name: Add munin host configurations
   ansible.builtin.copy:
-    src: "{{ item }}"
+    src: munin-conf.d/
     dest: /etc/munin/munin-conf.d/
     owner: root
+    group: root
     mode: "0644"
-  with_fileglob: "*"
   notify: Restart munin
 
 - name: Remove duplicate munin host configuration
@@ -14,5 +14,6 @@
     section: box.vangasse.eu
     state: absent
     owner: root
-    mode: u=rw,go=r
+    group: root
+    mode: "0644"
   notify: Restart munin

@@ -24,6 +24,7 @@
     src: /tmp/letsencrypt.tar.xz
     dest: /etc/
     owner: root
+    group: root
   notify: Restart nginx
 
 - name: Uninstall apt Certbot (old version)

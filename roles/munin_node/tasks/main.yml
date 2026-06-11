@@ -8,7 +8,8 @@
     ignore_spaces: true
     no_extra_spaces: true
     owner: root
-    mode: u=rw,go=r
+    group: root
+    mode: "0644"
   notify:
     - Reload systemd
     - Restart munin-node

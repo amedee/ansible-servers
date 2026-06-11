@@ -4,7 +4,8 @@
     path: /etc/apt/keyrings
     state: directory
     owner: root
-    mode: u=rwx,go=rx
+    group: root
+    mode: "0755"
 
 - name: Import Ondřej Surý GPG keys using isolated GNUPGHOME
   ansible.builtin.shell: |

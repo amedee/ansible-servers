@@ -4,6 +4,7 @@
     path: /home/user-data/dns
     state: directory
     owner: root
+    group: root
     mode: "0755"
 
 - name: Check if dns_update exists
@@ -16,5 +17,6 @@
     src: custom.yaml
     dest: /home/user-data/dns/custom.yaml
     owner: root
+    group: root
     mode: "0644"
   notify: DNS update

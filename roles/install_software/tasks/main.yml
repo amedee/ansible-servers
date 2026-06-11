@@ -1,11 +1,11 @@
 ---
 - name: Install APT preferences
   ansible.builtin.copy:
-    src: "{{ item }}"
+    src: preferences.d/
     dest: /etc/apt/preferences.d/
     owner: root
+    group: root
     mode: "0644"
-  with_fileglob: "*.pref"
 
 - name: Configure deb822-format APT repositories
   ansible.builtin.deb822_repository:

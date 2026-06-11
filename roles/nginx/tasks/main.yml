@@ -4,6 +4,7 @@
     src: gzip.conf
     dest: /etc/nginx/conf.d/
     owner: root
+    group: root
     mode: "0644"
   notify: Restart nginx
 
@@ -27,6 +28,7 @@
     src: /etc/nginx/sites-available/{{ hostname }}
     dest: /etc/nginx/sites-enabled/default
     owner: root
+    group: root
     state: link
   notify: Restart nginx
 
@@ -36,7 +38,7 @@
     state: directory
     owner: "{{ webserver_user }}"
     group: "{{ webserver_user }}"
-    mode: u=rwx,go=rx
+    mode: "0755"
 
 - name: Configure logrotate for nginx logs
   ansible.builtin.import_tasks: logrotate.yml
