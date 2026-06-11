@@ -8,11 +8,11 @@
 
 - name: Copy Postfix checks files
   ansible.builtin.copy:
-    src: "{{ item }}"
+    src: checks/
     dest: /etc/postfix/checks/
     owner: root
+    group: root
     mode: "0644"
-  with_fileglob: "*_checks.pcre"
   notify:
     - Restart Postfix
 
