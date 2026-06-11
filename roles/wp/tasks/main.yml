@@ -1,6 +1,24 @@
 ---
 - name: Create WordPress MySQL database and user
-  ansible.builtin.import_tasks: wordpress_db.yml
+  ansible.builtin.import_tasks:
+    file: wordpress_db.yml
 
 - name: "Install WordPress in {{ webserver_directory }}"
-  ansible.builtin.import_tasks: wordpress.yml
+  ansible.builtin.import_tasks:
+    file: wordpress.yml
+
+- name: Configure Redis for WordPress
+  ansible.builtin.import_tasks:
+    file: wordpress_redis.yml
+
+- name: Manage WordPress plugins
+  ansible.builtin.import_tasks:
+    file: wordpress_plugins.yml
+
+- name: Manage WordPress themes
+  ansible.builtin.import_tasks:
+    file: wordpress_themes.yml
+
+- name: Restore WordPress archive
+  ansible.builtin.import_tasks:
+    file: wordpress_restore_archive.yml

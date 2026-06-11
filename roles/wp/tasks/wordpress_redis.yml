@@ -1,0 +1,22 @@
+---
+- name: Remove WP_REDIS_PASSWORD from wp-config.php
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.lineinfile:
+    path: "{{ webserver_directory }}/wp-config.php"
+    regexp: "^[ \\t]*define\\(\\s*['\"]WP_REDIS_PASSWORD['\"],.*\\);"
+    state: absent
+
+- name: Check if WordPress is connected to Redis
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    argv:
+      - "{{ php_bin }}"
+      - "{{ wp_cli_bin }}"
+      - redis
+      - status
+      - "--path={{ webserver_directory }}"
+  register: wp_redis_status
+  changed_when: false
+  failed_when: "'Status: Connected' not in wp_redis_status.stdout"

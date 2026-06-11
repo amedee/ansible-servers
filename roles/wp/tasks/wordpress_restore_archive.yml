@@ -1,0 +1,45 @@
+---
+- name: Create WP archive directory
+  ansible.builtin.file:
+    path: "{{ wp_archive_dir }}"
+    state: directory
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_user }}"
+    mode: "0750"
+
+- name: Download WordPress uploads archive
+  amazon.aws.s3_object:
+    bucket: backups-by-amedee
+    object: wp-content/uploads.tar.xz
+    dest: "{{ wp_archive }}"
+    mode: get
+    overwrite: different
+    access_key: "{{ aws_access_key }}"
+    secret_key: "{{ aws_secret_key }}"
+    region: us-east-1
+  no_log: true
+  register: wp_s3_download
+
+- name: Check archive availability
+  ansible.builtin.stat:
+    path: "{{ wp_archive }}"
+  register: wp_archive_stat
+
+- name: Fail if archive is unavailable
+  ansible.builtin.fail:
+    msg: "{{ wp_archive }} is missing — aborting deployment"
+  when:
+    - not ansible_check_mode
+    - not wp_archive_stat.stat.exists
+
+- name: Extract WordPress uploads archive # noqa no-handler
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: "{{ wp_archive }}"
+    dest: "{{ webserver_directory }}/wp-content/"
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_user }}"
+  when:
+    - not ansible_check_mode
+    - wp_archive_stat.stat.exists
+    - wp_s3_download is changed

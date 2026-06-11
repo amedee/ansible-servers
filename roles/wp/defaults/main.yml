@@ -1,0 +1,3 @@
+---
+wp_archive_dir: /var/cache/wp-archive
+wp_archive: "{{ wp_archive_dir }}/uploads.tar.xz"
