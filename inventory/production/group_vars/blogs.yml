@@ -5,7 +5,6 @@ apt_packages_extra:
   - ghostscript
   - imagemagick
   - mysql-client
-  - mysql-client
   - mysql-server
   - nginx
   - openssl
