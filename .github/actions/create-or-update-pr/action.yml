@@ -57,7 +57,7 @@ runs:
           echo "✅ Committing changes..."
           git commit -m "${INPUTS_COMMIT_MESSAGE}"
           REPO_URL="https://x-access-token:${INPUTS_GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push --force-with-lease "$REPO_URL" "${INPUTS_BRANCH}"
+          git push --force "$REPO_URL" "${INPUTS_BRANCH}"
           echo "pushed=true" >> "$GITHUB_OUTPUT"
         fi
 
