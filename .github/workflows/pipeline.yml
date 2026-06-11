@@ -8,6 +8,7 @@ on: # yamllint disable-line rule:truthy
     paths:
       - "**"
       - "!*.md"
+      - "!.github/workflows/ansible-doctor.yml"
       - "!.github/workflows/gource.yml"
       - "!.pre-commit-config.yaml"
       - "!Vagrantfile"

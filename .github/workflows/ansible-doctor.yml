@@ -6,6 +6,7 @@ on: # yamllint disable-line rule:truthy
     branches:
       - main
     paths:
+      - ".github/workflows/ansible-doctor.yml"
       - "roles/**/defaults/main.yml"
       - "roles/**/meta/main.yml"
   workflow_dispatch:
@@ -37,16 +38,6 @@ jobs:
       - name: Run ansible-doctor
         run: ansible-doctor --force --recursive roles
 
-      - name: 🔍 Show changes before prettier
-        run: |
-          {
-           echo "### 🔍 Diff before prettier"
-           echo
-           echo '```diff'
-           git diff --ignore-all-space
-           echo '```'
-          } | tee -a "$GITHUB_STEP_SUMMARY"
-
       - name: 📦 Cache npm
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
@@ -59,51 +50,34 @@ jobs:
         run: |
           npx prettier --write "roles/**/README.md"
 
-      - name: Check if there are changes
+      - name: Detect any changes in working tree
         id: changes
         run: |
-          # Detect any changes in working tree
-          if git diff --exit-code --quiet; then
+          if git diff --exit-code --quiet "roles/**/README.md" ; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           else
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: 📤 Extract staged git diff
-        if: steps.changes.outputs.has_changes == 'true'
-        run: |
-          git diff --ignore-all-space > diff.txt
-
-      - name: 🧠 Prepare diff outputs
         id: diff_outputs
         if: steps.changes.outputs.has_changes == 'true'
         run: |
-          if [ -s diff.txt ]; then
-            echo "has_diff=true" >> "$GITHUB_OUTPUT"
-            printf "diff_content<<EOF\n%s\nEOF\n" "$(cat diff.txt)" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_diff=false" >> "$GITHUB_OUTPUT"
-            echo "diff_content=" >> "$GITHUB_OUTPUT"
-          fi
+          git diff > diff.txt
 
-      - name: Attach diff to summary
-        if: steps.changes.outputs.has_changes == 'true'
-        run: |
+          printf "diff_content<<EOF\n%s\nEOF\n" "$(cat diff.txt)" >> "$GITHUB_OUTPUT"
+
           {
             echo "### 🔍 Diff"
             echo
             echo '```diff'
-            if [ -s diff.txt ]; then
-              cat diff.txt
-            else
-              echo "# No diff file"
-            fi
+            cat diff.txt
             echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: 🤖 Generate AI commit message
         id: ai_commit
-        if: steps.diff_outputs.outputs.has_diff == 'true'
+        if: steps.changes.outputs.has_changes == 'true'
         uses: ./.github/actions/ai-commit-message
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -113,19 +87,9 @@ jobs:
             Write a concise Git commit message describing the staged changes
             to Markdown documentation of Ansible roles.
 
-      - name: Ensure commit message exists
-        if: steps.changes.outputs.has_changes == 'true'
-        env:
-          AI_MESSAGE: ${{ steps.ai_commit.outputs.message }}
-        run: |
-          if [ -z "$AI_MESSAGE" ]; then
-            echo "AI commit message missing. Aborting workflow."
-            exit 1
-          fi
-
       - name: 🔁 Commit, push, and PR
         uses: ./.github/actions/create-or-update-pr
-        if: steps.diff_outputs.outputs.has_diff == 'true'
+        if: steps.changes.outputs.has_changes == 'true'
         with:
           branch: chore/ansible-docs
           commit_message: ${{ steps.ai_commit.outputs.message }}
