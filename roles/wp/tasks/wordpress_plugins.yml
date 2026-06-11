@@ -11,7 +11,7 @@
   register: wp_plugin_install
   changed_when: "'Installing' in wp_plugin_install.stdout"
 
-- name: Ensure WordPress plugin auto-updates are enabled
+- name: Enable auto-updates for all plugins
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
@@ -21,14 +21,13 @@
       - plugin
       - auto-updates
       - enable
-      - "{{ item }}"
+      - "--all"
       - "--path={{ webserver_directory }}"
-  loop: "{{ wp_plugins_install }}"
   register: wp_plugin_autoupdate
-  changed_when: "'Success' in wp_plugin_autoupdate.stdout"
   failed_when: >
     wp_plugin_autoupdate.rc != 0 and
-    'already enabled' not in wp_plugin_autoupdate.stderr | lower
+    'No plugin auto-updates enabled.' not in wp_plugin_autoupdate.stderr
+  changed_when: wp_plugin_autoupdate.rc == 0
 
 - name: Deactivate and uninstall WordPress plugins
   become: true
