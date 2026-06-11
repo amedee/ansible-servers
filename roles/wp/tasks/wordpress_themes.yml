@@ -6,7 +6,7 @@
     argv: >-
       {{ [php_bin, wp_cli_bin, 'theme', 'install'] +
           wp_themes_install +
-          ['--force', '--path=' + webserver_directory] }}
+          ['--path=' + webserver_directory] }}
   register: wp_theme_install
   changed_when: "'Installing' in wp_theme_install.stdout"
   failed_when: >
