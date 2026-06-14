@@ -132,11 +132,6 @@ munin_node_config_base:
     env.exclude_re: ^/boot/efi$
   "diskstats*":
     env.include_only: vd
-munin_node_config_extra: {}
-munin_node_install_plugins_base: []
-munin_node_install_plugins_extra: []
-munin_node_plugins_base: []
-munin_node_plugins_extra: []
 
 mydomains: []
 

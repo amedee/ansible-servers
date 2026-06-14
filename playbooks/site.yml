@@ -47,19 +47,23 @@
           }}
     - debops.debops.reboot
 
-    - role: merge_vars
-      merge_vars_from_1: munin_node_config_base
-      merge_vars_from_2: munin_node_config_extra
-      merge_vars_target: munin_node_config
-    - role: merge_vars
-      merge_vars_from_1: munin_node_install_plugins_base
-      merge_vars_from_2: munin_node_install_plugins_extra
-      merge_vars_target: munin_node_install_plugins
-    - role: merge_vars
-      merge_vars_from_1: munin_node_plugins_base
-      merge_vars_from_2: munin_node_plugins_extra
-      merge_vars_target: munin_node_plugins
-    - munin_node
+    - role: munin_node
+      vars:
+        munin_node_config: >-
+          {{
+            (munin_node_config_base | default({}))
+            | combine(munin_node_config_extra | default({}), recursive=True)
+          }}
+        munin_node_install_plugins: >-
+          {{
+            (munin_node_install_plugins_base | default([]))
+            + (munin_node_install_plugins_extra | default([]))
+          }}
+        munin_node_plugins: >-
+          {{
+            (munin_node_plugins_base | default([]))
+            + (munin_node_plugins_extra | default([]))
+          }}
 
     - postfix
 
