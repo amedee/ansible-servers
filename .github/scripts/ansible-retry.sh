@@ -83,7 +83,7 @@ for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
 		--limit "$ANSIBLE_HOST" \
 		"${ansible_args[@]}" \
 		--vault-password-file "$VAULT_FILE" \
-		-vv 2>&1 | tee "$LOG"; then
+		2>&1 | tee "$LOG"; then
 
 		echo "✅ Success on attempt $attempt"
 		exit 0
