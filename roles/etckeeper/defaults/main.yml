@@ -1,0 +1,7 @@
+---
+etckeeper__enabled: true
+etckeeper__vcs: git
+etckeeper__vcs_user: "The /etc Keeper"
+etckeeper__vcs_email: >-
+  root@{{ ansible_facts['fqdn']
+  | default(ansible_facts['hostname']) }}

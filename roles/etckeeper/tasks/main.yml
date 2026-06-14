@@ -1,0 +1,16 @@
+---
+- name: Ensure etckeeper git user/email is configured safely
+  community.general.git_config:
+    name: "{{ item.key }}"
+    scope: system
+    value: "{{ item.value }}"
+  loop:
+    - key: user.name
+      value: "{{ etckeeper__vcs_user | default('root') }}"
+    - key: user.email
+      value: "{{ etckeeper__vcs_email }}"
+  when: etckeeper__enabled | bool and etckeeper__vcs == 'git'
+
+- name: Configure etckeeper via debops role
+  ansible.builtin.include_role:
+    name: debops.debops.etckeeper
