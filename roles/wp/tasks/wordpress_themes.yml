@@ -23,9 +23,8 @@
       - theme
       - auto-updates
       - enable
-      - "{{ item }}"
+      - "--all"
       - "--path={{ webserver_directory }}"
-  loop: "{{ wp_themes_install }}"
   register: wp_theme_autoupdate
   changed_when: "'Success' in wp_theme_autoupdate.stdout"
   failed_when: >
