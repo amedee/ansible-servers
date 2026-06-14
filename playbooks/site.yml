@@ -32,7 +32,7 @@
   roles:
     - swapfile
     - localepurge
-    - etckeeper_wrapper
+    - debops.debops.etckeeper
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
