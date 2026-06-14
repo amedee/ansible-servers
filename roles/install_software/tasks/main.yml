@@ -88,7 +88,7 @@
 - name: Install APT packages
   ansible.builtin.apt:
     state: present
-    pkg: "{{ apt_packages }}"
+    pkg: "{{ install_software_apt_packages }}"
   notify:
     - APT autoclean
     - APT autoremove

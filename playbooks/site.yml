@@ -38,11 +38,13 @@
     - debops.debops.unattended_upgrades
     - apt_keyrings
 
-    - role: merge_vars
-      merge_vars_from_1: apt_packages_base
-      merge_vars_from_2: apt_packages_extra
-      merge_vars_target: apt_packages
-    - install_software
+    - role: install_software
+      vars:
+        install_software_apt_packages: >-
+          {{
+            (apt_packages_base | default([]))
+            + (apt_packages_extra | default([]))
+          }}
     - debops.debops.reboot
 
     - role: merge_vars
