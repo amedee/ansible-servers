@@ -3,7 +3,6 @@
   ansible.builtin.apt:
     name: ufw
     state: present
-    update_cache: true
 
 - name: Ensure UFW is enabled
   community.general.ufw:

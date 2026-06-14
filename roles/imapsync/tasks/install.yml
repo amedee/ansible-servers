@@ -20,7 +20,6 @@
       - libunicode-string-perl
       - wget
     state: present
-    update_cache: true
 
 - name: Install imapsync script
   ansible.builtin.get_url:
