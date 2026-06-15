@@ -91,6 +91,7 @@ jobs:
         with:
           avatars_auto_fetch: true
           gource_title: ${{ github.repository }}
+          logo_url: 'https://amedee.be/wp-content/uploads/2022/12/Carbon_Glider_by_mientefuego_150x150.png'
 
       - name: Install FFmpeg
         if: steps.check.outputs.run_job == 'true'
