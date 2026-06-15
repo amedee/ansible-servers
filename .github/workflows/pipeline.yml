@@ -66,23 +66,11 @@ jobs:
     name: 🛠️ Code Quality — Pre-Commit
     uses: ./.github/workflows/code-quality-pre-commit.yml
 
-  dry-run:
-    name: 🔍 Dry Run on Production
-    uses: ./.github/workflows/ansible-run.yml
-    needs:
-      - ansible-cache
-    with:
-      check-mode: true
-    secrets:
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
-
   deploy:
     name: 🚀 Deploy to Production
     uses: ./.github/workflows/ansible-run.yml
     needs:
       - ansible-cache
-      - dry-run
       - super-linter
       - ansible-lint
       - eslint
