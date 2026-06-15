@@ -1,17 +1,57 @@
 ---
+- name: Get list of installed WordPress plugins
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    argv:
+      - "{{ php_bin }}"
+      - "{{ wp_cli_bin }}"
+      - plugin
+      - list
+      - "--path={{ webserver_directory }}"
+      - --format=json
+  register: wp_plugin_list
+  changed_when: false
+  check_mode: false
+
+- name: Parse installed plugins
+  ansible.builtin.set_fact:
+    wp_installed_plugins: "{{ wp_plugin_list.stdout | from_json | map(attribute='name') | list }}"
+
+- name: Calculate plugins to install
+  ansible.builtin.set_fact:
+    wp_plugins_to_install: "{{ wp_plugins_install | difference(wp_installed_plugins) }}"
+
 - name: Ensure WordPress plugins are installed
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
     argv: >-
       {{ [php_bin, wp_cli_bin, 'plugin', 'install'] +
-          wp_plugins_install +
-          ['--activate', '--path=' + webserver_directory] }}
-  when: wp_plugins_install | length > 0
+          wp_plugins_to_install +
+          ['--path=' + webserver_directory] }}
+  when: wp_plugins_to_install | length > 0
   register: wp_plugin_install
   changed_when: "'Installing' in wp_plugin_install.stdout"
 
-- name: Enable auto-updates for all plugins
+- name: Activate all installed WordPress plugins
+  become: true
+  become_user: "{{ webserver_user }}"
+  ansible.builtin.command:
+    argv:
+      - "{{ php_bin }}"
+      - "{{ wp_cli_bin }}"
+      - plugin
+      - activate
+      - "--all"
+      - "--path={{ webserver_directory }}"
+  register: wp_plugin_activate
+  failed_when: wp_plugin_activate.rc != 0
+  changed_when: >
+    wp_plugin_activate.rc == 0 and
+    'already activated' not in wp_plugin_activate.stdout
+
+- name: Enable auto-updates for all WordPress plugins
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
@@ -23,11 +63,12 @@
       - enable
       - "--all"
       - "--path={{ webserver_directory }}"
-  register: wp_plugin_autoupdate
-  failed_when: >
-    wp_plugin_autoupdate.rc != 0 and
-    'No plugin auto-updates enabled.' not in wp_plugin_autoupdate.stderr
-  changed_when: wp_plugin_autoupdate.rc == 0
+  register: wp_autoupdates
+  failed_when:
+    - wp_autoupdates.rc != 0
+    - "'No plugin auto-updates enabled.' not in wp_autoupdates.stderr"
+  changed_when:
+    - "'Enabled' in wp_autoupdates.stderr"
 
 - name: Deactivate and uninstall WordPress plugins
   become: true
