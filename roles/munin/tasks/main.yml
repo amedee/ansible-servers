@@ -17,3 +17,18 @@
     group: root
     mode: "0644"
   notify: Restart munin
+
+- name: Fix munin cgi-tmp cleanup user
+  ansible.builtin.replace:
+    path: /etc/cron.d/munin
+    regexp: '^32 03 \* \* \*\s+www-data\s+.*cgi-tmp.*$'
+    replace: >-
+      32 03 * * *     munin
+      cgitmpdir=$({ cat /etc/munin/munin.conf /etc/munin/munin-conf.d/* 2>/dev/null || true; } |
+      sed -nE 's/^\s*cgitmpdir\s+(\S.*)$/\1/p' | tail -1);
+      cgitmpdir=${cgitmpdir:-/var/lib/munin/cgi-tmp};
+      if [ -d "$cgitmpdir" ]; then
+      find "$cgitmpdir/" -type f -mtime +1 -delete;
+      find "$cgitmpdir/" -mindepth 1 -type d -empty -delete;
+      fi
+    backup: true
