@@ -46,7 +46,7 @@ jobs:
     steps:
       - name: Collect Workflow Telemetry
         # yamllint disable-line rule:line-length
-        uses: tsviz/actions-runner-telemetry@8ed1d7209ae6f0f721fec133d5ae2402ba478c37 # v1.7.2
+        uses: tsviz/actions-runner-telemetry@0fbec1ca185a193c94e4540e244110fdee912693 # v1.7.3
 
       - name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
