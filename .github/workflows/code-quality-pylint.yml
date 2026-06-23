@@ -38,7 +38,7 @@ jobs:
           requirements-file: "requirements.txt"
 
       - name: Run pylint
-        uses: dciborow/action-pylint@cf6c9bcd79e4aa70e2fbeaf6332d741eb1e0bff8 # v0.1.1
+        uses: dciborow/action-pylint@cf6c9bcd79e4aa70e2fbeaf6332d741eb1e0bff8 # 0.1.1
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           glob_pattern: ".github roles"
