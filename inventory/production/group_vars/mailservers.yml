@@ -1,6 +1,5 @@
 ---
 apt_packages_extra:
-  - duplicity
   - fdupes
   - mpack
   - munin
