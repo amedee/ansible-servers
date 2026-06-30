@@ -2,7 +2,6 @@
 apt_packages_extra:
   - fdupes
   - mpack
-  - munin
 
 backup_age: 3
 # yamllint disable-line rule:line-length

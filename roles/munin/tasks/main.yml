@@ -1,5 +1,10 @@
 ---
-- name: Add munin host configurations
+- name: Install Munin
+  ansible.builtin.apt:
+    name:
+      - munin
+
+- name: Add Munin host configurations
   ansible.builtin.copy:
     src: munin-conf.d/
     dest: /etc/munin/munin-conf.d/
@@ -8,7 +13,7 @@
     mode: "0644"
   notify: Restart munin
 
-- name: Remove duplicate munin host configuration
+- name: Remove duplicate Munin host configuration
   community.general.ini_file:
     path: /etc/munin/munin.conf
     section: box.vangasse.eu
@@ -18,7 +23,7 @@
     mode: "0644"
   notify: Restart munin
 
-- name: Fix munin cgi-tmp cleanup user
+- name: Fix Munin cgi-tmp cleanup user
   ansible.builtin.replace:
     path: /etc/cron.d/munin
     regexp: 'www-data cgitmpdir='
