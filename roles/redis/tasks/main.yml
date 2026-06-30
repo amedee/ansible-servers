@@ -1,4 +1,9 @@
 ---
+- name: Install Redis
+  ansible.builtin.apt:
+    name:
+      - redis-server
+
 - name: Configure Redis
   ansible.builtin.lineinfile:
     path: /etc/redis/redis.conf

@@ -26,7 +26,6 @@ apt_packages_extra:
   - python3-mysqldb
   - python3-packaging
   - python3-pip
-  - redis-server
 
 dbserver_wp_db_host: localhost
 
