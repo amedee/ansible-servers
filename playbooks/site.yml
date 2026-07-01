@@ -82,8 +82,8 @@
     - imapsync
     - mailinabox_dns
     - mailinabox_duplicity
+    - mailinabox_ufw
     - munin
-    - ufw
 
 - name: Configure WordPress servers
   hosts: blogs

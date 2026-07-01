@@ -14,6 +14,14 @@
     - Reload systemd
     - Restart munin-node
 
+- name: Ensure UFW is installed
+  ansible.builtin.apt:
+    name: ufw
+
+- name: Ensure UFW is enabled
+  community.general.ufw:
+    state: enabled
+
 - name: Allow Munin access to port 4949
   community.general.ufw:
     rule: allow

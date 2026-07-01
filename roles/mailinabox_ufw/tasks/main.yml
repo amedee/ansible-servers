@@ -2,7 +2,6 @@
 - name: Ensure UFW is installed
   ansible.builtin.apt:
     name: ufw
-    state: present
 
 - name: Ensure UFW is enabled
   community.general.ufw:

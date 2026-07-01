@@ -1,6 +1,6 @@
-# ufw
+# mailinabox_ufw
 
-Role to configure UFW for mailinabox.
+Role to silence mailinabox about not being able to use port 25.
 
 ## Table of contents
 
