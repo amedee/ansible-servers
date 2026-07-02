@@ -1,0 +1,8 @@
+---
+- name: Add postfix logrotate config
+  ansible.builtin.copy:
+    src: postfix-logrotate
+    dest: /etc/logrotate.d/postfix
+    owner: root
+    group: root
+    mode: "0644"

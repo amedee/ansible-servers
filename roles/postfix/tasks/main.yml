@@ -189,3 +189,6 @@
     group: root
     mode: "0644"
   notify: Restart Postfix
+
+- name: Configure logrotate for postfix logs
+  ansible.builtin.import_tasks: logrotate.yml

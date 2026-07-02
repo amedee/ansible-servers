@@ -1,0 +1,18 @@
+/var/log/mail.err
+/var/log/mail.info
+/var/log/mail.log
+/var/log/mail.warn
+{
+      monthly
+      rotate 24
+      compress
+      delaycompress
+      missingok
+      notifempty
+      sharedscripts
+
+      postrotate
+        systemctl reload rsyslog >/dev/null 2>&1 || true
+        systemctl reload postfix >/dev/null 2>&1 || true
+      endscript
+}

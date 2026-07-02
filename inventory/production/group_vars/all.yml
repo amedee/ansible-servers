@@ -73,23 +73,6 @@ locale: en_US.UTF-8
 logrotate__options: |
   su root adm
 logrotate__config:
-  - filename: postfix
-    logs:
-      - /var/log/mail.err
-      - /var/log/mail.info
-      - /var/log/mail.log
-      - /var/log/mail.warn
-    options: |
-      monthly
-      rotate 24
-      compress
-      delaycompress
-      missingok
-      notifempty
-      sharedscripts
-    postrotate: |
-      systemctl restart rsyslog
-      systemctl restart postfix
   - filename: rsyslog
     logs:
       - /var/log/auth.log
