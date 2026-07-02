@@ -1,18 +1,18 @@
 {
-  "name": "Ansible Lightweight",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+	"name": "Ansible Lightweight",
+	"image": "mcr.microsoft.com/devcontainers/python:3.11",
 
-  "features": {},
+	"features": {},
 
-  "onCreateCommand": "pip install --upgrade pip",
+	"onCreateCommand": "pip install --upgrade pip",
 
-  "postCreateCommand": "pip install ansible",
+	"postCreateCommand": "pip install ansible",
 
-  "remoteUser": "vscode",
+	"remoteUser": "vscode",
 
-  "customizations": {
-    "vscode": {
-      "extensions": ["redhat.ansible", "ms-python.python"]
-    }
-  }
+	"customizations": {
+		"vscode": {
+			"extensions": ["redhat.ansible", "ms-python.python"]
+		}
+	}
 }
