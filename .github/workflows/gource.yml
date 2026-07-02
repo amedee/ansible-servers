@@ -31,12 +31,6 @@ jobs:
     environment: production
 
     steps:
-      - name: Checkout full repository history
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # v6.2.0
         with:
@@ -84,6 +78,13 @@ jobs:
           fi
 
           echo "run_job=${RUN_JOB}" >> "${GITHUB_OUTPUT}"
+
+      - name: Checkout full repository history
+        if: steps.check.outputs.run_job == 'true'
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Generate Gource video
         if: steps.check.outputs.run_job == 'true'
