@@ -1,0 +1,8 @@
+---
+- name: Configure cron job for hadori
+  ansible.builtin.copy:
+    src: hadori-cron
+    dest: /etc/cron.d/hadori
+    owner: root
+    group: root
+    mode: "0644"

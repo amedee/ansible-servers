@@ -1,0 +1,8 @@
+---
+- name: Install hadori
+  ansible.builtin.apt:
+    name:
+      - hadori
+
+- name: Configure cron job for hadori
+  ansible.builtin.import_tasks: cron.yml

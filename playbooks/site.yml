@@ -32,6 +32,7 @@
   roles:
     - swapfile
     - localepurge
+    - hadori
     - debops.debops.etckeeper
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
