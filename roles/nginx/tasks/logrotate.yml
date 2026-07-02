@@ -1,9 +1,8 @@
 ---
-- name: Add nginx logrotate dependent config
-  ansible.builtin.set_fact:
-    logrotate__dependent_config: >-
-      {{
-        (logrotate__dependent_config | default([]))
-        + nginx_logrotate__dependent_config
-      }}
-  # noqa: var-naming
+- name: Add nginx logrotate config
+  ansible.builtin.copy:
+    src: nginx-logrotate
+    dest: /etc/logrotate.d/nginx
+    owner: root
+    group: root
+    mode: '0644'
