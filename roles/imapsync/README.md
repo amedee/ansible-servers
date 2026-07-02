@@ -11,7 +11,6 @@ Role to configure imapsync.
   - [imapsync_cron_minute](#imapsync_cron_minute)
   - [imapsync_install_path](#imapsync_install_path)
   - [imapsync_log_file](#imapsync_log_file)
-  - [imapsync_logrotate\_\_dependent_config](#imapsync_logrotate__dependent_config)
   - [imapsync_script_path](#imapsync_script_path)
   - [imapsync_upstream_url](#imapsync_upstream_url)
 - [Dependencies](#dependencies)
@@ -64,25 +63,6 @@ imapsync_install_path: /usr/local/bin/imapsync
 
 ```YAML
 imapsync_log_file: /var/log/imapsync.log
-```
-
-### imapsync_logrotate\_\_dependent_config
-
-#### Default value
-
-```YAML
-imapsync_logrotate__dependent_config:
-  - filename: imapsync
-    log: '{{ imapsync_log_file }}'
-    options: |
-      weekly
-      missingok
-      rotate 8
-      compress
-      delaycompress
-      notifempty
-      create 0640 root adm
-    state: present
 ```
 
 ### imapsync_script_path

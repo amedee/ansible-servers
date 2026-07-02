@@ -1,9 +1,8 @@
 ---
-- name: Add imapsync logrotate dependent config
-  ansible.builtin.set_fact:
-    logrotate__dependent_config: >-
-      {{
-        (logrotate__dependent_config | default([]))
-        + imapsync_logrotate__dependent_config
-      }}
-  # noqa: var-naming
+- name: Add imapsync logrotate config
+  ansible.builtin.template:
+    src: imapsync-logrotate.j2
+    dest: /etc/logrotate.d/imapsync
+    owner: root
+    group: root
+    mode: '0644'
