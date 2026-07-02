@@ -7,8 +7,6 @@ Role to configure imapsync.
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
   - [imapsync_creds_path](#imapsync_creds_path)
-  - [imapsync_cron_hour](#imapsync_cron_hour)
-  - [imapsync_cron_minute](#imapsync_cron_minute)
   - [imapsync_install_path](#imapsync_install_path)
   - [imapsync_log_file](#imapsync_log_file)
   - [imapsync_script_path](#imapsync_script_path)
@@ -31,22 +29,6 @@ Role to configure imapsync.
 
 ```YAML
 imapsync_creds_path: /root/.imapsync-creds
-```
-
-### imapsync_cron_hour
-
-#### Default value
-
-```YAML
-imapsync_cron_hour: '*'
-```
-
-### imapsync_cron_minute
-
-#### Default value
-
-```YAML
-imapsync_cron_minute: '*/10'
 ```
 
 ### imapsync_install_path

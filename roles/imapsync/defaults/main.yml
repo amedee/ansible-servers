@@ -3,8 +3,4 @@ imapsync_upstream_url: https://imapsync.lamiral.info/imapsync
 imapsync_install_path: /usr/local/bin/imapsync
 imapsync_script_path: /usr/local/sbin/imapsync.sh
 imapsync_creds_path: /root/.imapsync-creds
-
-imapsync_cron_minute: "*/10"
-imapsync_cron_hour: "*"
-
 imapsync_log_file: /var/log/imapsync.log
