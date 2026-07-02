@@ -1,20 +1,8 @@
 ---
 - name: Configure cron job for imapsync
-  ansible.builtin.set_fact:
-    cron__dependent_jobs: >-
-      {{
-        (cron__dependent_jobs | default({}))
-        | combine({
-            'imapsync': {
-              'jobs': [
-                {
-                  'job': imapsync_script_path,
-                  'minute': imapsync_cron_minute,
-                  'hour': imapsync_cron_hour,
-                  'state': 'present'
-                }
-              ]
-            }
-          })
-      }}
-  # noqa: var-naming
+  ansible.builtin.template:
+    src: imapsync-cron.j2
+    dest: /etc/cron.d/imapsync
+    mode: "0644"
+    user: root
+    group: root
