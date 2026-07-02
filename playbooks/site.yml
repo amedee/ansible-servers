@@ -104,6 +104,14 @@
   hosts: all
   gather_facts: false
 
+  pre_tasks:
+    - name: Add rsyslog logrotate config
+      ansible.builtin.copy:
+        src: rsyslog-logrotate
+        dest: /etc/logrotate.d/rsyslog
+        owner: root
+        group: root
+        mode: "0644"
+
   roles:
     - debops.debops.cron
-    - debops.debops.logrotate
