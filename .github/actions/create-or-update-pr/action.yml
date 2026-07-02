@@ -48,7 +48,6 @@ runs:
         git config user.name "${INPUTS_GIT_USER_NAME}"
         git config user.email "${INPUTS_GIT_USER_EMAIL}"
         git checkout -B "${INPUTS_BRANCH}"
-        git add .
 
         if git diff --cached --quiet; then
           echo "🟡 No staged changes to commit."
@@ -62,6 +61,7 @@ runs:
         fi
 
     - shell: bash
+      if: steps.commit_push.outputs.pushed == 'true'
       env:
         GH_TOKEN: ${{ inputs.github_token }}
         INPUTS_BRANCH: ${{ inputs.branch }}

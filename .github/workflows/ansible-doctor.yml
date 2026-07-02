@@ -50,10 +50,13 @@ jobs:
         run: |
           npx prettier --write "roles/**/README.md"
 
-      - name: Detect any changes in working tree
+      - name: Stage generated README files
+        run: git add roles/*/README.md
+
+      - name: Detect generated README changes
         id: changes
         run: |
-          if git diff --exit-code --quiet "roles/**/README.md" ; then
+          if git diff --cached --quiet; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           else
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
@@ -63,7 +66,7 @@ jobs:
         id: diff_outputs
         if: steps.changes.outputs.has_changes == 'true'
         run: |
-          git diff > diff.txt
+          git diff --cached > diff.txt
 
           printf "diff_content<<EOF\n%s\nEOF\n" "$(cat diff.txt)" >> "$GITHUB_OUTPUT"
 
@@ -86,6 +89,16 @@ jobs:
           prompt_content: |
             Write a concise Git commit message describing the staged changes
             to Markdown documentation of Ansible roles.
+
+      - name: Ensure commit message exists
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          AI_MESSAGE: ${{ steps.ai_commit.outputs.message }}
+        run: |
+          if [ -z "$AI_MESSAGE" ]; then
+            echo "AI commit message missing. Aborting workflow."
+            exit 1
+          fi
 
       - name: 🔁 Commit, push, and PR
         uses: ./.github/actions/create-or-update-pr

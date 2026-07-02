@@ -143,52 +143,37 @@ jobs:
           YAML_CONFIG_FILE: ".yamllint.yml"
         continue-on-error: true
 
+      - name: Stage changed files
+        run: git add .
+
       - name: Check if there are changes
         id: changes
         run: |
-          # Detect any changes in working tree
-          if git diff --ignore-all-space --exit-code --quiet; then
+          if git diff --cached --quiet; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           else
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: 📤 Extract staged git diff
-        if: steps.changes.outputs.has_changes == 'true'
-        run: |
-          git diff --ignore-all-space > diff.txt
-
-      - name: 🧠 Prepare diff outputs
         id: diff_outputs
         if: steps.changes.outputs.has_changes == 'true'
         run: |
-          if [ -s diff.txt ]; then
-            echo "has_diff=true" >> "$GITHUB_OUTPUT"
-            printf "diff_content<<EOF\n%s\nEOF\n" "$(cat diff.txt)" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_diff=false" >> "$GITHUB_OUTPUT"
-            echo "diff_content=" >> "$GITHUB_OUTPUT"
-          fi
+          git diff --cached > diff.txt
 
-      - name: Attach diff to summary
-        if: steps.changes.outputs.has_changes == 'true'
-        run: |
+          printf "diff_content<<EOF\n%s\nEOF\n" "$(cat diff.txt)" >> "$GITHUB_OUTPUT"
+
           {
             echo "### 🔍 Diff"
             echo
             echo '```diff'
-            if [ -s diff.txt ]; then
-              cat diff.txt
-            else
-              echo "# No diff file"
-            fi
+            cat diff.txt
             echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: 🤖 Generate AI commit message
-        if: ${{ steps.changes.outputs.has_changes == 'true' &&
-                github.event_name != 'pull_request' }}
         id: ai_commit
+        if: steps.changes.outputs.has_changes == 'true'
         uses: ./.github/actions/ai-commit-message
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
