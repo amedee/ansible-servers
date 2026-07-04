@@ -82,6 +82,7 @@
     - debops.debops.environment
     - imapsync
     - mailinabox_dns
+    - mailinabox_dovecot
     - mailinabox_duplicity
     - mailinabox_ufw
     - munin
@@ -101,7 +102,7 @@
     - debops.debops.wpcli
     - wp
 
-- name: Finalize cron and logrotate configuration
+- name: Finalize logrotate configuration
   hosts: all
   gather_facts: false
 
@@ -113,6 +114,3 @@
         owner: root
         group: root
         mode: "0644"
-
-  roles:
-    - debops.debops.cron
