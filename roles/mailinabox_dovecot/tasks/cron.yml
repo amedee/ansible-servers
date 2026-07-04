@@ -1,0 +1,30 @@
+---
+- name: Configure cron jobs for Dovecot expunge
+  ansible.builtin.copy:
+    src: doveadm_expunge.cron
+    dest: /etc/cron.d/doveadm_expunge
+    mode: "0644"
+    owner: root
+    group: root
+
+- name: Install tools required for image extraction
+  ansible.builtin.apt:
+    name:
+      - fdupes
+      - mpack
+
+- name: Copy script for image extraction
+  ansible.builtin.copy:
+    src: extract_image_attachments.sh
+    dest: /usr/local/bin/extract_image_attachments.sh
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Configure cron jobs for image extraction
+  ansible.builtin.copy:
+    src: extract_image_attachments.cron
+    dest: /etc/cron.d/extract_image_attachments
+    mode: "0644"
+    owner: root
+    group: root
