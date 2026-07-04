@@ -48,7 +48,7 @@ jobs:
 
       - name: Format Markdown with Prettier
         run: |
-          npx prettier --write "roles/**/README.md"
+          npx prettier --prose-wrap always --print-width 80 --write "roles/**/README.md"
 
       - name: Stage generated README files
         run: git add roles/*/README.md
