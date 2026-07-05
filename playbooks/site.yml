@@ -37,6 +37,13 @@
         group: root
         mode: "0644"
 
+    - name: Install some quality of life software
+      ansible.builtin.apt:
+        name:
+          - mc
+          - ncdu
+          - nmap
+
   roles:
     - swapfile
     - localepurge
@@ -46,14 +53,7 @@
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
     - apt_keyrings
-
-    - role: install_software
-      vars:
-        install_software_apt_packages: >-
-          {{
-            (apt_packages_base | default([]))
-            + (apt_packages_extra | default([]))
-          }}
+    - install_software
     - debops.debops.reboot
 
     - role: munin_node

@@ -85,14 +85,6 @@
     - APT autoclean
     - APT autoremove
 
-- name: Install APT packages
-  ansible.builtin.apt:
-    state: present
-    pkg: "{{ install_software_apt_packages }}"
-  notify:
-    - APT autoclean
-    - APT autoremove
-
 - name: Upgrade all packages
   ansible.builtin.apt:
     upgrade: dist

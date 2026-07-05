@@ -1,4 +1,9 @@
 ---
+- name: Install php-redis
+  ansible.builtin.apt:
+    name:
+      - php-redis
+
 - name: Remove WP_REDIS_PASSWORD from wp-config.php
   become: true
   become_user: "{{ webserver_user }}"

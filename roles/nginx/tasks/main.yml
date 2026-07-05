@@ -1,4 +1,11 @@
 ---
+- name: Install Nginx and PHP
+  ansible.builtin.apt:
+    name:
+      - nginx
+      - php
+      - php-fpm
+
 - name: Copy gzip config file
   ansible.builtin.copy:
     src: gzip.conf

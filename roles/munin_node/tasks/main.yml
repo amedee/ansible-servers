@@ -1,4 +1,11 @@
 ---
+- name: Install munin-node and software required by some plugins
+  ansible.builtin.apt:
+    name:
+      - hping3
+      - munin-node
+      - uptimed
+
 - name: Allow munin-node to read files in home directories
   community.general.ini_file:
     path: /lib/systemd/system/munin-node.service

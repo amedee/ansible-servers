@@ -6,8 +6,8 @@
 
 - name: Install localepurge packages
   ansible.builtin.apt:
-    state: present
-    pkg: localepurge
+    name:
+      - localepurge
 
 - name: Edit localepurge config file
   ansible.builtin.lineinfile:

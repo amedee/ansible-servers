@@ -1,4 +1,14 @@
 ---
+- name: Install Postfix
+  ansible.builtin.apt:
+    name:
+      - mailutils
+      - postfix
+      - postfix-pcre
+      - procmail
+      - python3-venv
+      - swaks
+
 - name: Ensure /etc/postfix/checks/ directory exists
   ansible.builtin.file:
     path: /etc/postfix/checks/

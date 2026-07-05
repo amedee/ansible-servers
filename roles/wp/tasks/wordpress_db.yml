@@ -1,4 +1,14 @@
 ---
+- name: Install MySQL and AWS S3 dependencies
+  ansible.builtin.apt:
+    name:
+      - mysql-client
+      - php-mysql
+      - python3-boto3
+      - python3-mysqldb
+      - python3-packaging
+      - python3-pip
+
 - name: "Create database '{{ wp_db_name }}'"
   ansible.mysql.mysql_db:
     name: "{{ wp_db_name }}"

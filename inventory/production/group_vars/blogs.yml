@@ -1,32 +1,4 @@
 ---
-apt_packages_extra:
-  - curl
-  - elinks
-  - ghostscript
-  - imagemagick
-  - mysql-client
-  - mysql-server
-  - nginx
-  - openssl
-  - php
-  - php-curl
-  - php-fpm
-  - php-gd
-  - php-imagick
-  - php-intl
-  - php-json
-  - php-mbstring
-  - php-mysql
-  - php-redis
-  - php-ssh2
-  - php-xml
-  - php-xmlrpc
-  - php-zip
-  - python3-boto3
-  - python3-mysqldb
-  - python3-packaging
-  - python3-pip
-
 dbserver_wp_db_host: localhost
 
 deb822_repositories:

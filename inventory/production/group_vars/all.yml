@@ -8,23 +8,8 @@ ansible_ssh_common_args: >-
   -o ForwardAgent=yes
   -o StrictHostKeyChecking=accept-new
 ansible_user: root
-apt_packages_base:
-  - hping3
-  - mailutils
-  - mc
-  - mutt
-  - ncdu
-  - nmap
-  - postfix
-  - postfix-pcre
-  - procmail
-  - python3-venv
-  - swaks
-  - uptimed
-apt_packages_extra: []
 
 apt_packages_uninstall:
-  - apache2-bin
   - apport
   - mecab-utils
 
