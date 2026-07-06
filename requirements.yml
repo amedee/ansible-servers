@@ -7,7 +7,7 @@ collections:
   - name: amazon.aws
     version: 11.4.0
   - name: ansible.posix
-    version: 2.2.0
+    version: 2.2.1
   - name: ansible.utils
     version: 6.0.3
   - name: community.docker
