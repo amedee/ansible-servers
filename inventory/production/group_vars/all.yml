@@ -13,9 +13,6 @@ apt_packages_uninstall:
   - apport
   - mecab-utils
 
-snap_packages:
-  - yq
-
 deb822_repositories: []
 
 aws_access_key: !vault |

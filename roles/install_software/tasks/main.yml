@@ -91,7 +91,3 @@
   notify:
     - APT autoclean
     - APT autoremove
-
-- name: Install snap packages
-  community.general.snap:
-    name: "{{ snap_packages }}"
