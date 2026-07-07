@@ -30,6 +30,15 @@
     cache_valid_time: 86400 # One day
     lock_timeout: 300 # 5 minutes
 
+- name: Copy nginx config file
+  ansible.builtin.copy:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart nginx
+
 - name: Copy gzip config file
   ansible.builtin.copy:
     src: gzip.conf
