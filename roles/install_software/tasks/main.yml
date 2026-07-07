@@ -1,28 +1,37 @@
 ---
-- name: Install APT preferences
-  ansible.builtin.copy:
-    src: preferences.d/
-    dest: /etc/apt/preferences.d/
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: Configure deb822-format APT repositories
+- name: Configure DigitalOcean Ubuntu mirror
   ansible.builtin.deb822_repository:
-    name: "{{ item.name }}"
-    types: "{{ item.repo.types | default(omit) }}"
-    uris: "{{ item.repo.uris }}"
-    suites: "{{ item.repo.suites }}"
-    components: "{{ item.repo.components }}"
-    signed_by: "{{ item.repo.signed_by }}"
-    state: present
-  loop: "{{ deb822_repositories }}"
+    name: ubuntu
+    types:
+      - deb
+    uris:
+      - http://mirrors.digitalocean.com/ubuntu/
+    suites:
+      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_distribution_release }}-updates"
+      - "{{ ansible_distribution_release }}-backports"
+    components:
+      - main
+      - restricted
+      - universe
+      - multiverse
+    signed_by: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
-- name: Update apt cache
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 86400 # One day
-    lock_timeout: 300 # 5 minutes
+- name: Configure Ubuntu security repository
+  ansible.builtin.deb822_repository:
+    name: ubuntu-security
+    types:
+      - deb
+    uris:
+      - http://security.ubuntu.com/ubuntu
+    suites:
+      - "{{ ansible_distribution_release }}-security"
+    components:
+      - main
+      - restricted
+      - universe
+      - multiverse
+    signed_by: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
 - name: Remove unwanted packages
   ansible.builtin.apt:

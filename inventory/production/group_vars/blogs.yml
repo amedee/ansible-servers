@@ -1,34 +1,6 @@
 ---
 dbserver_wp_db_host: localhost
 
-deb822_repositories:
-  - name: ondrej-ubuntu-nginx-noble
-    repo:
-      uris: "https://ppa.launchpadcontent.net/ondrej/nginx/ubuntu/"
-      suites: [noble]
-      components: [main]
-      signed_by: /etc/apt/keyrings/ondrej.gpg
-  - name: ondrej-ubuntu-php-noble
-    repo:
-      uris: "https://ppa.launchpadcontent.net/ondrej/php/ubuntu/"
-      suites: [noble]
-      components: [main]
-      signed_by: /etc/apt/keyrings/ondrej.gpg
-  - name: third-party
-    repo:
-      types: [deb]
-      uris: "http://mirrors.digitalocean.com/ubuntu/"
-      suites:
-        - noble
-        - noble-updates
-        - noble-backports
-      components:
-        - main
-        - restricted
-        - universe
-        - multiverse
-      signed_by: "/usr/share/keyrings/ubuntu-archive-keyring.gpg"
-
 redis_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   32336333613162383136373737333462313834396236326538663365303935373138353166623632

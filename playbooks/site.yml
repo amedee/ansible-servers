@@ -52,7 +52,6 @@
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
-    - apt_keyrings
     - install_software
     - debops.debops.reboot
 
