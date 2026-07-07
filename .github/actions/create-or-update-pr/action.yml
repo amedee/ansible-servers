@@ -6,6 +6,10 @@ inputs:
   branch:
     description: "Branch to push changes to"
     required: true
+  create_pr:
+    description: "Whether to create or update a pull request"
+    required: false
+    default: "true"
   commit_message:
     description: "Full commit message"
     required: true
@@ -47,7 +51,14 @@ runs:
 
         git config user.name "${INPUTS_GIT_USER_NAME}"
         git config user.email "${INPUTS_GIT_USER_EMAIL}"
-        git checkout -B "${INPUTS_BRANCH}"
+
+        if git show-ref --verify --quiet "refs/heads/${INPUTS_BRANCH}"; then
+          git checkout "${INPUTS_BRANCH}"
+        elif git show-ref --verify --quiet "refs/remotes/origin/${INPUTS_BRANCH}"; then
+          git checkout -B "${INPUTS_BRANCH}" "origin/${INPUTS_BRANCH}"
+        else
+          git checkout -b "${INPUTS_BRANCH}"
+        fi
 
         if git diff --cached --quiet; then
           echo "🟡 No staged changes to commit."
@@ -61,7 +72,9 @@ runs:
         fi
 
     - shell: bash
-      if: steps.commit_push.outputs.pushed == 'true'
+      if: |
+        steps.commit_push.outputs.pushed == 'true' &&
+        inputs.create_pr == 'true'
       env:
         GH_TOKEN: ${{ inputs.github_token }}
         INPUTS_BRANCH: ${{ inputs.branch }}

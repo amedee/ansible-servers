@@ -104,7 +104,14 @@ jobs:
         uses: ./.github/actions/create-or-update-pr
         if: steps.changes.outputs.has_changes == 'true'
         with:
-          branch: chore/ansible-docs
+          branch: >-
+            ${{ github.event_name == 'workflow_dispatch'
+                && github.ref_name != 'main'
+                && github.ref_name
+                || 'chore/ansible-docs' }}
+          create_pr: >-
+            ${{ !(github.event_name == 'workflow_dispatch'
+                && github.ref_name != 'main') }}
           commit_message: ${{ steps.ai_commit.outputs.message }}
           pr_title: "📚️ Update Ansible role docs"
           pr_body: ${{ steps.ai_commit.outputs.message }}
