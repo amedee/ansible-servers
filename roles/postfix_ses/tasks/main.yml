@@ -1,0 +1,59 @@
+---
+- name: Install SES runtime dependencies
+  ansible.builtin.apt:
+    name:
+      - python3-boto3
+      - python3-botocore
+
+- name: Ensure Postfix transport_maps is configured for SES
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^transport_maps\s*='
+    line: 'transport_maps = pcre:/etc/postfix/transport.pcre'
+    validate: 'postfix check'
+  notify: Restart Postfix
+
+- name: Ensure SES transport exists
+  ansible.builtin.blockinfile:
+    path: /etc/postfix/master.cf
+    marker: "# {mark} ANSIBLE SES TRANSPORT"
+    insertafter: EOF
+    block: |
+      ses       unix  -       n       n       -       -       pipe
+        flags=Rq user=ses argv=/usr/local/bin/ses_wrapper.sh ${recipient}
+    validate: "postfix check"
+  notify: Restart Postfix
+
+- name: Ensure SES system user exists
+  ansible.builtin.user:
+    name: ses
+    comment: "Postfix SES transport user"
+    shell: /usr/sbin/nologin
+    create_home: false
+    system: true
+  check_mode: false
+
+- name: Deploy SES wrapper script
+  ansible.builtin.template:
+    src: ses_wrapper.sh.j2
+    dest: /usr/local/bin/ses_wrapper.sh
+    owner: root
+    group: "{{ 'ses' if not ansible_check_mode else 'root' }}"
+    mode: "0750"
+
+- name: Deploy SES sendmail script
+  ansible.builtin.copy:
+    src: ses_sendmail.py
+    dest: /usr/local/bin/ses_sendmail.py
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Deploy /etc/postfix/transport.pcre from template
+  ansible.builtin.template:
+    src: transport.pcre.j2
+    dest: /etc/postfix/transport.pcre
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Postfix
