@@ -1,17 +1,4 @@
 ---
-- name: Configure nginx upstream repository
-  ansible.builtin.deb822_repository:
-    name: nginx
-    types:
-      - deb
-    uris:
-      - https://nginx.org/packages/ubuntu
-    suites:
-      - "{{ ansible_distribution_release }}"
-    components:
-      - nginx
-    signed_by: https://nginx.org/keys/nginx_signing.key
-
 - name: Configure Sury PHP repository
   ansible.builtin.deb822_repository:
     name: sury-php
@@ -24,14 +11,6 @@
     components:
       - main
     signed_by: https://packages.sury.org/php/apt.gpg
-
-- name: Configure nginx APT pinning
-  ansible.builtin.copy:
-    src: pin_nginx.pref
-    dest: /etc/apt/preferences.d/pin_nginx.pref
-    owner: root
-    group: root
-    mode: "0644"
 
 - name: Configure PHP APT pinning
   ansible.builtin.copy:
