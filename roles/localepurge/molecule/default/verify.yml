@@ -1,0 +1,31 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Read the localepurge config file
+      ansible.builtin.slurp:
+        src: /etc/locale.nopurge
+      register: localepurge_nopurge_file
+
+    - name: Assert the configured locale is present in the config
+      vars:
+        nopurge_content: "{{ localepurge_nopurge_file.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - nopurge_content is string
+          - >
+            (nopurge_content
+            | regex_search('^' ~ locale ~ '$', multiline=True))
+            is not none
+
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Assert localepurge is installed
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.packages is defined
+          - "'localepurge' in ansible_facts.packages"

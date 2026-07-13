@@ -1,0 +1,30 @@
+---
+driver:
+  name: default
+
+platforms:
+  - name: instance
+    connection: local
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: "${MOLECULE_PROJECT_DIRECTORY}/.."
+
+  inventory:
+    host_vars:
+      instance:
+        ansible_connection: local
+        ansible_become: true
+        ansible_become_method: sudo
+        locale: en_US.UTF-8
+
+scenario:
+  test_sequence:
+    - syntax
+    - converge
+    - idempotence
+    - verify
+
+verifier:
+  name: ansible

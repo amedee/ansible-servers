@@ -51,6 +51,12 @@ jobs:
     needs:
       - ansible-cache
 
+  molecule:
+    name: 🧪 Molecule Tests
+    uses: ./.github/workflows/molecule.yml
+    needs:
+      - ansible-cache
+
   eslint:
     name: 🛠️ Code Quality — ESLint
     uses: ./.github/workflows/code-quality-eslint.yml
@@ -74,6 +80,7 @@ jobs:
       - ansible-cache
       - super-linter
       - ansible-lint
+      - molecule
       - eslint
       - pylint
       - validate-configs
