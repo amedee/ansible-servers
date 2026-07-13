@@ -1,19 +1,6 @@
 ---
-- name: Ensure locale exists
-  community.general.locale_gen:
-    name: "{{ locale }}"
-    state: present
+- name: Install localepurge
+  ansible.builtin.import_tasks: install.yml
 
-- name: Install localepurge packages
-  ansible.builtin.apt:
-    name:
-      - localepurge
-
-- name: Edit localepurge config file
-  ansible.builtin.lineinfile:
-    path: /etc/locale.nopurge
-    create: true
-    line: "{{ locale }}"
-    owner: root
-    group: root
-    mode: "0644"
+- name: Configure localepurge
+  ansible.builtin.import_tasks: config.yml

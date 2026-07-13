@@ -1,0 +1,5 @@
+---
+- name: Install localepurge package
+  ansible.builtin.apt:
+    name:
+      - localepurge

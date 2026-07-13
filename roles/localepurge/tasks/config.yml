@@ -1,0 +1,14 @@
+---
+- name: Ensure locale exists
+  community.general.locale_gen:
+    name: "{{ locale }}"
+    state: present
+
+- name: Edit localepurge config file
+  ansible.builtin.lineinfile:
+    path: /etc/locale.nopurge
+    create: true
+    line: "{{ locale }}"
+    owner: root
+    group: root
+    mode: "0644"
