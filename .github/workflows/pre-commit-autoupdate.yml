@@ -30,7 +30,7 @@ jobs:
         uses: ./.github/actions/setup-python-pip
         with:
           python-version: "3.13"
-          requirements-file: "requirements.txt"
+          requirements-file: ".github/requirements-ci.txt"
 
       - name: 💾 Cache pre-commit environment
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -39,9 +39,6 @@ jobs:
           key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: |
             pre-commit-${{ runner.os }}-
-
-      - name: 📦 Install pre-commit
-        run: pip install pre-commit
 
       - name: 🧹 Run pre-commit autoupdate
         run: pre-commit autoupdate
