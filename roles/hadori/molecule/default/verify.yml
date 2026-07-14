@@ -1,0 +1,38 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Assert hadori is installed
+      ansible.builtin.assert:
+        that:
+          - "'hadori' in ansible_facts.packages"
+
+    - name: Check cron file exists
+      ansible.builtin.stat:
+        path: /etc/cron.d/hadori
+      register: hadori_cron_file
+
+    - name: Read cron file
+      ansible.builtin.slurp:
+        src: /etc/cron.d/hadori
+      register: hadori_cron_content
+      when: hadori_cron_file.stat.exists
+
+    - name: Assert hadori cron job exists and is active
+      ansible.builtin.assert:
+        that:
+          - hadori_cron_file.stat.exists
+          - >
+            (
+              hadori_cron_content.content
+              | b64decode
+            ) is regex(
+              '^@monthly\s+root\s+/usr/bin/hadori --verbose /bin /sbin /lib /lib64 /usr /opt$',
+              multiline=True
+            )
