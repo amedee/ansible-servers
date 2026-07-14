@@ -26,10 +26,6 @@ permissions:
   contents: read
 
 jobs:
-  ansible-cache:
-    name: 🚀 Ansible Cache
-    uses: ./.github/workflows/ansible-cache.yml
-
   super-linter:
     name: 🛠️ Code Quality — Super-Linter
     permissions:
@@ -42,20 +38,14 @@ jobs:
     secrets:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       ANSIBLE_DEP_UPDATER_TOKEN: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
-    needs:
-      - ansible-cache
 
   ansible-lint:
     name: 🛠️ Code Quality — Ansible Lint
     uses: ./.github/workflows/code-quality-ansible-lint.yml
-    needs:
-      - ansible-cache
 
   molecule:
     name: 🧪 Molecule Tests
     uses: ./.github/workflows/molecule.yml
-    needs:
-      - ansible-cache
 
   eslint:
     name: 🛠️ Code Quality — ESLint
@@ -77,7 +67,6 @@ jobs:
     name: 🚀 Deploy to Production
     uses: ./.github/workflows/ansible-run.yml
     needs:
-      - ansible-cache
       - super-linter
       - ansible-lint
       - molecule

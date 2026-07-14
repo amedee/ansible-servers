@@ -9,24 +9,10 @@ runs:
       uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
       with:
         path: |
-          .ansible/
-          roles/
+          /home/runner/.ansible/collections
+          roles
         key: ansible-deps-${{ hashFiles('requirements.yml') }}
 
-    - name: Pre-install Ansible Galaxy roles (with retry)
+    - name: Install Galaxy dependencies (with retry)
       shell: bash
-      run: |
-        for i in {1..5}; do
-          if ansible-galaxy install -vv -r requirements.yml; then
-            break
-          else
-            echo "Installation failed, retry in $((i * 10)) seconds…" >&2
-            sleep $((i * 10))
-          fi
-        done
-
-    - name: Copy Ansible collections to proper directory
-      shell: bash
-      run: |
-        mkdir -p .ansible/collections /home/runner/.ansible
-        cp -r .ansible/collections /home/runner/.ansible/
+      run: ansible-galaxy install -r requirements.yml
