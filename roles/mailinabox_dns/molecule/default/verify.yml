@@ -1,0 +1,64 @@
+---
+- name: Verify custom DNS role behavior
+  hosts: all
+  gather_facts: false
+
+  tasks:
+
+    - name: Verify DNS directory exists
+      ansible.builtin.stat:
+        path: /home/user-data/dns
+      register: mailinabox_dns_dir
+
+    - name: Assert DNS directory exists
+      ansible.builtin.assert:
+        that:
+          - mailinabox_dns_dir.stat.exists
+          - mailinabox_dns_dir.stat.isdir
+          - mailinabox_dns_dir.stat.pw_name == "root"
+          - mailinabox_dns_dir.stat.gr_name == "root"
+          - mailinabox_dns_dir.stat.mode == "0755"
+        fail_msg: "DNS directory missing or incorrect permissions"
+
+    - name: Verify dns_update stat result
+      ansible.builtin.stat:
+        path: /root/mailinabox/tools/dns_update
+      register: mailinabox_dns_update_file
+
+    - name: Assert dns_update stat registered
+      ansible.builtin.assert:
+        that:
+          - mailinabox_dns_update_file is defined
+        success_msg: "mailinabox_dns_update stat registered"
+        fail_msg: "mailinabox_dns_update stat was not registered"
+
+    - name: Verify custom.yaml exists
+      ansible.builtin.stat:
+        path: /home/user-data/dns/custom.yaml
+      register: mailinabox_dns_custom_yaml
+
+    - name: Assert custom.yaml exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - mailinabox_dns_custom_yaml.stat.exists
+          - mailinabox_dns_custom_yaml.stat.pw_name == "root"
+          - mailinabox_dns_custom_yaml.stat.gr_name == "root"
+          - mailinabox_dns_custom_yaml.stat.mode == "0644"
+        fail_msg: "custom.yaml missing or incorrect permissions"
+
+    - name: Read deployed custom DNS file
+      ansible.builtin.slurp:
+        src: /home/user-data/dns/custom.yaml
+      register: mailinabox_dns_deployed
+
+    - name: Read expected custom DNS file
+      ansible.builtin.slurp:
+        src: "{{ playbook_dir }}/../../files/custom.yaml"
+      delegate_to: localhost
+      become: false
+      register: mailinabox_dns_expected
+
+    - name: Assert deployed file matches role file
+      ansible.builtin.assert:
+        that:
+          - mailinabox_dns_deployed.content == mailinabox_dns_expected.content
