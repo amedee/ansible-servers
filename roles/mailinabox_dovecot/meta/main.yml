@@ -1,10 +1,14 @@
 ---
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
+  author: Amedee Van Gasse
+  role_name: mailinabox_dovecot
+  namespace: amedee
+
   description: >
     Dovecot-related maintenance tasks for Mail-in-a-Box, including
     mailbox expunge jobs and helper scripts scheduled via /etc/cron.d.
-  author: Amedee Van Gasse
+
   license: MIT
   min_ansible_version: "2.16"
 
@@ -19,3 +23,5 @@ galaxy_info:
     - mailinabox
     - cron
     - maintenance
+
+dependencies: []

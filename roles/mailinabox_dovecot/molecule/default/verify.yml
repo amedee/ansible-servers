@@ -1,0 +1,64 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  vars:
+    expected_files:
+      - path: /etc/cron.d/doveadm_expunge
+        mode: "0644"
+        source: ../../files/doveadm_expunge.cron
+
+      - path: /etc/cron.d/extract_image_attachments
+        mode: "0644"
+        source: ../../files/extract_image_attachments.cron
+
+      - path: /usr/local/bin/extract_image_attachments.sh
+        mode: "0755"
+        source: ../../files/extract_image_attachments.sh
+
+    required_packages:
+      - fdupes
+      - mpack
+
+  tasks:
+    - name: Gather file stats
+      ansible.builtin.stat:
+        path: "{{ item.path }}"
+      loop: "{{ expected_files }}"
+      register: mailinabox_dovecot_file_stats
+
+    - name: Verify file properties
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+          - item.stat.isreg
+          - item.stat.pw_name == "root"
+          - item.stat.gr_name == "root"
+          - item.stat.mode == item.item.mode
+        fail_msg: "Invalid properties for {{ item.item.path }}"
+      loop: "{{ mailinabox_dovecot_file_stats.results }}"
+
+    - name: Read deployed files
+      ansible.builtin.slurp:
+        src: "{{ item.path }}"
+      loop: "{{ expected_files }}"
+      register: mailinabox_dovecot_file_contents
+
+    - name: Verify file contents
+      ansible.builtin.assert:
+        that:
+          - (item.content | b64decode) == lookup('file', item.item.source)
+        fail_msg: "Unexpected content in {{ item.item.path }}"
+      loop: "{{ mailinabox_dovecot_file_contents.results }}"
+
+    - name: Gather installed package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Verify required packages are installed
+      ansible.builtin.assert:
+        that:
+          - item in ansible_facts.packages
+        fail_msg: "Package {{ item }} is not installed"
+      loop: "{{ required_packages }}"
