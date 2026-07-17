@@ -52,28 +52,18 @@ runs:
         git config user.name "${INPUTS_GIT_USER_NAME}"
         git config user.email "${INPUTS_GIT_USER_EMAIL}"
 
-        if git show-ref --verify --quiet "refs/heads/${INPUTS_BRANCH}"; then
-          git checkout "${INPUTS_BRANCH}"
-        elif git show-ref --verify --quiet "refs/remotes/origin/${INPUTS_BRANCH}"; then
-          git checkout -B "${INPUTS_BRANCH}" "origin/${INPUTS_BRANCH}"
-        else
-          git checkout -b "${INPUTS_BRANCH}"
-        fi
+        git stash push --keep-index -m "create-or-update-pr"
+        git switch -C "${INPUTS_BRANCH}"
+        git stash pop
 
-        if git diff --cached --quiet; then
-          echo "🟡 No staged changes to commit."
-          echo "pushed=false" >> "$GITHUB_OUTPUT"
-        else
-          echo "✅ Committing changes..."
-          git commit -m "${INPUTS_COMMIT_MESSAGE}"
-          REPO_URL="https://x-access-token:${INPUTS_GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push --force "$REPO_URL" "${INPUTS_BRANCH}"
-          echo "pushed=true" >> "$GITHUB_OUTPUT"
-        fi
+        echo "✅ Committing changes..."
+        git commit -m "${INPUTS_COMMIT_MESSAGE}"
+        REPO_URL="https://x-access-token:${INPUTS_GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        git push --force "$REPO_URL" "${INPUTS_BRANCH}"
+        echo "pushed=true" >> "$GITHUB_OUTPUT"
 
     - shell: bash
       if: |
-        steps.commit_push.outputs.pushed == 'true' &&
         inputs.create_pr == 'true'
       env:
         GH_TOKEN: ${{ inputs.github_token }}
