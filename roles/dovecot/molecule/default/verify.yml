@@ -26,7 +26,7 @@
       ansible.builtin.stat:
         path: "{{ item.path }}"
       loop: "{{ expected_files }}"
-      register: mailinabox_dovecot_file_stats
+      register: dovecot_file_stats
 
     - name: Verify file properties
       ansible.builtin.assert:
@@ -37,20 +37,20 @@
           - item.stat.gr_name == "root"
           - item.stat.mode == item.item.mode
         fail_msg: "Invalid properties for {{ item.item.path }}"
-      loop: "{{ mailinabox_dovecot_file_stats.results }}"
+      loop: "{{ dovecot_file_stats.results }}"
 
     - name: Read deployed files
       ansible.builtin.slurp:
         src: "{{ item.path }}"
       loop: "{{ expected_files }}"
-      register: mailinabox_dovecot_file_contents
+      register: dovecot_file_contents
 
     - name: Verify file contents
       ansible.builtin.assert:
         that:
           - (item.content | b64decode) == lookup('file', item.item.source)
         fail_msg: "Unexpected content in {{ item.item.path }}"
-      loop: "{{ mailinabox_dovecot_file_contents.results }}"
+      loop: "{{ dovecot_file_contents.results }}"
 
     - name: Gather installed package facts
       ansible.builtin.package_facts:

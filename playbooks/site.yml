@@ -90,7 +90,7 @@
     - debops.debops.environment
     - imapsync
     - mailinabox_dns
-    - mailinabox_dovecot
+    - dovecot
     - mailinabox_duplicity
     - mailinabox_ufw
     - munin

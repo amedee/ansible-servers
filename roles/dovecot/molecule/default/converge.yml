@@ -4,4 +4,4 @@
   gather_facts: false
 
   roles:
-    - mailinabox_dovecot
+    - dovecot

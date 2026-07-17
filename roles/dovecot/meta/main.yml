@@ -2,7 +2,7 @@
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
   author: Amedee Van Gasse
-  role_name: mailinabox_dovecot
+  role_name: dovecot
   namespace: amedee
 
   description: >
