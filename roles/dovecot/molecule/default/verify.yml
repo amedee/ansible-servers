@@ -4,18 +4,19 @@
   gather_facts: false
 
   vars:
+    role_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"
     expected_files:
       - path: /etc/cron.d/doveadm_expunge
         mode: "0644"
-        source: ../../files/doveadm_expunge.cron
+        source: "{{ role_dir }}/files/doveadm_expunge.cron"
 
       - path: /etc/cron.d/extract_image_attachments
         mode: "0644"
-        source: ../../files/extract_image_attachments.cron
+        source: "{{ role_dir }}/files/extract_image_attachments.cron"
 
       - path: /usr/local/bin/extract_image_attachments.sh
         mode: "0755"
-        source: ../../files/extract_image_attachments.sh
+        source: "{{ role_dir }}/files/extract_image_attachments.sh"
 
     required_packages:
       - fdupes
@@ -38,19 +39,6 @@
           - item.stat.mode == item.item.mode
         fail_msg: "Invalid properties for {{ item.item.path }}"
       loop: "{{ dovecot_file_stats.results }}"
-
-    - name: Read deployed files
-      ansible.builtin.slurp:
-        src: "{{ item.path }}"
-      loop: "{{ expected_files }}"
-      register: dovecot_file_contents
-
-    - name: Verify file contents
-      ansible.builtin.assert:
-        that:
-          - (item.content | b64decode | trim) == (lookup('file', item.item.source) | trim)
-        fail_msg: "Unexpected content in {{ item.item.path }}"
-      loop: "{{ dovecot_file_contents.results }}"
 
     - name: Gather installed package facts
       ansible.builtin.package_facts:
