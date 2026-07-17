@@ -48,7 +48,7 @@
     - name: Verify file contents
       ansible.builtin.assert:
         that:
-          - (item.content | b64decode) == lookup('file', item.item.source)
+          - (item.content | b64decode | trim) == (lookup('file', item.item.source) | trim)
         fail_msg: "Unexpected content in {{ item.item.path }}"
       loop: "{{ dovecot_file_contents.results }}"
 
