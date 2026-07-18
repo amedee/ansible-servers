@@ -1,0 +1,42 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Check Redis configuration file
+      ansible.builtin.stat:
+        path: /etc/redis/redis.conf
+      register: redis_conf
+
+    - name: Assert Redis is installed
+      ansible.builtin.assert:
+        that:
+          - "'redis-server' in ansible_facts.packages"
+
+    - name: Assert Redis service exists
+      ansible.builtin.assert:
+        that:
+          - "'redis-server.service' in ansible_facts.services"
+
+    - name: Assert Redis service is enabled and running
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services["redis-server.service"].status == "enabled"
+          - ansible_facts.services["redis-server.service"].state == "running"
+
+    - name: Assert Redis configuration file properties
+      ansible.builtin.assert:
+        that:
+          - redis_conf.stat.exists
+          - redis_conf.stat.pw_name == "root"
+          - redis_conf.stat.gr_name == "root"
+          - redis_conf.stat.mode == "0644"
