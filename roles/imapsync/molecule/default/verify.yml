@@ -1,0 +1,84 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  vars_files:
+    # Load role defaults for paths used in verification
+    - ../../defaults/main.yml
+
+  tasks:
+    - name: Verify Mail::IMAPClient Perl module is installed
+      ansible.builtin.command:
+        cmd: perl -MMail::IMAPClient -e 1
+      changed_when: false
+
+    - name: Check imapsync binary
+      ansible.builtin.stat:
+        path: "{{ imapsync_install_path }}"
+      register: imapsync_binary
+
+    - name: Verify imapsync binary permissions
+      ansible.builtin.assert:
+        that:
+          - imapsync_binary.stat.exists
+          - imapsync_binary.stat.isreg
+          - imapsync_binary.stat.pw_name == "root"
+          - imapsync_binary.stat.gr_name == "root"
+          - imapsync_binary.stat.mode == "0755"
+
+    - name: Check imapsync credentials file
+      ansible.builtin.stat:
+        path: "{{ imapsync_creds_path }}"
+      register: imapsync_creds
+
+    - name: Verify imapsync credentials permissions
+      ansible.builtin.assert:
+        that:
+          - imapsync_creds.stat.exists
+          - imapsync_creds.stat.isreg
+          - imapsync_creds.stat.pw_name == "root"
+          - imapsync_creds.stat.gr_name == "root"
+          - imapsync_creds.stat.mode == "0600"
+
+    - name: Check imapsync sync script
+      ansible.builtin.stat:
+        path: "{{ imapsync_script_path }}"
+      register: imapsync_script
+
+    - name: Verify imapsync sync script permissions
+      ansible.builtin.assert:
+        that:
+          - imapsync_script.stat.exists
+          - imapsync_script.stat.isreg
+          - imapsync_script.stat.pw_name == "root"
+          - imapsync_script.stat.gr_name == "root"
+          - imapsync_script.stat.mode == "0750"
+
+    - name: Check cron configuration
+      ansible.builtin.stat:
+        path: /etc/cron.d/imapsync
+      register: imapsync_cron
+
+    - name: Verify cron configuration permissions
+      ansible.builtin.assert:
+        that:
+          - imapsync_cron.stat.exists
+          - imapsync_cron.stat.isreg
+          - imapsync_cron.stat.pw_name == "root"
+          - imapsync_cron.stat.gr_name == "root"
+          - imapsync_cron.stat.mode == "0644"
+
+    - name: Check logrotate configuration
+      ansible.builtin.stat:
+        path: /etc/logrotate.d/imapsync
+      register: imapsync_logrotate
+
+    - name: Verify logrotate configuration permissions
+      ansible.builtin.assert:
+        that:
+          - imapsync_logrotate.stat.exists
+          - imapsync_logrotate.stat.isreg
+          - imapsync_logrotate.stat.pw_name == "root"
+          - imapsync_logrotate.stat.gr_name == "root"
+          - imapsync_logrotate.stat.mode == "0644"

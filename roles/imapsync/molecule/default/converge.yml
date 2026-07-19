@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: false
+
+  vars:
+    imapsync_gmail_user: molecule-test@example.invalid
+    # checkov:skip=CKV_SECRET_6: Molecule test fixture, not a real credential
+    imapsync_gmail_pass: not-a-real-password
+    imapsync_miab_host: molecule-test.invalid
+    imapsync_miab_user: dummy
+    # checkov:skip=CKV_SECRET_6: Molecule test fixture, not a real credential
+    imapsync_miab_pass: not-a-real-password
+
+  roles:
+    - imapsync
