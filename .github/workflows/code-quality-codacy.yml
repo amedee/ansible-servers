@@ -5,6 +5,9 @@ on: # yamllint disable-line rule:truthy
   push:
     branches:
       - main
+    paths:
+      - "**"
+      - "!*.md"
   schedule:
     - cron: "0 3 * * 1" # Every Monday at 03:00 UTC
   workflow_dispatch:
