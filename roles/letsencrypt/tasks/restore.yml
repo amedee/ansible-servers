@@ -1,0 +1,53 @@
+---
+- name: Check if Certbot is already configured
+  ansible.builtin.stat:
+    path: "/etc/letsencrypt/renewal/{{ letsencrypt_primary_domain }}.conf"
+  register: letsencrypt_config
+
+- name: Determine whether a restore is needed
+  ansible.builtin.set_fact:
+    letsencrypt_restore_required: >-
+      {{ not (letsencrypt_config.stat.exists and letsencrypt_config.stat.isreg) }}
+
+- name: Restore LetsEncrypt configuration
+  when: letsencrypt_restore_required
+  block:
+    - name: Install S3 dependencies
+      ansible.builtin.apt:
+        name:
+          - python3-boto3
+          - python3-packaging
+          - python3-pip
+
+    - name: Download backup from S3
+      amazon.aws.s3_object:
+        bucket: backups-by-amedee
+        object: letsencrypt.tar.xz
+        dest: /tmp/letsencrypt.tar.xz
+        mode: get
+        overwrite: different
+        access_key: "{{ aws_access_key }}"
+        secret_key: "{{ aws_secret_key }}"
+        region: us-east-1
+      no_log: true
+
+    - name: Extract backup
+      ansible.builtin.unarchive:
+        remote_src: true
+        src: /tmp/letsencrypt.tar.xz
+        dest: /etc/
+        owner: root
+        group: root
+      notify: Reload nginx
+
+  rescue:
+    - name: Remove incomplete LetsEncrypt backup
+      ansible.builtin.file:
+        path: /tmp/letsencrypt.tar.xz
+        state: absent
+
+    - name: Fail if LetsEncrypt restore failed
+      ansible.builtin.fail:
+        msg: >-
+          Failed to restore LetsEncrypt configuration from backup.
+          The server may not have valid certificates.

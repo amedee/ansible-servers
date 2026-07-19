@@ -1,62 +1,7 @@
 ---
-- name: Install openssl
-  ansible.builtin.apt:
-    name:
-      - openssl
+- name: Install LetsEncrypt
+  ansible.builtin.import_tasks: install.yml
 
-- name: Check if Certbot is already configured
-  ansible.builtin.stat:
-    path: /etc/letsencrypt/renewal/amedee.be.conf
-  register: letsencrypt_config
-
-- name: Install MySQL and AWS S3 dependencies for Python
-  ansible.builtin.apt:
-    name:
-      - python3-boto3
-      - python3-packaging
-      - python3-pip
-
-- name: Get letsencrypt backup from S3
-  when: not (letsencrypt_config.stat.exists and letsencrypt_config.stat.isreg)
-  amazon.aws.s3_object:
-    bucket: backups-by-amedee
-    object: letsencrypt.tar.xz
-    dest: /tmp/letsencrypt.tar.xz
-    mode: get
-    overwrite: different
-    access_key: "{{ aws_access_key }}"
-    secret_key: "{{ aws_secret_key }}"
-    region: us-east-1
-  no_log: true
-
-- name: Extract letsencrypt backup on the remote machine
-  when: not (letsencrypt_config.stat.exists and letsencrypt_config.stat.isreg)
-  ansible.builtin.unarchive:
-    remote_src: true
-    src: /tmp/letsencrypt.tar.xz
-    dest: /etc/
-    owner: root
-    group: root
-  notify: Restart nginx
-
-- name: Uninstall apt Certbot (old version)
-  ansible.builtin.apt:
-    name:
-      - apache2
-      - apache2-bin
-      - certbot
-    state: absent
-    autoremove: true
-  notify: Restart nginx
-
-- name: Install snap Certbot (new version)
-  community.general.snap:
-    name: certbot
-    classic: true
-  notify: Restart nginx
-
-- name: Prepare the Certbot command
-  ansible.builtin.file:
-    src: /snap/bin/certbot
-    dest: /usr/bin/certbot
-    state: link
+- name: Restore LetsEncrypt configuration
+  ansible.builtin.import_tasks: restore.yml
+  when: letsencrypt_restore_from_backup
