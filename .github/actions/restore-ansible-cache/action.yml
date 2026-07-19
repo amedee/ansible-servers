@@ -10,9 +10,19 @@ runs:
       with:
         path: |
           /home/runner/.ansible/collections
-          roles
+          /home/runner/.ansible/roles
         key: ansible-deps-${{ hashFiles('requirements.yml') }}
 
-    - name: Install Galaxy dependencies (with retry)
+    - name: Install Galaxy roles
       shell: bash
-      run: ansible-galaxy install -r requirements.yml
+      run: |
+        ansible-galaxy role install \
+          -r requirements.yml \
+          -p /home/runner/.ansible/roles
+
+    - name: Install Galaxy collections
+      shell: bash
+      run: |
+        ansible-galaxy collection install \
+          -r requirements.yml \
+          -p /home/runner/.ansible/collections
