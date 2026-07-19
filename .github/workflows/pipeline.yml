@@ -11,9 +11,6 @@ on: # yamllint disable-line rule:truthy
       - "!.github/workflows/ansible-doctor.yml"
       - "!.github/workflows/gource.yml"
       - "!.pre-commit-config.yaml"
-      - "!Vagrantfile"
-      - "!deploy_to_staging.sh"
-      - "!resize_disk.sh"
   schedule:
     - cron: "10 3 * * SAT"
   workflow_dispatch:
@@ -26,6 +23,10 @@ permissions:
   contents: read
 
 jobs:
+  preheat-ansible-cache:
+    name: 🔥 Preheat Ansible Cache
+    uses: ./.github/workflows/preheat-ansible-cache.yml
+
   super-linter:
     name: 🛠️ Code Quality — Super-Linter
     permissions:
@@ -35,17 +36,10 @@ jobs:
       pull-requests: write
       statuses: write
     uses: ./.github/workflows/code-quality-super-linter.yml
+    needs: preheat-ansible-cache
     secrets:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       ANSIBLE_DEP_UPDATER_TOKEN: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
-
-  ansible-lint:
-    name: 🛠️ Code Quality — Ansible Lint
-    uses: ./.github/workflows/code-quality-ansible-lint.yml
-
-  molecule:
-    name: 🧪 Molecule Tests
-    uses: ./.github/workflows/molecule.yml
 
   eslint:
     name: 🛠️ Code Quality — ESLint
@@ -63,10 +57,21 @@ jobs:
     name: 🛠️ Code Quality — Pre-Commit
     uses: ./.github/workflows/code-quality-pre-commit.yml
 
+  ansible-lint:
+    name: 🛠️ Code Quality — Ansible Lint
+    uses: ./.github/workflows/code-quality-ansible-lint.yml
+    needs: preheat-ansible-cache
+
+  molecule:
+    name: 🧪 Molecule Tests
+    uses: ./.github/workflows/molecule.yml
+    needs: preheat-ansible-cache
+
   deploy:
     name: 🚀 Deploy to Production
     uses: ./.github/workflows/ansible-run.yml
     needs:
+      - preheat-ansible-cache
       - super-linter
       - ansible-lint
       - molecule

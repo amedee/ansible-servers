@@ -1,12 +1,21 @@
 ---
 name: ♻️ Restore Ansible Cache
-description: Restores and relocates Ansible role/collection cache
+description: Restores and installs Ansible Galaxy dependencies
+
+outputs:
+  cache-hit:
+    description: Whether the cache was restored from an exact match
+    value: ${{ steps.cache.outputs.cache-hit }}
+  cache-primary-key:
+    description: Primary cache key
+    value: ${{ steps.cache.outputs.cache-primary-key }}
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: Restore Ansible roles and collections cache
-      uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+      id: cache
+      uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
       with:
         path: |
           /home/runner/.ansible/collections
