@@ -1,0 +1,56 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Check Certbot binary
+      ansible.builtin.stat:
+        path: /usr/bin/certbot
+      register: letsencrypt_certbot_binary
+
+    - name: Verify Certbot binary exists
+      ansible.builtin.assert:
+        that:
+          - letsencrypt_certbot_binary.stat.exists
+          - letsencrypt_certbot_binary.stat.islnk
+
+    - name: Check Certbot symlink target
+      ansible.builtin.command: readlink /usr/bin/certbot
+      changed_when: false
+      register: letsencrypt_certbot_link
+
+    - name: Verify Certbot symlink target
+      ansible.builtin.assert:
+        that:
+          - letsencrypt_certbot_link.stdout == '/snap/bin/certbot'
+
+    - name: Check Certbot installation
+      ansible.builtin.command: certbot --version
+      changed_when: false
+      register: letsencrypt_certbot_check
+
+    - name: Verify Certbot can run
+      ansible.builtin.assert:
+        that:
+          - "'certbot' in letsencrypt_certbot_check.stdout"
+
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Verify apt Certbot package is absent
+      ansible.builtin.assert:
+        that:
+          - "'certbot' not in ansible_facts.packages"
+
+    - name: Check Certbot snap installation
+      ansible.builtin.command: snap list certbot
+      changed_when: false
+      register: letsencrypt_certbot_snap
+
+    - name: Verify Certbot snap is installed
+      ansible.builtin.assert:
+        that:
+          - letsencrypt_certbot_snap.rc == 0
+          - "'certbot' in letsencrypt_certbot_snap.stdout"
