@@ -35,10 +35,13 @@ ansible-playbook playbooks/site.yml
 
 This repository uses CI to continuously validate configuration quality:
 
+[![Molecule Coverage][molecule-badge]][molecule-status]
+
 [![Deployment Status][deployment-badge]][deployment-status]
 [![Codacy Badge][codacy-badge]][codacy-grade]
 [![Super-Linter][superlinter-badge]][superlinter-status]
 [![CodeFactor][codefactor-badge]][codefactor-status]
+
 [![License: MIT][license-badge]][license-link]
 
 ## 🔍 Repository History
@@ -71,3 +74,5 @@ Timelapse visualisation of how this infrastructure codebase evolved over time.
 [securitysage]: https://web.archive.org/web/20070106001401/http://www.securitysage.com:80/guides/postfix_uce.html
 [gource-thumbnail]: https://gource-by-amedee.s3.amazonaws.com/gource-latest.gif
 [gource-video]: https://gource-by-amedee.s3.amazonaws.com/gource-latest.mp4
+[molecule-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/amedee/ansible-servers/refs/heads/badges/molecule-coverage.json
+[molecule-status]: https://github.com/amedee/ansible-servers/actions/workflows/molecule-coverage.yml

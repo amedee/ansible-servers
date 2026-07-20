@@ -1,0 +1,74 @@
+---
+name: 🧪 Molecule Coverage
+
+on: # yamllint disable-line rule:truthy
+  push:
+    paths:
+      - 'roles/**'
+      - '.github/workflows/molecule-coverage.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  molecule-coverage:
+    name: Calculate Molecule coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Calculate coverage
+        id: coverage
+        shell: bash
+        run: |
+          total=$(find roles -mindepth 1 -maxdepth 1 -type d | wc -l)
+
+          tested=$(find roles -mindepth 2 -maxdepth 3 \
+            -type d \
+            -path '*/molecule/default' | wc -l)
+
+          percentage=$((tested * 100 / total))
+
+          if (( percentage >= 90 )); then
+            color=brightgreen
+          elif (( percentage >= 75 )); then
+            color=green
+          elif (( percentage >= 50 )); then
+            color=yellow
+          elif (( percentage >= 25 )); then
+            color=orange
+          else
+            color=red
+          fi
+
+          {
+            echo "total=$total"
+            echo "tested=$tested"
+            echo "percentage=$percentage"
+            echo "color=$color"
+            echo "message=${tested}/${total} roles (${percentage}%)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Generate badge JSON
+        run: |
+          mkdir -p badge
+
+          cat > badge/molecule-coverage.json <<EOF
+          {
+            "schemaVersion": 1,
+            "label": "Molecule",
+            "message": "${{ steps.coverage.outputs.message }}",
+            "color": "${{ steps.coverage.outputs.color }}"
+          }
+          EOF
+
+      - name: Publish badge
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: badges
+          publish_dir: badge
+          force_orphan: true
