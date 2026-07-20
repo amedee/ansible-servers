@@ -1,6 +1,6 @@
-# install_software
+# apt
 
-Role to configure install software on all of my servers.
+Role to configure APT package management.
 
 ## Table of contents
 
