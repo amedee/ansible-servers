@@ -1,0 +1,4 @@
+---
+duplicity_backup_age: 3
+# yamllint disable-line rule:line-length
+duplicity_backup_target: s3://s3.us-east-1.amazonaws.com/backups-by-amedee/mail-in-a-box

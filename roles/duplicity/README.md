@@ -1,4 +1,4 @@
-# mailinabox_duplicity
+# duplicity
 
 Role to do configuration of duplicity backup of mailinabox.
 

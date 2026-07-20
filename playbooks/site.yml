@@ -91,7 +91,7 @@
     - imapsync
     - mailinabox_dns
     - dovecot
-    - mailinabox_duplicity
+    - duplicity
     - mailinabox_ufw
     - munin
 

@@ -20,11 +20,6 @@
     group: root
     mode: "0700"
 
-- name: Check if backup.py exists
-  ansible.builtin.stat:
-    path: /root/mailinabox/management/backup.py
-  register: mailinabox_duplicity_backup_py
-
 - name: Configure Duplicity
   ansible.builtin.template:
     src: custom.yaml.j2
@@ -33,7 +28,6 @@
     group: root
     mode: "0600"
   no_log: true
-  notify: Perform backup
 
 - name: Create apt-backup-duplicity.sh script
   ansible.builtin.copy:

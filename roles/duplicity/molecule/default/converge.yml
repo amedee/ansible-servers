@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: false
+
+  vars:
+    aws_access_key: foo # pragma: allowlist secret
+    aws_secret_key: bar # pragma: allowlist secret
+
+  roles:
+    - duplicity

@@ -1,6 +1,0 @@
----
-- name: Perform backup
-  ansible.builtin.command:
-    cmd: /root/mailinabox/management/backup.py
-  changed_when: true
-  when: mailinabox_duplicity_backup_py.stat.exists

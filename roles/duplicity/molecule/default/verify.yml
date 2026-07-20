@@ -1,0 +1,81 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Check duplicity package is installed
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Verify duplicity is installed
+      ansible.builtin.assert:
+        that:
+          - "'duplicity' in ansible_facts.packages"
+        fail_msg: "Duplicity package is not installed"
+
+    - name: Verify APT pin file
+      ansible.builtin.stat:
+        path: /etc/apt/preferences.d/pin_duplicity.pref
+      register: duplicity_pin
+
+    - name: Assert APT pin file properties
+      ansible.builtin.assert:
+        that:
+          - duplicity_pin.stat.exists
+          - duplicity_pin.stat.mode == "0644"
+          - duplicity_pin.stat.pw_name == "root"
+          - duplicity_pin.stat.gr_name == "root"
+
+    - name: Verify Duplicity config directory
+      ansible.builtin.stat:
+        path: /home/user-data/backup
+      register: duplicity_config_dir
+
+    - name: Assert backup directory properties
+      ansible.builtin.assert:
+        that:
+          - duplicity_config_dir.stat.exists
+          - duplicity_config_dir.stat.isdir
+          - duplicity_config_dir.stat.mode == "0700"
+          - duplicity_config_dir.stat.pw_name == "root"
+          - duplicity_config_dir.stat.gr_name == "root"
+
+    - name: Verify Duplicity configuration file exists
+      ansible.builtin.stat:
+        path: /home/user-data/backup/custom.yaml
+      register: duplicity_config_file
+
+    - name: Assert configuration file properties
+      ansible.builtin.assert:
+        that:
+          - duplicity_config_file.stat.exists
+          - duplicity_config_file.stat.mode == "0600"
+          - duplicity_config_file.stat.pw_name == "root"
+          - duplicity_config_file.stat.gr_name == "root"
+
+    - name: Verify backup script exists
+      ansible.builtin.stat:
+        path: /usr/local/bin/apt-backup-duplicity.sh
+      register: duplicity_backup_script
+
+    - name: Assert backup script properties
+      ansible.builtin.assert:
+        that:
+          - duplicity_backup_script.stat.exists
+          - duplicity_backup_script.stat.mode == "0755"
+          - duplicity_backup_script.stat.pw_name == "root"
+          - duplicity_backup_script.stat.gr_name == "root"
+
+    - name: Verify APT post-invoke hook exists
+      ansible.builtin.stat:
+        path: /etc/apt/apt.conf.d/99backup-duplicity-debs
+      register: duplicity_apt_hook
+
+    - name: Assert APT hook properties
+      ansible.builtin.assert:
+        that:
+          - duplicity_apt_hook.stat.exists
+          - duplicity_apt_hook.stat.mode == "0644"
+          - duplicity_apt_hook.stat.pw_name == "root"
+          - duplicity_apt_hook.stat.gr_name == "root"
