@@ -9,12 +9,6 @@ ansible_ssh_common_args: >-
   -o StrictHostKeyChecking=accept-new
 ansible_user: root
 
-apt_packages_uninstall:
-  - apport
-  - mecab-utils
-
-deb822_repositories: []
-
 aws_access_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   30343063643933306461363831336466356534343036613837616439613161363565386536353163

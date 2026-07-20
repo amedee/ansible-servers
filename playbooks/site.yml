@@ -21,14 +21,6 @@
       ansible.builtin.hostname:
         name: "{{ hostname }}"
 
-    - name: Disable APT Phasing
-      ansible.builtin.copy:
-        dest: /etc/apt/apt.conf.d/99disable-phasing
-        content: 'APT::Get::Always-Include-Phased-Updates "true";'
-        owner: root
-        group: root
-        mode: "0644"
-
     - name: Add rsyslog logrotate config
       ansible.builtin.copy:
         src: rsyslog-logrotate
@@ -46,13 +38,13 @@
 
   roles:
     - swapfile
+    - apt
     - localepurge
     - hadori
     - debops.debops.etckeeper
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
-    - install_software
     - debops.debops.reboot
 
     - role: munin_node

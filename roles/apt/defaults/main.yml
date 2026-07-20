@@ -1,0 +1,4 @@
+---
+apt_packages_uninstall:
+  - apport
+  - mecab-utils

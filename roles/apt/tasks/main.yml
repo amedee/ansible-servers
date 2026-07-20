@@ -1,5 +1,5 @@
 ---
-- name: Configure DigitalOcean Ubuntu mirror
+- name: Configure Ubuntu package repositories
   ansible.builtin.deb822_repository:
     name: ubuntu
     types:
@@ -32,6 +32,14 @@
       - universe
       - multiverse
     signed_by: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+- name: Disable APT Phasing
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/99disable-phasing
+    content: 'APT::Get::Always-Include-Phased-Updates "true";'
+    owner: root
+    group: root
+    mode: "0644"
 
 - name: Remove unwanted packages
   ansible.builtin.apt:
