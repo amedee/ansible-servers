@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Calculate coverage
         id: coverage
@@ -60,13 +62,16 @@ jobs:
           {
             "schemaVersion": 1,
             "label": "Molecule",
-            "message": "${{ steps.coverage.outputs.message }}",
-            "color": "${{ steps.coverage.outputs.color }}"
+            "message": "${STEPS_COVERAGE_OUTPUTS_MESSAGE}",
+            "color": "${STEPS_COVERAGE_OUTPUTS_COLOR}"
           }
           EOF
+        env:
+          STEPS_COVERAGE_OUTPUTS_MESSAGE: ${{ steps.coverage.outputs.message }}
+          STEPS_COVERAGE_OUTPUTS_COLOR: ${{ steps.coverage.outputs.color }}
 
       - name: Publish badge
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: badges
