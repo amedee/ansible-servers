@@ -1,0 +1,56 @@
+---
+- name: Verify
+  hosts: instance
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+
+    - name: Verify Munin package is installed
+      ansible.builtin.assert:
+        that:
+          - "'munin' in ansible_facts.packages"
+
+    - name: Check Munin configuration directory
+      ansible.builtin.stat:
+        path: /etc/munin/munin-conf.d
+      register: munin_conf_dir
+
+    - name: Verify Munin configuration directory exists
+      ansible.builtin.assert:
+        that:
+          - munin_conf_dir.stat.exists
+          - munin_conf_dir.stat.isdir
+
+    - name: Find installed Munin host configurations
+      ansible.builtin.find:
+        paths: /etc/munin/munin-conf.d
+        patterns: "*.conf"
+      register: munin_configs
+
+    - name: Verify Munin host configurations were installed
+      ansible.builtin.assert:
+        that:
+          - munin_configs.matched | int > 0
+
+    - name: Read Munin main configuration
+      ansible.builtin.slurp:
+        src: /etc/munin/munin.conf
+      register: munin_main_config
+
+    - name: Verify duplicate host configuration was removed
+      ansible.builtin.assert:
+        that:
+          - "'[box.vangasse.eu]' not in (munin_main_config.content | b64decode)"
+
+    - name: Read Munin cron configuration
+      ansible.builtin.slurp:
+        src: /etc/cron.d/munin
+      register: munin_cron
+
+    - name: Verify cgi-tmp cleanup uses munin user
+      ansible.builtin.assert:
+        that:
+          - "'munin cgitmpdir=' in (munin_cron.content | b64decode)"

@@ -1,0 +1,3 @@
+---
+munin_removed_hosts:
+  - box.vangasse.eu
