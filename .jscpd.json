@@ -1,7 +1,10 @@
 {
 	"threshold": 5,
 	"reporters": ["html", "console", "markdown"],
-	"ignore": ["/github/workspace/.ansible/**"],
+	"ignore": [
+		"**/.ansible/**",
+		"**/molecule/**"
+	],
 	"absolute": true,
 	"gitignore": true
 }
