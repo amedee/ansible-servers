@@ -1,0 +1,26 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Verify MySQL server is installed
+      ansible.builtin.assert:
+        that:
+          - "'mysql-server' in ansible_facts.packages"
+        fail_msg: MySQL server package is not installed.
+
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Verify MySQL service is running
+      ansible.builtin.assert:
+        that:
+          - "'mysql.service' in ansible_facts.services"
+          - ansible_facts.services['mysql.service'].state == 'running'
+        fail_msg: MySQL service is not running.
