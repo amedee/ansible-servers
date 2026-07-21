@@ -1,6 +1,8 @@
 # mailinabox_ufw
 
-Role to silence mailinabox about not being able to use port 25.
+Work around Mail-in-a-Box's outbound SMTP connectivity check by redirecting
+outbound TCP/25 to localhost. Intended for servers that send mail via an SMTP
+relay or API instead of direct SMTP delivery.
 
 ## Table of contents
 
