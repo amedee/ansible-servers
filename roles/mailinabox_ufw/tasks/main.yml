@@ -8,7 +8,11 @@
   community.general.ufw:
     state: enabled
 
-- name: Allow outgoing SMTP traffic (port 25 redirect rule via NAT)
+# Mail-in-a-Box checks outbound SMTP connectivity by connecting to TCP/25.
+# Some cloud providers block outbound TCP/25, causing the check to fail.
+# Since this server sends mail via AWS SES instead of direct SMTP, redirect
+# the connection to localhost so the health check succeeds.
+- name: Redirect outgoing SMTP traffic to localhost
   ansible.builtin.blockinfile:
     path: /etc/ufw/before.rules
     backup: true
@@ -21,16 +25,14 @@
       COMMIT
   notify: Reload UFW
 
-- name: Ensure UFW allows forwarding
+- name: Configure UFW forwarding
   ansible.builtin.lineinfile:
     path: /etc/default/ufw
-    regexp: "^DEFAULT_FORWARD_POLICY="
-    line: 'DEFAULT_FORWARD_POLICY="ACCEPT"'
-  notify: Reload UFW
-
-- name: Enable IP forwarding for UFW
-  ansible.builtin.lineinfile:
-    path: /etc/default/ufw
-    regexp: "^IP_FORWARD="
-    line: 'IP_FORWARD="yes"'
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - regexp: "^DEFAULT_FORWARD_POLICY="
+      line: 'DEFAULT_FORWARD_POLICY="ACCEPT"'
+    - regexp: "^IP_FORWARD="
+      line: 'IP_FORWARD="yes"'
   notify: Reload UFW

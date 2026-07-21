@@ -1,0 +1,60 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+
+    - name: Verify UFW is installed
+      ansible.builtin.assert:
+        that:
+          - "'ufw' in ansible_facts.packages"
+        fail_msg: UFW package is not installed
+
+    - name: Read UFW configuration
+      ansible.builtin.slurp:
+        src: /etc/default/ufw
+      register: mailinabox_ufw_config
+
+    - name: Decode UFW configuration
+      ansible.builtin.set_fact:
+        mailinabox_ufw_config_content: "{{ mailinabox_ufw_config.content | b64decode }}"
+
+    - name: Verify UFW forwarding configuration
+      ansible.builtin.assert:
+        that:
+          - 'DEFAULT_FORWARD_POLICY="ACCEPT" in mailinabox_ufw_config_content'
+          - 'IP_FORWARD="yes" in mailinabox_ufw_config_content'
+        fail_msg: UFW forwarding is not configured correctly
+
+    - name: Read UFW before rules
+      ansible.builtin.slurp:
+        src: /etc/ufw/before.rules
+      register: mailinabox_ufw_before_rules
+
+    - name: Decode UFW before rules
+      ansible.builtin.set_fact:
+        mailinabox_ufw_before_rules_content: "{{ mailinabox_ufw_before_rules.content | b64decode }}"
+
+    - name: Verify SMTP redirect workaround
+      ansible.builtin.assert:
+        that:
+          - >
+            '-A OUTPUT -p tcp --dport 25 -j DNAT --to-destination 127.0.0.1:25'
+            in mailinabox_ufw_before_rules_content
+        fail_msg: Mail-in-a-Box SMTP port workaround is missing
+
+    - name: Check UFW status
+      ansible.builtin.command:
+        cmd: ufw status
+      register: mailinabox_ufw_status
+      changed_when: false
+
+    - name: Verify UFW is active
+      ansible.builtin.assert:
+        that:
+          - "'Status: active' in mailinabox_ufw_status.stdout"
+        fail_msg: UFW is not enabled
