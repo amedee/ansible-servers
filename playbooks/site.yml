@@ -92,7 +92,7 @@
   gather_facts: false
 
   roles:
-    - mysql_config
+    - mysql
     - redis
     - nginx
     - letsencrypt

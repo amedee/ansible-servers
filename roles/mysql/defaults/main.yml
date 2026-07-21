@@ -1,0 +1,2 @@
+---
+mysql_disable_binary_logging: true

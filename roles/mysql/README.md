@@ -1,6 +1,6 @@
-# mysql_config
+# mysql
 
-Role to configure a MySQL database server.
+Role to install and configure a MySQL database server.
 
 ## Table of contents
 
