@@ -1,0 +1,58 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: Check Ubuntu repository file exists
+      ansible.builtin.stat:
+        path: /etc/apt/sources.list.d/ubuntu.sources
+      register: apt_ubuntu_repo
+
+    - name: Assert Ubuntu repository file exists
+      ansible.builtin.assert:
+        that:
+          - apt_ubuntu_repo.stat.exists
+          - apt_ubuntu_repo.stat.isreg
+
+    - name: Check Ubuntu security repository file exists
+      ansible.builtin.stat:
+        path: /etc/apt/sources.list.d/ubuntu-security.sources
+      register: apt_ubuntu_security_repo
+
+    - name: Assert Ubuntu security repository file exists
+      ansible.builtin.assert:
+        that:
+          - apt_ubuntu_security_repo.stat.exists
+          - apt_ubuntu_security_repo.stat.isreg
+
+    - name: Check APT phasing configuration
+      ansible.builtin.stat:
+        path: /etc/apt/apt.conf.d/99disable-phasing
+      register: apt_phasing
+
+    - name: Assert APT phasing configuration properties
+      ansible.builtin.assert:
+        that:
+          - apt_phasing.stat.exists
+          - apt_phasing.stat.isreg
+          - apt_phasing.stat.pw_name == 'root'
+          - apt_phasing.stat.gr_name == 'root'
+          - apt_phasing.stat.mode == '0644'
+
+    - name: Read APT phasing configuration
+      ansible.builtin.slurp:
+        path: /etc/apt/apt.conf.d/99disable-phasing
+      register: apt_phasing_content
+
+    - name: Assert APT phasing configuration content
+      ansible.builtin.assert:
+        that:
+          - >
+            (apt_phasing_content.content | b64decode | trim)
+            == 'APT::Get::Always-Include-Phased-Updates "true";'
+
+    - name: Validate APT sources are usable # noqa: command-instead-of-module
+      ansible.builtin.command:
+        cmd: apt-get update
+      changed_when: false
