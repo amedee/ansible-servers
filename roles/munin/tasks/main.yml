@@ -4,25 +4,29 @@
     name:
       - munin
 
-- name: Add Munin host configurations
+- name: Install Munin host configuration files
   ansible.builtin.copy:
     src: munin-conf.d/
     dest: /etc/munin/munin-conf.d/
     owner: root
     group: root
     mode: "0644"
+    directory_mode: "0755"
   notify: Restart munin
 
-- name: Remove duplicate Munin host configuration
+- name: Remove duplicate Munin host configurations
   community.general.ini_file:
     path: /etc/munin/munin.conf
-    section: box.vangasse.eu
+    section: "{{ item }}"
     state: absent
     owner: root
     group: root
     mode: "0644"
+  loop: "{{ munin_removed_hosts }}"
   notify: Restart munin
 
+# Debian ships the cgi-tmp cleanup cron job with www-data,
+# but Munin creates the temporary directory as user munin.
 - name: Fix Munin cgi-tmp cleanup user
   ansible.builtin.replace:
     path: /etc/cron.d/munin
