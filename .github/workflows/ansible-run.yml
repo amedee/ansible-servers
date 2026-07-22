@@ -40,7 +40,7 @@ jobs:
 
     env:
       ANSIBLE_CONFIG: ansible.cfg
-      ANSIBLE_STDOUT_CALLBACK: yaml
+      ANSIBLE_STDOUT_CALLBACK: json
       CHECK_MODE_INPUT: ${{ inputs.check-mode }}
 
     steps:
@@ -84,12 +84,27 @@ jobs:
       - name: Deploy changes to servers
         shell: bash
         run: |
-          .github/scripts/ansible-retry.sh
+          .github/scripts/ansible-retry.sh > ansible-result.json
         env:
           ANSIBLE_HOST: ${{ matrix.host }}
+          ANSIBLE_STDOUT_CALLBACK: json
           CHECK_MODE: ${{ steps.set_check_mode.outputs.check_mode }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
+
+      - name: Inspect Ansible output
+        if: always()
+        run: |
+          echo "===== first 30 lines ====="
+          head -30 ansible-result.json || true
+          echo
+          echo "===== last 30 lines ====="
+          tail -30 ansible-result.json || true
+
+      - name: Generate Ansible summary
+        if: always()
+        run: |
+          python3 .github/scripts/ansible_summary.py ansible-result.json >> "$GITHUB_STEP_SUMMARY"
 
       - name: Archive Ansible log
         if: always()
