@@ -43,10 +43,7 @@ def main() -> int:
     print("| --- | ---: | ---: | ---: | ---: |")
 
     for host, stats in hosts.items():
-        print(
-            f"| {host} | {stats['ok']} | {stats['changed']} | "
-            f"{stats['failed']} | {stats['unreachable']} |"
-        )
+        print(f"| {host} | {stats['ok']} | {stats['changed']} | {stats['failed']} | {stats['unreachable']} |")
 
     return 0
 
