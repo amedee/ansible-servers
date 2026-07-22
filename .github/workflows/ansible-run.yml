@@ -91,6 +91,11 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
 
+      - name: Generate Ansible summary
+        if: always()
+        run: |
+          python3 .github/scripts/ansible-summary.py ~/.ansible/ansible.log >> "$GITHUB_STEP_SUMMARY"
+
       - name: Archive Ansible log
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
