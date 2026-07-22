@@ -84,12 +84,17 @@ jobs:
       - name: Deploy changes to servers
         shell: bash
         run: |
-          .github/scripts/ansible-retry.sh
+          .github/scripts/ansible-retry.sh 2>&1 | tee ansible-output.log
         env:
           ANSIBLE_HOST: ${{ matrix.host }}
           CHECK_MODE: ${{ steps.set_check_mode.outputs.check_mode }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
+
+      - name: Generate Ansible summary
+        if: always()
+        run: |
+          python3 .github/scripts/ansible_summary.py ansible-output.log >> "$GITHUB_STEP_SUMMARY"
 
       - name: Archive Ansible log
         if: always()
