@@ -40,7 +40,6 @@ jobs:
 
     env:
       ANSIBLE_CONFIG: ansible.cfg
-      ANSIBLE_STDOUT_CALLBACK: yaml
       CHECK_MODE_INPUT: ${{ inputs.check-mode }}
 
     steps:
@@ -90,6 +89,11 @@ jobs:
           CHECK_MODE: ${{ steps.set_check_mode.outputs.check_mode }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
+
+      - name: Generate Ansible summary
+        if: always()
+        run: |
+          python3 .github/scripts/ansible_summary.py ~/.ansible/ansible.log >> "$GITHUB_STEP_SUMMARY"
 
       - name: Archive Ansible log
         if: always()
