@@ -39,7 +39,6 @@ eval "$(ssh-agent -s)" >/dev/null
 printf '%s\n' "${SSH_PRIVATE_KEY}" | tr -d '\r' | ssh-add - >/dev/null
 
 export ANSIBLE_CONFIG=ansible.cfg
-export ANSIBLE_STDOUT_CALLBACK=json
 
 RETRY_PATTERNS=(
 	"SSH:UNREACHABLE!|FAILED.*ssh"
