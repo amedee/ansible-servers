@@ -62,11 +62,7 @@ def main() -> int:
         )
 
     print()
-    print(
-        f"**Totals:** {total_changed} changed, "
-        f"{total_failed} failed, "
-        f"{total_unreachable} unreachable."
-    )
+    print(f"**Totals:** {total_changed} changed, {total_failed} failed, {total_unreachable} unreachable.")
 
     return 0
 
