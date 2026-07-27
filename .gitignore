@@ -2,6 +2,7 @@
 *.log
 *.sql
 *.xz
+.telemetry_data.json
 .ansible/
 .idea/
 .logs/

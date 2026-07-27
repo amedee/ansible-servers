@@ -21,9 +21,16 @@ jobs:
       actions: write
       contents: read
     steps:
+      - name: Collect Workflow Telemetry
+        # yamllint disable-line rule:line-length
+        uses: tsviz/actions-runner-telemetry@0fbec1ca185a193c94e4540e244110fdee912693 # v1.7.3
+        with:
+          enabled: ${{ vars.RUNNER_TELEMETRY_ENABLED || 'true' }}
+
       - name: Delete workflow runs
         # yamllint disable-line rule:line-length
         uses: Mattraks/delete-workflow-runs@b3018382ca039b53d238908238bd35d1fb14f8ee # v2.1.0
+
       - name: Purge deleted branches
         # yamllint disable-line rule:line-length
         uses: Mattraks/delete-workflow-runs@b3018382ca039b53d238908238bd35d1fb14f8ee # v2.1.0
