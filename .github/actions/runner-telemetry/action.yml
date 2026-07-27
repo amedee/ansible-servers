@@ -1,0 +1,18 @@
+---
+name: Runner telemetry
+description: Collect GitHub Actions runner resource usage
+
+inputs:
+  enabled:
+    description: Enable telemetry collection
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Collect runner telemetry
+      # yamllint disable-line rule:line-length
+      uses: tsviz/actions-runner-telemetry@0fbec1ca185a193c94e4540e244110fdee912693 # v1.7.3
+      with:
+        enabled: ${{ inputs.enabled }}
