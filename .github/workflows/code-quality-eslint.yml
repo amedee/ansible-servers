@@ -18,8 +18,8 @@ on: # yamllint disable-line rule:truthy
       - "**/*.cjs"
       - "**/*.ts"
       - "**/*.tsx"
-  workflow_dispatch:
   workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -27,7 +27,7 @@ permissions:
 jobs:
   eslint:
     name: ESLint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     if: github.event_name != 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository
 
     steps:

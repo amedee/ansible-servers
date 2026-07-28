@@ -23,7 +23,8 @@ permissions:
 
 jobs:
   precommit:
-    runs-on: ubuntu-latest
+    name: Pre-Commit
+    runs-on: ubuntu-slim
 
     steps:
       - name: Collect Workflow Telemetry

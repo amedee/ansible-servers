@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   check-token-expiration:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     environment: production
     steps:
       - name: Collect Workflow Telemetry

@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   metrics:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Collect Workflow Telemetry
         # yamllint disable-line rule:line-length

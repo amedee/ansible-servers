@@ -2,9 +2,9 @@
 name: 🧹 Cleanup old workflow runs
 
 on: # yamllint disable-line rule:truthy
-  workflow_dispatch:
   schedule:
     - cron: "0 3 * * 0" # Every Sunday at 03:00 UTC
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}
@@ -16,7 +16,7 @@ permissions:
 jobs:
   del_runs:
     name: Delete old workflow runs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       actions: write
       contents: read

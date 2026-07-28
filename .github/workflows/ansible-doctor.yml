@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   generate-docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     environment: production
     steps:
       - name: Collect Workflow Telemetry

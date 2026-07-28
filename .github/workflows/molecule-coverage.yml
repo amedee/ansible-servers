@@ -14,7 +14,7 @@ permissions:
 jobs:
   molecule-coverage:
     name: Calculate Molecule coverage
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
 
     steps:
       - name: Collect Workflow Telemetry
