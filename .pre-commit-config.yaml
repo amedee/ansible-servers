@@ -14,11 +14,6 @@ repos:
       - id: check-added-large-files
       - id: check-merge-conflict
       - id: check-case-conflict
-  - repo: https://github.com/ansible-community/ansible-lint
-    rev: v26.6.0
-    hooks:
-      - id: ansible-lint
-        language_version: python3.13
   - repo: https://github.com/IamTheFij/ansible-pre-commit
     rev: v1.0.1
     hooks:
