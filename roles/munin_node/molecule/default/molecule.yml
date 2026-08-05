@@ -1,0 +1,33 @@
+---
+driver:
+  name: default
+
+dependency:
+  name: galaxy
+
+platforms:
+  - name: instance
+    connection: local
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH:
+      "${MOLECULE_PROJECT_DIRECTORY}/..:${HOME}/.ansible/roles"
+
+  inventory:
+    host_vars:
+      instance:
+        ansible_connection: local
+        ansible_become: true
+
+scenario:
+  test_sequence:
+    - dependency
+    - syntax
+    - converge
+    - idempotence
+    - verify
+
+verifier:
+  name: ansible

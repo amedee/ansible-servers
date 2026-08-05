@@ -1,0 +1,53 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+
+    - name: Verify required packages are installed
+      ansible.builtin.assert:
+        that:
+          - "'hping3' in ansible_facts.packages"
+          - "'munin-node' in ansible_facts.packages"
+          - "'ufw' in ansible_facts.packages"
+          - "'uptimed' in ansible_facts.packages"
+
+    - name: Check effective ProtectHome setting
+      # noqa: command-instead-of-module
+      ansible.builtin.command:
+        cmd: systemctl show munin-node --property=ProtectHome --value
+      register: munin_node_protecthome
+      changed_when: false
+
+    - name: Verify ProtectHome is disabled
+      ansible.builtin.assert:
+        that:
+          - munin_node_protecthome.stdout == "no"
+
+    - name: Check UFW status
+      ansible.builtin.command:
+        cmd: ufw status
+      register: munin_node_ufw_status
+      changed_when: false
+
+    - name: Verify UFW is enabled
+      ansible.builtin.assert:
+        that:
+          - "'Status: active' in munin_node_ufw_status.stdout"
+
+    - name: Verify Munin firewall rule exists
+      ansible.builtin.assert:
+        that:
+          - "'4949' in munin_node_ufw_status.stdout"
+          - "'142.93.227.16' in munin_node_ufw_status.stdout"
+
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Verify munin-node service exists
+      ansible.builtin.assert:
+        that:
+          - "'munin-node.service' in ansible_facts.services"
