@@ -1,19 +1,30 @@
 ---
-- name: Install munin-node and software required by some plugins
+- name: Install Munin packages and UFW
   ansible.builtin.apt:
     name:
       - hping3
       - munin-node
+      - ufw
       - uptimed
 
+- name: Ensure munin-node is enabled and running
+  ansible.builtin.service:
+    name: munin-node
+    enabled: true
+    state: started
+
+- name: Create systemd override directory for munin-node
+  ansible.builtin.file:
+    path: /etc/systemd/system/munin-node.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Allow munin-node to read files in home directories
-  community.general.ini_file:
-    path: /lib/systemd/system/munin-node.service
-    section: Service
-    option: ProtectHome
-    value: false
-    ignore_spaces: true
-    no_extra_spaces: true
+  ansible.builtin.copy:
+    src: override.conf
+    dest: /etc/systemd/system/munin-node.service.d/override.conf
     owner: root
     group: root
     mode: "0644"
@@ -33,4 +44,4 @@
   community.general.ufw:
     rule: allow
     port: 4949
-    src: 142.93.227.16
+    src: "{{ munin_node_server_ip }}"
