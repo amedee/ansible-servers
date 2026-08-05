@@ -1,0 +1,9 @@
+---
+nginx_apt_suite: "{{ ansible_distribution_release }}"
+nginx_default_indexfiles:
+  - index.php
+  - index.html
+nginx_directory: "{{ webserver_directory }}"
+nginx_hostname: "{{ hostname }}"
+nginx_php_version: "{{ php_version }}"
+nginx_user: "{{ webserver_user | default('www-data') }}"

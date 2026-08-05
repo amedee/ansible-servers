@@ -1,11 +1,8 @@
-# Rate Limiting
-limit_req_zone $binary_remote_addr zone=mylimit:10m rate=10r/s;
-
 # Server Block for HTTPS
 server {
-    root /var/www/html;
-    index index.php;
-    server_name {{ hostname }};
+    root {{ nginx_directory | default('/var/www/html') }};
+    index {{ nginx_default_indexfiles | default(['index.php']) | join(' ') }};
+    server_name {{ nginx_hostname }};
 
     add_header Cache-Control "public, max-age=31536000, immutable";
 
@@ -17,7 +14,7 @@ server {
     # PHP Processing
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/var/run/php/php{{ php_version }}-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php{{ nginx_php_version }}-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     }
 
@@ -55,14 +52,16 @@ server {
         return 444;
     }
 
+{% if nginx_ssl_enabled | default(true) %}
     # SSL Configuration
     listen 443 ssl; # managed by Certbot
     listen [::]:443 ssl;
-    ssl_certificate /etc/letsencrypt/live/{{ hostname }}/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/{{ hostname }}/privkey.pem; # managed by Certbot
+
+    ssl_certificate /etc/letsencrypt/live/{{ nginx_hostname }}/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/{{ nginx_hostname }}/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
-
+{% endif %}
 }
 
 # Redirect all HTTP traffic to HTTPS
@@ -76,6 +75,6 @@ server {
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
     location / {
-        return 301 https://{{ hostname }}$request_uri;
+        return 301 https://{{ nginx_hostname }}$request_uri;
     }
 }

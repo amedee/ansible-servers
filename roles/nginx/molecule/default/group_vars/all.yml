@@ -1,0 +1,6 @@
+---
+nginx_apt_suite: noble
+nginx_directory: /var/www/html
+nginx_hostname: example.com
+nginx_php_version: "8.4"
+nginx_ssl_enabled: false
