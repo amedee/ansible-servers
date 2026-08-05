@@ -73,7 +73,9 @@ jobs:
 
   deploy:
     name: 🚀 Deploy to Production
-    if: needs.detect-changes.outputs.production == 'true'
+    if: >
+      github.event_name != 'schedule' &&
+      needs.detect-changes.outputs.production == 'true'
     uses: ./.github/workflows/ansible-run.yml
     needs:
       - detect-changes
