@@ -7,7 +7,7 @@
     uris:
       - https://nginx.org/packages/ubuntu
     suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ nginx_apt_suite }}"
     components:
       - nginx
     signed_by: https://nginx.org/keys/nginx_signing.key
@@ -20,7 +20,7 @@
     uris:
       - https://packages.sury.org/php/
     suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ nginx_apt_suite }}"
     components:
       - main
     signed_by: https://packages.sury.org/php/apt.gpg
@@ -72,7 +72,7 @@
 - name: Copy website config file
   ansible.builtin.template:
     src: website.j2
-    dest: /etc/nginx/sites-available/{{ hostname }}
+    dest: /etc/nginx/sites-available/{{ nginx_hostname }}
     owner: root
     group: root
     mode: "0644"
@@ -86,19 +86,24 @@
 
 - name: Create a symbolic link
   ansible.builtin.file:
-    src: /etc/nginx/sites-available/{{ hostname }}
+    src: /etc/nginx/sites-available/{{ nginx_hostname }}
     dest: /etc/nginx/sites-enabled/default
     owner: root
     group: root
     state: link
   notify: Restart nginx
 
-- name: "Check existence of webserver directory {{ webserver_directory }}"
+- name: Validate nginx configuration
+  ansible.builtin.command: nginx -t
+  changed_when: false
+  register: nginx_test
+
+- name: "Check existence of webserver directory {{ nginx_directory }}"
   ansible.builtin.file:
-    path: "{{ webserver_directory }}"
+    path: "{{ nginx_directory }}"
     state: directory
-    owner: "{{ webserver_user }}"
-    group: "{{ webserver_user }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
     mode: "0755"
 
 - name: Configure logrotate for nginx logs

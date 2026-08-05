@@ -1,0 +1,102 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+
+  vars:
+    nginx_packages:
+      - nginx
+      - php
+      - php-fpm
+
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Verify required packages are installed
+      ansible.builtin.assert:
+        that:
+          - item in ansible_facts.packages
+        fail_msg: "Package {{ item }} is not installed"
+      loop: "{{ nginx_packages }}"
+
+    - name: Verify nginx service is enabled
+      ansible.builtin.service_facts:
+
+    - name: Verify nginx service exists
+      ansible.builtin.assert:
+        that:
+          - "'nginx.service' in ansible_facts.services"
+
+    - name: Verify nginx service is running
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services['nginx.service'].state == 'running'
+
+    - name: Verify nginx repository is configured
+      ansible.builtin.stat:
+        path: /etc/apt/sources.list.d/nginx.sources
+      register: nginx_repo
+
+    - name: Verify nginx repository file exists
+      ansible.builtin.assert:
+        that:
+          - nginx_repo.stat.exists
+
+    - name: Verify Sury repository is configured
+      ansible.builtin.stat:
+        path: /etc/apt/sources.list.d/sury-php.sources
+      register: nginx_sury_repo
+
+    - name: Verify Sury repository file exists
+      ansible.builtin.assert:
+        that:
+          - nginx_sury_repo.stat.exists
+
+    - name: Verify nginx APT pinning exists
+      ansible.builtin.stat:
+        path: /etc/apt/preferences.d/pin_nginx.pref
+      register: nginx_pin
+
+    - name: Verify PHP APT pinning exists
+      ansible.builtin.stat:
+        path: /etc/apt/preferences.d/pin_php.pref
+      register: nginx_php_pin
+
+    - name: Verify APT pinning files exist
+      ansible.builtin.assert:
+        that:
+          - nginx_pin.stat.exists
+          - nginx_php_pin.stat.exists
+
+    - name: Verify site configuration symlink exists
+      ansible.builtin.stat:
+        path: /etc/nginx/sites-enabled/default
+      register: nginx_default_site
+
+    - name: Assert default site is a symlink
+      ansible.builtin.assert:
+        that:
+          - nginx_default_site.stat.islnk
+
+    - name: Verify webroot directory exists
+      ansible.builtin.stat:
+        path: "{{ nginx_directory }}"
+      register: nginx_webroot
+
+    - name: Assert webroot directory exists
+      ansible.builtin.assert:
+        that:
+          - nginx_webroot.stat.exists
+          - nginx_webroot.stat.isdir
+
+    - name: Verify nginx configuration is valid
+      ansible.builtin.command: nginx -t
+      register: nginx_test
+      changed_when: false
+
+    - name: Assert nginx configuration test passed
+      ansible.builtin.assert:
+        that:
+          - nginx_test.rc == 0
