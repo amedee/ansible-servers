@@ -10,6 +10,7 @@ on: # yamllint disable-line rule:truthy
       - "!**/*.md"
       - "!.github/workflows/ansible-doctor.yml"
       - "!.github/workflows/gource.yml"
+      - "!.github/workflows/molecule-coverage.yml"
       - "!.pre-commit-config.yaml"
   schedule:
     - cron: "10 3 * * SAT"

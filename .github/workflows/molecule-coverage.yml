@@ -6,6 +6,7 @@ on: # yamllint disable-line rule:truthy
     paths:
       - 'roles/**'
       - '.github/workflows/molecule-coverage.yml'
+      - "!**/*.md"
   workflow_dispatch:
 
 permissions:
