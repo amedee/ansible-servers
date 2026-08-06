@@ -7,3 +7,24 @@ nginx_directory: "{{ webserver_directory }}"
 nginx_hostname: "{{ hostname }}"
 nginx_php_version: "{{ php_version }}"
 nginx_user: "{{ webserver_user | default('www-data') }}"
+
+nginx_repositories:
+  - name: nginx
+    uri: https://nginx.org/packages/ubuntu
+    component: nginx
+    key: https://nginx.org/keys/nginx_signing.key
+
+  - name: sury-php
+    uri: https://packages.sury.org/php/
+    component: main
+    key: https://packages.sury.org/php/apt.gpg
+
+nginx_apt_pinning_files:
+  - pin_nginx.pref
+  - pin_php.pref
+
+nginx_config_files:
+  - src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+  - src: gzip.conf
+    dest: /etc/nginx/conf.d/gzip.conf

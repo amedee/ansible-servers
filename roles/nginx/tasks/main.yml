@@ -1,45 +1,26 @@
 ---
-- name: Configure nginx upstream repository
+- name: Configure APT repositories
   ansible.builtin.deb822_repository:
-    name: nginx
+    name: "{{ item.name }}"
     types:
       - deb
     uris:
-      - https://nginx.org/packages/ubuntu
+      - "{{ item.uri }}"
     suites:
       - "{{ nginx_apt_suite }}"
     components:
-      - nginx
-    signed_by: https://nginx.org/keys/nginx_signing.key
+      - "{{ item.component }}"
+    signed_by: "{{ item.key }}"
+  loop: "{{ nginx_repositories }}"
 
-- name: Configure Sury PHP repository
-  ansible.builtin.deb822_repository:
-    name: sury-php
-    types:
-      - deb
-    uris:
-      - https://packages.sury.org/php/
-    suites:
-      - "{{ nginx_apt_suite }}"
-    components:
-      - main
-    signed_by: https://packages.sury.org/php/apt.gpg
-
-- name: Configure nginx APT pinning
+- name: Configure APT pinning
   ansible.builtin.copy:
-    src: pin_nginx.pref
-    dest: /etc/apt/preferences.d/pin_nginx.pref
+    src: "{{ item }}"
+    dest: "/etc/apt/preferences.d/{{ item }}"
     owner: root
     group: root
     mode: "0644"
-
-- name: Configure PHP APT pinning
-  ansible.builtin.copy:
-    src: pin_php.pref
-    dest: /etc/apt/preferences.d/pin_php.pref
-    owner: root
-    group: root
-    mode: "0644"
+  loop: "{{ nginx_apt_pinning_files }}"
 
 - name: Install Nginx and PHP
   ansible.builtin.apt:
@@ -51,23 +32,15 @@
     cache_valid_time: 86400 # One day
     lock_timeout: 300 # 5 minutes
 
-- name: Copy nginx config file
+- name: Deploy nginx configuration files
   ansible.builtin.copy:
-    src: nginx.conf
-    dest: /etc/nginx/nginx.conf
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: root
     group: root
     mode: "0644"
-  notify: Restart nginx
-
-- name: Copy gzip config file
-  ansible.builtin.copy:
-    src: gzip.conf
-    dest: /etc/nginx/conf.d/
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Restart nginx
+  loop: "{{ nginx_config_files }}"
+  notify: Reload nginx
 
 - name: Copy website config file
   ansible.builtin.template:
@@ -76,22 +49,20 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Restart nginx
+  notify: Reload nginx
 
 - name: Delete DigitalOcean website config
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/digitalocean
     state: absent
-  notify: Restart nginx
+  notify: Reload nginx
 
-- name: Create a symbolic link
+- name: Enable website
   ansible.builtin.file:
     src: /etc/nginx/sites-available/{{ nginx_hostname }}
     dest: /etc/nginx/sites-enabled/default
-    owner: root
-    group: root
     state: link
-  notify: Restart nginx
+  notify: Reload nginx
 
 - name: Validate nginx configuration
   ansible.builtin.command: nginx -t
