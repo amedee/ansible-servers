@@ -1,9 +1,12 @@
 # Local domains handled by Postfix as usual
-/^localhost$/       :
+
+/^localhost$/             :
+/^.*@localhost$/          :*
+
 {% if inventory_hostname in groups['mailservers'] %}
-/^.*@vangasse\.eu$/    :
-/^.*@.*\.vangasse\.eu$/     :
-/^.*@amedee\.be$/      :
+/^.*@vangasse\.eu$/       :
+/^.*@.*\.vangasse\.eu$/   :
+/^.*@amedee\.be$/         :
 {% endif %}
 
-/.*/                ses:
+/.*/                      ses:

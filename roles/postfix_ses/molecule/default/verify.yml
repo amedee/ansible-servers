@@ -1,0 +1,98 @@
+---
+- name: Verify normal server behavior
+  hosts: instance
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Verify Postfix configuration
+      ansible.builtin.command:
+        cmd: postfix check
+      changed_when: false
+
+    - name: Verify external mail uses SES transport
+      ansible.builtin.command:
+        cmd: postmap -q recipient@example.com pcre:/etc/postfix/transport.pcre
+      register: postfix_ses_external_transport_lookup
+      changed_when: false
+
+    - name: Assert external mail uses SES
+      ansible.builtin.assert:
+        that:
+          - postfix_ses_external_transport_lookup.stdout == "ses:"
+        fail_msg: >-
+          External mail is not routed through SES.
+          Result:
+          {{ postfix_ses_external_transport_lookup.stdout | default('(empty)') }}
+
+    - name: Verify amedee.be uses SES on non-mailservers
+      ansible.builtin.command:
+        cmd: postmap -q user@amedee.be pcre:/etc/postfix/transport.pcre
+      register: postfix_ses_amedee_transport_lookup
+      changed_when: false
+
+    - name: Assert amedee.be uses SES on non-mailservers
+      ansible.builtin.assert:
+        that:
+          - postfix_ses_amedee_transport_lookup.stdout == "ses:"
+        fail_msg: >-
+          amedee.be unexpectedly treated as local.
+          Result:
+          {{ postfix_ses_amedee_transport_lookup.stdout | default('(empty)') }}
+
+
+- name: Verify Mail-in-a-Box server behavior
+  hosts: mailserver
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Verify Postfix configuration
+      ansible.builtin.command:
+        cmd: postfix check
+      changed_when: false
+
+    - name: Verify external mail uses SES transport
+      ansible.builtin.command:
+        cmd: postmap -q recipient@example.com pcre:/etc/postfix/transport.pcre
+      register: postfix_ses_external_transport_lookup
+      changed_when: false
+
+    - name: Assert external mail uses SES
+      ansible.builtin.assert:
+        that:
+          - postfix_ses_external_transport_lookup.stdout == "ses:"
+        fail_msg: >-
+          External mail is not routed through SES.
+          Result:
+          {{ postfix_ses_external_transport_lookup.stdout | default('(empty)') }}
+
+    - name: Verify amedee.be stays local on mailservers
+      ansible.builtin.command:
+        cmd: postmap -q user@amedee.be pcre:/etc/postfix/transport.pcre
+      register: postfix_ses_amedee_transport_lookup
+      changed_when: false
+
+    - name: Assert amedee.be bypasses SES on mailservers
+      ansible.builtin.assert:
+        that:
+          - postfix_ses_amedee_transport_lookup.stdout != "ses:"
+        fail_msg: >-
+          amedee.be is incorrectly routed through SES.
+          Result:
+          {{ postfix_ses_amedee_transport_lookup.stdout | default('(empty)') }}
+
+    - name: Verify localhost address stays local
+      ansible.builtin.command:
+        cmd: postmap -q root@localhost pcre:/etc/postfix/transport.pcre
+      register: postfix_ses_localhost_transport_lookup
+      changed_when: false
+
+    - name: Assert localhost bypasses SES
+      ansible.builtin.assert:
+        that:
+          - postfix_ses_localhost_transport_lookup.stdout != "ses:"
+        fail_msg: >-
+          root@localhost is incorrectly routed through SES.
+          Result:
+          {{ postfix_ses_localhost_transport_lookup.stdout | default('(empty)') }}

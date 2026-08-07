@@ -1,0 +1,40 @@
+---
+- name: Prepare
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Set predictable hostname
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}.test"
+
+    - name: Ensure /etc/mailname exists
+      ansible.builtin.copy:
+        content: "{{ inventory_hostname }}.test\n"
+        dest: /etc/mailname
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Configure Postfix debconf
+      ansible.builtin.debconf:
+        name: postfix
+        question: "{{ item.question }}"
+        value: "{{ item.value }}"
+        vtype: "{{ item.vtype }}"
+      loop:
+        - question: postfix/main_mailer_type
+          value: "Internet Site"
+          vtype: select
+        - question: postfix/mailname
+          value: "{{ 'amedee.be' if 'mailservers' in group_names else 'instance' }}"
+          vtype: string
+
+    - name: Install Postfix for testing
+      ansible.builtin.apt:
+        name:
+          - postfix
+          - postfix-pcre
+        state: present
+        update_cache: true

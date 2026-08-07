@@ -1,16 +1,52 @@
 ---
-- name: Install SES runtime dependencies
+- name: Install deb822 repository dependency
+  ansible.builtin.apt:
+    name:
+      - python3-debian
+    state: present
+    update_cache: true
+
+- name: Enable Ubuntu Universe repository
+  ansible.builtin.deb822_repository:
+    name: ubuntu-universe
+    types:
+      - deb
+    uris:
+      - "http://archive.ubuntu.com/ubuntu"
+    suites:
+      - "{{ ansible_distribution_release }}"
+    components:
+      - main
+      - universe
+      - restricted
+      - multiverse
+    state: present
+    enabled: true
+
+- name: Install SES wrapper dependencies
   ansible.builtin.apt:
     name:
       - python3-boto3
       - python3-botocore
+    state: present
+    update_cache: true
+
+- name: Verify Postfix configuration exists
+  ansible.builtin.stat:
+    path: /etc/postfix/main.cf
+  register: postfix_ses_main_cf
+
+- name: Require configured Postfix installation
+  ansible.builtin.assert:
+    that:
+      - postfix_ses_main_cf.stat.exists
+    fail_msg: "Postfix must be installed and configured before applying postfix_ses"
 
 - name: Ensure Postfix transport_maps is configured for SES
   ansible.builtin.lineinfile:
     path: /etc/postfix/main.cf
     regexp: '^transport_maps\s*='
     line: 'transport_maps = pcre:/etc/postfix/transport.pcre'
-    validate: 'postfix check'
   notify: Restart Postfix
 
 - name: Ensure SES transport exists
@@ -21,7 +57,6 @@
     block: |
       ses       unix  -       n       n       -       -       pipe
         flags=Rq user=ses argv=/usr/local/bin/ses_wrapper.sh ${recipient}
-    validate: "postfix check"
   notify: Restart Postfix
 
 - name: Ensure SES system user exists

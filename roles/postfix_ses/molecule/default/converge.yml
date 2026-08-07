@@ -1,0 +1,14 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    postfix_ses_molecule: true
+    aws_ses_access_key_id: "MOLECULE_TEST_ACCESS_KEY" # pragma: allowlist secret
+    aws_ses_secret_access_key: "MOLECULE_TEST_SECRET_KEY" # pragma: allowlist secret
+    aws_ses_default_region: "eu-west-1"
+
+  roles:
+    - role: postfix_ses
