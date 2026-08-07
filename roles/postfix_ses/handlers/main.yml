@@ -1,11 +1,6 @@
 ---
-- name: Validate Postfix configuration
-  ansible.builtin.command:
-    cmd: postfix check
-  changed_when: false
-
-- name: Restart Postfix
+- name: Reload Postfix
   ansible.builtin.service:
     name: postfix
-    state: restarted
+    state: reloaded
   when: not postfix_ses_molecule | default(false)
