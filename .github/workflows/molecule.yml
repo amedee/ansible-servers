@@ -23,11 +23,12 @@ permissions:
 
 jobs:
   discover:
-    name: Discover Molecule scenarios
+    name: 🔍 Discover scenarios
 
     runs-on: ubuntu-slim
 
     outputs:
+      roles: ${{ steps.discover.outputs.roles }}
       scenarios: ${{ steps.discover.outputs.scenarios }}
 
     steps:
@@ -45,19 +46,85 @@ jobs:
       - name: Discover scenarios
         id: discover
         run: |
-          scenarios=$(
-            find roles -type f -path "*/molecule/*/molecule.yml" \
-            | sed 's#/molecule.yml##' \
-            | jq -R -s -c 'split("\n")[:-1]'
+          roles=$(
+            find roles \
+              -mindepth 1 \
+              -maxdepth 1 \
+              -type d \
+              -printf '%f\n' \
+              | sort \
+              | jq -R -s -c 'split("\n")[:-1]'
           )
 
+          scenarios=$(
+            find roles \
+              -type f \
+              -path "*/molecule/*/molecule.yml" \
+              | while IFS= read -r molecule_file; do
+                  scenario_dir="$(dirname "${molecule_file}")"
+                  role_dir="$(dirname "$(dirname "${scenario_dir}")")"
+
+                  jq -n \
+                    --arg role "$(basename "${role_dir}")" \
+                    --arg scenario "$(basename "${scenario_dir}")" \
+                    --arg path "${scenario_dir}" \
+                    '{
+                      role: $role,
+                      scenario: $scenario,
+                      path: $path
+                    }'
+                done \
+              | jq -s -c .
+          )
+
+          echo "roles=${roles}" >> "${GITHUB_OUTPUT}"
           echo "scenarios=${scenarios}" >> "${GITHUB_OUTPUT}"
+
+          echo "Discovered roles:"
+          echo "${roles}" | jq .
 
           echo "Discovered scenarios:"
           echo "${scenarios}" | jq .
 
+      - name: Generate Molecule coverage summary
+        run: |
+          covered_roles=$(
+            printf '%s\n' "${STEPS_DISCOVER_OUTPUTS_SCENARIOS}" \
+              | jq '[.[].role] | unique | length'
+          )
+
+          total_roles=$(
+            printf '%s\n' "${STEPS_DISCOVER_OUTPUTS_ROLES}" \
+              | jq 'length'
+          )
+
+          {
+            echo "## Molecule Coverage (${covered_roles}/${total_roles})"
+            echo
+            echo "| Role | Molecule |"
+            echo "| --- | :---: |"
+
+            printf '%s\n' "${STEPS_DISCOVER_OUTPUTS_ROLES}" \
+              | jq -r '.[]' \
+              | while IFS= read -r role; do
+                role_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GITHUB_SHA}/roles/${role}"
+
+                if printf '%s\n' "${STEPS_DISCOVER_OUTPUTS_SCENARIOS}" \
+                  | jq -e --arg role "${role}" \
+                  'any(.[]; .role == $role)' \
+                  > /dev/null; then
+                  echo "| [\`${role}\`](${role_url}) | ✅ |"
+                else
+                  echo "| [\`${role}\`](${role_url}) | ❌ |"
+                fi
+              done
+          } >> "${GITHUB_STEP_SUMMARY}"
+        env:
+          STEPS_DISCOVER_OUTPUTS_SCENARIOS: ${{ steps.discover.outputs.scenarios }}
+          STEPS_DISCOVER_OUTPUTS_ROLES: ${{ steps.discover.outputs.roles }}
+
   molecule:
-    name: Molecule (${{ matrix.scenario }})
+    name: ${{ matrix.scenario.role }}-${{ matrix.scenario.scenario }}
     needs: discover
 
     runs-on: ubuntu-latest
@@ -90,13 +157,11 @@ jobs:
 
       - name: Run Molecule
         run: |
-          role_dir="$(dirname "$(dirname "${MATRIX_SCENARIO}")")"
-          scenario_name="$(basename "${MATRIX_SCENARIO}")"
+          echo "Role: ${MATRIX_ROLE}"
+          echo "Scenario: ${MATRIX_SCENARIO}"
 
-          echo "Role directory: ${role_dir}"
-          echo "Scenario: ${scenario_name}"
-
-          cd "${role_dir}"
-          molecule test -s "${scenario_name}"
+          cd "roles/${MATRIX_ROLE}"
+          molecule test -s "${MATRIX_SCENARIO}"
         env:
-          MATRIX_SCENARIO: ${{ matrix.scenario }}
+          MATRIX_ROLE: ${{ matrix.scenario.role }}
+          MATRIX_SCENARIO: ${{ matrix.scenario.scenario }}
