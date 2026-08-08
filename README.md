@@ -37,6 +37,12 @@ This repository uses CI to continuously validate configuration quality:
 
 [![Molecule Coverage][molecule-badge]][molecule-status]
 
+<!-- molecule-coverage:start -->
+
+<!-- Molecule coverage is generated automatically. -->
+
+<!-- molecule-coverage:end -->
+
 [![Deployment Status][deployment-badge]][deployment-status]
 [![Codacy Badge][codacy-badge]][codacy-grade]
 [![Super-Linter][superlinter-badge]][superlinter-status]

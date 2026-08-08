@@ -24,104 +24,7 @@ permissions:
 jobs:
   discover:
     name: 🔍 Discover scenarios
-
-    runs-on: ubuntu-slim
-
-    outputs:
-      roles: ${{ steps.discover.outputs.roles }}
-      scenarios: ${{ steps.discover.outputs.scenarios }}
-
-    steps:
-      - name: Collect Workflow Telemetry
-        # yamllint disable-line rule:line-length
-        uses: tsviz/actions-runner-telemetry@0fbec1ca185a193c94e4540e244110fdee912693 # v1.7.3
-        with:
-          enabled: ${{ vars.RUNNER_TELEMETRY_ENABLED || 'true' }}
-
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Discover scenarios
-        id: discover
-        run: |
-          roles=$(
-            find roles \
-              -mindepth 1 \
-              -maxdepth 1 \
-              -type d \
-              -printf '%f\n' \
-              | sort \
-              | jq -R -s -c 'split("\n")[:-1]'
-          )
-
-          scenarios=$(
-            find roles \
-              -type f \
-              -path "*/molecule/*/molecule.yml" \
-              | while IFS= read -r molecule_file; do
-                  scenario_dir="$(dirname "${molecule_file}")"
-                  role_dir="$(dirname "$(dirname "${scenario_dir}")")"
-
-                  jq -n \
-                    --arg role "$(basename "${role_dir}")" \
-                    --arg scenario "$(basename "${scenario_dir}")" \
-                    --arg path "${scenario_dir}" \
-                    '{
-                      role: $role,
-                      scenario: $scenario,
-                      path: $path
-                    }'
-                done \
-              | jq -s -c .
-          )
-
-          echo "roles=${roles}" >> "${GITHUB_OUTPUT}"
-          echo "scenarios=${scenarios}" >> "${GITHUB_OUTPUT}"
-
-          echo "Discovered roles:"
-          echo "${roles}" | jq .
-
-          echo "Discovered scenarios:"
-          echo "${scenarios}" | jq .
-
-      - name: Generate Molecule coverage summary
-        run: |
-          covered_roles=$(
-            printf '%s\n' "${STEPS_DISCOVER_OUTPUTS_SCENARIOS}" \
-              | jq '[.[].role] | unique | length'
-          )
-
-          total_roles=$(
-            printf '%s\n' "${STEPS_DISCOVER_OUTPUTS_ROLES}" \
-              | jq 'length'
-          )
-
-          {
-            echo "## Molecule Coverage (${covered_roles}/${total_roles})"
-            echo
-            echo "| Role | Molecule |"
-            echo "| --- | :---: |"
-
-            printf '%s\n' "${STEPS_DISCOVER_OUTPUTS_ROLES}" \
-              | jq -r '.[]' \
-              | while IFS= read -r role; do
-                role_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GITHUB_SHA}/roles/${role}"
-
-                if printf '%s\n' "${STEPS_DISCOVER_OUTPUTS_SCENARIOS}" \
-                  | jq -e --arg role "${role}" \
-                  'any(.[]; .role == $role)' \
-                  > /dev/null; then
-                  echo "| [\`${role}\`](${role_url}) | ✅ |"
-                else
-                  echo "| [\`${role}\`](${role_url}) | ❌ |"
-                fi
-              done
-          } >> "${GITHUB_STEP_SUMMARY}"
-        env:
-          STEPS_DISCOVER_OUTPUTS_SCENARIOS: ${{ steps.discover.outputs.scenarios }}
-          STEPS_DISCOVER_OUTPUTS_ROLES: ${{ steps.discover.outputs.roles }}
+    uses: ./.github/workflows/molecule-discover.yml
 
   molecule:
     name: ${{ matrix.scenario.role }}-${{ matrix.scenario.scenario }}
@@ -156,12 +59,7 @@ jobs:
         uses: ./.github/actions/restore-ansible-cache
 
       - name: Run Molecule
-        run: |
-          echo "Role: ${MATRIX_ROLE}"
-          echo "Scenario: ${MATRIX_SCENARIO}"
-
-          cd "roles/${MATRIX_ROLE}"
-          molecule test -s "${MATRIX_SCENARIO}"
+        run: molecule test -s "${MATRIX_SCENARIO}"
+        working-directory: roles/${{ matrix.scenario.role }}
         env:
-          MATRIX_ROLE: ${{ matrix.scenario.role }}
           MATRIX_SCENARIO: ${{ matrix.scenario.scenario }}
