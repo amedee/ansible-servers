@@ -3,6 +3,8 @@ name: 🧪 Molecule Coverage
 
 on: # yamllint disable-line rule:truthy
   push:
+    branches:
+      - main
     paths:
       - 'roles/**'
       - '.github/workflows/molecule-coverage.yml'
