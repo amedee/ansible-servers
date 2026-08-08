@@ -1,0 +1,43 @@
+---
+name: 🧪 Molecule Discovery
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+    outputs:
+      roles:
+        description: All Ansible roles in the repository
+        value: ${{ jobs.discover.outputs.roles }}
+      scenarios:
+        description: All discovered Molecule scenarios
+        value: ${{ jobs.discover.outputs.scenarios }}
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    name: 🔍 Discover scenarios
+    runs-on: ubuntu-slim
+
+    outputs:
+      roles: ${{ steps.discover.outputs.roles }}
+      scenarios: ${{ steps.discover.outputs.scenarios }}
+
+    steps:
+      - name: Collect Workflow Telemetry
+        # yamllint disable-line rule:line-length
+        uses: tsviz/actions-runner-telemetry@0fbec1ca185a193c94e4540e244110fdee912693 # v1.7.3
+        with:
+          enabled: ${{ vars.RUNNER_TELEMETRY_ENABLED || 'true' }}
+
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Discover roles and scenarios
+        id: discover
+        run: |
+          python3 .github/scripts/molecule_coverage.py discover \
+            --roles-output "${GITHUB_OUTPUT}" \
+            --summary-output "${GITHUB_STEP_SUMMARY}"
