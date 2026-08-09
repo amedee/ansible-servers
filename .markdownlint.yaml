@@ -2,3 +2,8 @@
 # Duplication is allowed for headings with different parents
 no-duplicate-heading:
   siblings_only: true
+
+# MD013/line-length - Line length
+MD013:
+  line_length: 80
+  tables: false
