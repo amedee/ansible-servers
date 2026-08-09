@@ -53,13 +53,9 @@ jobs:
             --badge-directory badge \
             --summary-output "${GITHUB_STEP_SUMMARY}"
 
-      - name: Publish badge
-        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: badges
-          publish_dir: badge
-          force_orphan: true
+      - name: Format Markdown with Prettier
+        run: |
+          npx prettier --prose-wrap always --print-width 80 --write "README.md"
 
       - name: Commit README changes
         run: |
@@ -74,3 +70,11 @@ jobs:
           git add README.md
           git commit -m "docs: update Molecule coverage"
           git push
+
+      - name: Publish badge
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: badges
+          publish_dir: badge
+          force_orphan: true
