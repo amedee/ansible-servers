@@ -68,12 +68,14 @@ jobs:
           FIX_BIOME_LINT: true
           FIX_GITHUB_ACTIONS_ZIZMOR: true
           FIX_JSON_PRETTIER: false
+          FIX_MARKDOWN_PRETTIER: true
           FIX_PYTHON_RUFF_FORMAT: true
           FIX_SHELL_SHFMT: true
           FIX_YAML_PRETTIER: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
           LINTER_RULES_PATH: "."
+          MARKDOWN_CONFIG_FILE: ".markdownlint.yaml"
           VALIDATE_ANSIBLE: false
           VALIDATE_CLANG_FORMAT: false
           VALIDATE_CLOJURE: false
