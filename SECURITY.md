@@ -2,7 +2,8 @@
 
 ## Supported Versions
 
-Only the latest commit in [main](https://github.com/amedee/ansible-servers) is supported.
+Only the latest commit in [main](https://github.com/amedee/ansible-servers) is
+supported.
 
 ## Reporting a Vulnerability
 
