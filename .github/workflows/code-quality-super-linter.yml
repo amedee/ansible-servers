@@ -68,6 +68,7 @@ jobs:
           FIX_BIOME_LINT: true
           FIX_GITHUB_ACTIONS_ZIZMOR: true
           FIX_JSON_PRETTIER: false
+          FIX_MARKDOWN_PRETTIER: true
           FIX_PYTHON_RUFF_FORMAT: true
           FIX_SHELL_SHFMT: true
           FIX_YAML_PRETTIER: false
