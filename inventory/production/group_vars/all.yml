@@ -59,10 +59,6 @@ munin_node_config_base:
   "diskstats*":
     env.include_only: vd
 
-mydomains: []
-
-postfix_invalid_recipients: []
-
 aws_ses_access_key_id: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   31623431373065383032376534346565356335363963613865363665623364646462663961636631

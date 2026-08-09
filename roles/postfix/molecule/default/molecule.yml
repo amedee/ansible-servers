@@ -1,0 +1,30 @@
+---
+driver:
+  name: default
+
+platforms:
+  - name: instance
+    connection: local
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: "${MOLECULE_PROJECT_DIRECTORY}/.."
+
+  inventory:
+    host_vars:
+      instance:
+        ansible_connection: local
+        ansible_become: true
+        postfix_invalid_recipients:
+          - invalid-recipient@example.com
+
+scenario:
+  test_sequence:
+    - syntax
+    - converge
+    - idempotence
+    - verify
+
+verifier:
+  name: ansible

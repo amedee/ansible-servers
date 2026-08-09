@@ -3,13 +3,14 @@
 /var/log/mail.log
 /var/log/mail.warn
 {
-      monthly
-      rotate 24
       compress
       delaycompress
       missingok
+      monthly
       notifempty
+      rotate 24
       sharedscripts
+      su root root
 
       postrotate
         systemctl reload rsyslog >/dev/null 2>&1 || true

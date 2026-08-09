@@ -1,0 +1,72 @@
+---
+- name: Verify Postfix
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Verify required packages are installed
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Assert required Postfix packages
+      ansible.builtin.assert:
+        that:
+          - "'postfix' in ansible_facts.packages"
+          - "'postfix-pcre' in ansible_facts.packages"
+
+    - name: Check Postfix configuration
+      ansible.builtin.command:
+        cmd: postfix check
+      changed_when: false
+
+    - name: Get Postfix status
+      ansible.builtin.command:
+        cmd: postfix status
+      changed_when: false
+
+    - name: Verify SMTP service is available
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: 25
+        state: started
+        timeout: 10
+
+    - name: Get effective Postfix settings
+      ansible.builtin.command:
+        cmd: postconf -n
+      register: postfix_config
+      changed_when: false
+
+    - name: Verify expected Postfix settings
+      ansible.builtin.assert:
+        that:
+          - "'mydestination = ' in postfix_config.stdout"
+          - "'smtpd_recipient_restrictions = ' in postfix_config.stdout"
+          - "'check_recipient_access pcre:/etc/postfix/checks/invalid_recipients.pcre' in postfix_config.stdout"
+
+    - name: Test sender canonical map
+      ansible.builtin.command:
+        cmd: >
+          postmap -q test@example.com
+          pcre:/etc/postfix/sender-canonical-maps.pcre
+      register: postfix_sender_canonical_result
+      changed_when: false
+
+    - name: Verify sender canonical map behavior
+      ansible.builtin.assert:
+        that:
+          - postfix_sender_canonical_result.stdout == 'amedee@vangasse.eu'
+
+    - name: Test recipient canonical map
+      ansible.builtin.command:
+        cmd: >
+          postmap -q foo-bar@example.com
+          pcre:/etc/postfix/recipient-canonical-maps.pcre
+      register: postfix_recipient_canonical_result
+      changed_when: false
+
+    - name: Verify recipient canonical map behavior
+      ansible.builtin.assert:
+        that:
+          - postfix_recipient_canonical_result.stdout == 'foo@example.com'
