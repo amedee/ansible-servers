@@ -1,0 +1,57 @@
+---
+name: Prettier
+
+on: # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+    paths:
+      - "**/*.md"
+      - ".github/workflows/prettier.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  prettier:
+    name: Format Markdown
+    runs-on: ubuntu-slim
+
+    steps:
+      - name: Collect Workflow Telemetry
+        # yamllint disable-line rule:line-length
+        uses: tsviz/actions-runner-telemetry@0fbec1ca185a193c94e4540e244110fdee912693 # v1.7.3
+        with:
+          enabled: ${{ vars.RUNNER_TELEMETRY_ENABLED || 'true' }}
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      - name: Format Markdown with Prettier
+        run: |
+          npx --yes prettier \
+            --prose-wrap always \
+            --print-width 80 \
+            --write "**/*.md"
+
+      - name: Commit formatting changes
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+          git commit -m "style: format Markdown with Prettier"
+          git push
