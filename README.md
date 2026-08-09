@@ -65,30 +65,19 @@ Timelapse visualisation of how this infrastructure codebase evolved over time.
 [box.vangasse.eu]: https://box.vangasse.eu
 [lemp droplet]: https://do.co/2GOFe5J#start
 [mailinabox]: https://mailinabox.email/
-[deployment-badge]:
-  https://github.com/amedee/ansible-servers/actions/workflows/pipeline.yml/badge.svg
-[deployment-status]:
-  https://github.com/amedee/ansible-servers/actions/workflows/pipeline.yml
-[codacy-badge]:
-  https://app.codacy.com/project/badge/Grade/14aefeb38e4e4313a524d732264dc9fc
-[codacy-grade]:
-  https://app.codacy.com/gh/amedee/ansible-servers/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
-[superlinter-badge]:
-  https://github.com/amedee/ansible-servers/actions/workflows/code-quality-super-linter.yml/badge.svg
-[superlinter-status]:
-  https://github.com/marketplace/actions/code-quality-super-linter
-[codefactor-badge]:
-  https://www.codefactor.io/repository/github/amedee/ansible-servers/badge
-[codefactor-status]:
-  https://www.codefactor.io/repository/github/amedee/ansible-servers
+[deployment-badge]: https://github.com/amedee/ansible-servers/actions/workflows/pipeline.yml/badge.svg
+[deployment-status]: https://github.com/amedee/ansible-servers/actions/workflows/pipeline.yml
+[codacy-badge]: https://app.codacy.com/project/badge/Grade/14aefeb38e4e4313a524d732264dc9fc
+[codacy-grade]: https://app.codacy.com/gh/amedee/ansible-servers/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
+[superlinter-badge]: https://github.com/amedee/ansible-servers/actions/workflows/code-quality-super-linter.yml/badge.svg
+[superlinter-status]: https://github.com/marketplace/actions/code-quality-super-linter
+[codefactor-badge]: https://www.codefactor.io/repository/github/amedee/ansible-servers/badge
+[codefactor-status]: https://www.codefactor.io/repository/github/amedee/ansible-servers
 [license-badge]: https://img.shields.io/badge/License-MIT-yellow.svg
 [license-link]: https://opensource.org/licenses/MIT
 [checks files]: roles/postfix/files/checks
-[securitysage]:
-  https://web.archive.org/web/20070106001401/http://www.securitysage.com:80/guides/postfix_uce.html
+[securitysage]: https://web.archive.org/web/20070106001401/http://www.securitysage.com:80/guides/postfix_uce.html
 [gource-thumbnail]: https://gource-by-amedee.s3.amazonaws.com/gource-latest.gif
 [gource-video]: https://gource-by-amedee.s3.amazonaws.com/gource-latest.mp4
-[molecule-badge]:
-  https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/amedee/ansible-servers/refs/heads/badges/molecule-coverage.json
-[molecule-status]:
-  https://github.com/amedee/ansible-servers/actions/workflows/molecule-coverage.yml
+[molecule-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/amedee/ansible-servers/refs/heads/badges/molecule-coverage.json
+[molecule-status]: https://github.com/amedee/ansible-servers/actions/workflows/molecule-coverage.yml
