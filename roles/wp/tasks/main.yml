@@ -20,17 +20,22 @@
   ansible.builtin.import_tasks:
     file: wordpress_db.yml
 
-- name: "Install WordPress in {{ webserver_directory }}"
+- name: Restore WordPress database
+  ansible.builtin.import_tasks:
+    file: wordpress_restore_database.yml
+  when: wp_restore_database
+
+- name: "Install WordPress in {{ wp_directory }}"
   ansible.builtin.import_tasks:
     file: wordpress.yml
-
-- name: Configure Redis for WordPress
-  ansible.builtin.import_tasks:
-    file: wordpress_redis.yml
 
 - name: Manage WordPress plugins
   ansible.builtin.import_tasks:
     file: wordpress_plugins.yml
+
+- name: Configure Redis for WordPress
+  ansible.builtin.import_tasks:
+    file: wordpress_redis.yml
 
 - name: Manage WordPress themes
   ansible.builtin.import_tasks:
@@ -39,3 +44,4 @@
 - name: Restore WordPress archive
   ansible.builtin.import_tasks:
     file: wordpress_restore_archive.yml
+  when: wp_restore_archive

@@ -1,43 +1,46 @@
 ---
-- name: Create wp-cli cache directory
+- name: Create WordPress user support directories
   ansible.builtin.file:
-    path: /var/www/.wp-cli/cache
+    path: "{{ item }}"
     state: directory
-    owner: "{{ webserver_user }}"
-    group: "{{ webserver_user }}"
-    mode: "0750"
+    owner: "{{ wp_webserver_user }}"
+    group: "{{ wp_webserver_user }}"
+    mode: "0700"
+  loop:
+    - /var/www/.wp-cli/cache
+    - /var/www/.ansible/tmp
 
 - name: Check if wp-config-sample.php exists
   ansible.builtin.stat:
-    path: "{{ webserver_directory }}/wp-config-sample.php"
+    path: "{{ wp_directory }}/wp-config-sample.php"
   register: wp_config_sample
 
 - name: Download WordPress
   when: not wp_config_sample.stat.exists
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
     argv:
-      - "{{ php_bin }}"
+      - "{{ wp_php_bin }}"
       - "{{ wp_cli_bin }}"
       - core
       - download
-      - "--path={{ webserver_directory }}"
+      - "--path={{ wp_directory }}"
   register: wp_core_download
   changed_when: true
 
 - name: Check if wp-config.php exists
   ansible.builtin.stat:
-    path: "{{ webserver_directory }}/wp-config.php"
+    path: "{{ wp_directory }}/wp-config.php"
   register: wp_config
 
 - name: Create a new wp-config.php
   when: not wp_config.stat.exists
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
     argv:
-      - "{{ php_bin }}"
+      - "{{ wp_php_bin }}"
       - "{{ wp_cli_bin }}"
       - config
       - create
@@ -45,7 +48,7 @@
       - "--dbuser={{ wp_db_user }}"
       - "--dbpass={{ wp_db_password }}"
       - "--dbhost={{ wp_db_host }}"
-      - "--path={{ webserver_directory }}"
+      - "--path={{ wp_directory }}"
   no_log: true
   register: wp_core_download
   changed_when: true
@@ -54,3 +57,39 @@
   ansible.builtin.include_tasks:
     file: wordpress_config.yml
   loop: "{{ wp_constants }}"
+
+- name: Check WordPress installation status
+  become: true
+  become_user: "{{ wp_webserver_user }}"
+  ansible.builtin.command:
+    argv:
+      - "{{ wp_php_bin }}"
+      - "{{ wp_cli_bin }}"
+      - core
+      - is-installed
+      - "--path={{ wp_directory }}"
+  register: wp_core_is_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install WordPress
+  when:
+    - wp_install | bool
+    - wp_core_is_installed.rc != 0
+  become: true
+  become_user: "{{ wp_webserver_user }}"
+  ansible.builtin.command:
+    argv:
+      - "{{ wp_php_bin }}"
+      - "{{ wp_cli_bin }}"
+      - core
+      - install
+      - "--url={{ wp_site_url }}"
+      - "--title={{ wp_site_title }}"
+      - "--admin_user={{ wp_admin_user }}"
+      - "--admin_password={{ wp_admin_password }}"
+      - "--admin_email={{ wp_admin_email }}"
+      - --skip-email
+      - "--path={{ wp_directory }}"
+  register: wp_core_install
+  changed_when: false

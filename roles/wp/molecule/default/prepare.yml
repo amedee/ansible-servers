@@ -1,0 +1,29 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: true
+
+  roles:
+    - mysql
+    - redis
+    - role: nginx
+      nginx_ssl_enabled: false
+    - role: debops.debops.keyring
+      keyring__dependent_gpg_keys:
+        - id: 63AF7AA15067C05616FDDD88A3A2E8F226F0BC06
+    - debops.debops.wpcli
+
+  tasks:
+    - name: Create MySQL administration user for WordPress
+      ansible.builtin.command:
+        argv:
+          - mysql
+          - --defaults-extra-file=/etc/mysql/debian.cnf
+          - -e
+          - >-
+            CREATE USER IF NOT EXISTS 'wp_admin'@'localhost'
+            IDENTIFIED BY 'wp_admin';
+            GRANT ALL PRIVILEGES ON *.* TO 'wp_admin'@'localhost'
+            WITH GRANT OPTION;
+            FLUSH PRIVILEGES;
+      changed_when: false

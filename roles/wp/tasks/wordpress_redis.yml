@@ -4,24 +4,111 @@
     name:
       - php-redis
 
+- name: Gather package facts
+  ansible.builtin.package_facts:
+
+- name: Show redis packages
+  ansible.builtin.debug:
+    msg: >-
+      {{
+        ansible_facts.packages.keys()
+        | select('search', 'redis')
+        | list
+      }}
+
+- name: Look for redis.ini
+  ansible.builtin.find:
+    paths:
+      - /etc/php
+    patterns:
+      - redis.ini
+  register: wp_redis_ini
+
+- name: Debug redis ini
+  ansible.builtin.debug:
+    var: wp_redis_ini.files
+
+- name: Look for redis.so
+  ansible.builtin.find:
+    paths:
+      - /usr/lib
+    patterns:
+      - redis.so
+    recurse: true
+  register: wp_redis_so
+
+- name: Debug redis.so
+  ansible.builtin.debug:
+    var: wp_redis_so.files
+
+- name: Check loaded PHP modules
+  ansible.builtin.command:
+    argv:
+      - "{{ wp_php_bin }}"
+      - -m
+  register: wp_php_modules
+  changed_when: false
+
+- name: Verify Redis extension is loaded
+  ansible.builtin.assert:
+    that:
+      - "'redis' in wp_php_modules.stdout_lines"
+    fail_msg: "{{ wp_php_modules.stdout }}"
+
 - name: Remove WP_REDIS_PASSWORD from wp-config.php
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.lineinfile:
-    path: "{{ webserver_directory }}/wp-config.php"
+    path: "{{ wp_directory }}/wp-config.php"
     regexp: "^[ \\t]*define\\(\\s*['\"]WP_REDIS_PASSWORD['\"],.*\\);"
     state: absent
 
 - name: Check if WordPress is connected to Redis
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
     argv:
-      - "{{ php_bin }}"
+      - "{{ wp_php_bin }}"
       - "{{ wp_cli_bin }}"
       - redis
       - status
-      - "--path={{ webserver_directory }}"
+      - "--path={{ wp_directory }}"
   register: wp_redis_status
   changed_when: false
-  failed_when: "'Status: Connected' not in wp_redis_status.stdout"
+
+- name: Connect WordPress to Redis
+  become: true
+  become_user: "{{ wp_webserver_user }}"
+  ansible.builtin.command:
+    argv:
+      - "{{ wp_php_bin }}"
+      - "{{ wp_cli_bin }}"
+      - redis
+      - enable
+      - --debug
+      - "--path={{ wp_directory }}"
+  register: wp_redis_enable
+  changed_when: false
+  when: "'Status: Connected' not in wp_redis_status.stdout"
+
+- name: Debug Redis enable
+  ansible.builtin.debug:
+    var: wp_redis_enable.stdout
+
+- name: Check if WordPress is connected to Redis
+  become: true
+  become_user: "{{ wp_webserver_user }}"
+  ansible.builtin.command:
+    argv:
+      - "{{ wp_php_bin }}"
+      - "{{ wp_cli_bin }}"
+      - redis
+      - status
+      - --debug
+      - "--path={{ wp_directory }}"
+  register: wp_redis_enabled
+  changed_when: false
+
+- name: Debug Redis status
+  ansible.builtin.debug:
+    var: wp_redis_enabled.stdout

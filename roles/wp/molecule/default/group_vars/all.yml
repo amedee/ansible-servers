@@ -1,0 +1,43 @@
+---
+wp_directory: /var/www/html
+wp_webserver_user: www-data
+wp_php_version: 8.4
+wp_php_bin: "/usr/bin/php{{ wp_php_version }}"
+wp_cli_bin: /usr/local/bin/wp
+
+wp_install: true
+
+wp_db_admin_user: wp_admin
+wp_db_admin_password: wp_admin # pragma: allowlist secret
+wp_db_name: wordpress
+
+
+wp_restore_database: false
+wp_restore_archive: false
+
+# WordPress configuration
+wp_constants:
+  - name: WP_DEBUG
+    value: "false"
+  - name: WP_CACHE_KEY_SALT
+    value: amedee.be
+  - name: WP_REDIS_PREFIX
+    value: amedee.be_
+
+# Plugins
+wp_plugins_install:
+  - redis-cache
+  - wp-redis
+wp_plugins_uninstall:
+  - hello
+
+# Themes
+wp_themes_install:
+  - neve
+
+wp_themes_uninstall:
+  - twentytwentytwo
+  - twentytwentythree
+  - twentytwentyfour
+
+wp_fallback_theme: neve

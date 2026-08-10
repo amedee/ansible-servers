@@ -1,0 +1,279 @@
+---
+- name: Verify WordPress
+  hosts: all
+  become: true
+  vars:
+    wp_verify_path: "{{ wp_directory }}"
+    wp_verify_php: "{{ wp_php_bin }}"
+    wp_verify_cli: "{{ wp_cli_bin }}"
+
+  tasks:
+    - name: Check WordPress installation
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      ansible.builtin.command:
+        argv:
+          - "{{ wp_verify_php }}"
+          - "{{ wp_verify_cli }}"
+          - core
+          - is-installed
+          - "--path={{ wp_verify_path }}"
+      register: wp_core_status
+      changed_when: false
+
+    - name: Verify WordPress is installed
+      ansible.builtin.assert:
+        that:
+          - wp_core_status.rc == 0
+        fail_msg: "WordPress is not installed"
+
+    - name: Check WordPress version
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      ansible.builtin.command:
+        argv:
+          - "{{ wp_verify_php }}"
+          - "{{ wp_verify_cli }}"
+          - core
+          - version
+          - "--path={{ wp_verify_path }}"
+      register: wp_core_version
+      changed_when: false
+
+    - name: Verify WordPress version is available
+      ansible.builtin.assert:
+        that:
+          - wp_core_version.rc == 0
+          - wp_core_version.stdout | trim | length > 0
+        fail_msg: "Could not determine the installed WordPress version"
+
+    - name: Check WordPress database connection
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      ansible.builtin.command:
+        argv:
+          - "{{ wp_verify_php }}"
+          - "{{ wp_verify_cli }}"
+          - db
+          - check
+          - "--path={{ wp_verify_path }}"
+      register: wp_db_check
+      changed_when: false
+
+    - name: Verify WordPress database is usable
+      ansible.builtin.assert:
+        that:
+          - wp_db_check.rc == 0
+        fail_msg: "WordPress cannot connect to its database"
+
+    - name: Check configured WordPress database
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      ansible.builtin.command:
+        argv:
+          - "{{ wp_verify_php }}"
+          - "{{ wp_verify_cli }}"
+          - config
+          - get
+          - DB_NAME
+          - "--path={{ wp_verify_path }}"
+      register: wp_db_name_result
+      changed_when: false
+
+    - name: Verify configured WordPress database
+      ansible.builtin.assert:
+        that:
+          - wp_db_name_result.rc == 0
+          - wp_db_name_result.stdout | trim == wp_db_name
+        fail_msg: >-
+          WordPress is configured for database
+          {{ wp_db_name_result.stdout | trim | quote }},
+          expected {{ wp_db_name | quote }}
+
+    - name: Verify WordPress constants
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      ansible.builtin.command:
+        argv:
+          - "{{ wp_verify_php }}"
+          - "{{ wp_verify_cli }}"
+          - config
+          - get
+          - "{{ item.name }}"
+          - "--path={{ wp_verify_path }}"
+      register: wp_constant_results
+      changed_when: false
+      loop: "{{ wp_constants }}"
+
+    - name: Verify WordPress constants have expected values
+      ansible.builtin.assert:
+        that:
+          - item.stdout | trim == item.item.value
+        fail_msg: >-
+          WordPress constant {{ item.item.name }} has value
+          {{ item.stdout | trim | quote }},
+          expected {{ item.item.value | quote }}
+      loop: "{{ wp_constant_results.results }}"
+
+    - name: Check PHP modules
+      ansible.builtin.command:
+        argv:
+          - "{{ wp_verify_php }}"
+          - -m
+      register: wp_php_modules
+      changed_when: false
+
+    - name: Debug PHP modules
+      ansible.builtin.debug:
+        var: wp_php_modules.stdout_lines
+
+    - name: Check WordPress Redis connection
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      ansible.builtin.command:
+        argv:
+          - "{{ wp_verify_php }}"
+          - "{{ wp_verify_cli }}"
+          - redis
+          - status
+          - "--path={{ wp_verify_path }}"
+      register: wp_redis_status
+      changed_when: false
+
+    - name: Verify WordPress is connected to Redis
+      ansible.builtin.assert:
+        that:
+          - "'Status: Connected' in wp_redis_status.stdout"
+        fail_msg: "{{ wp_redis_status.stdout }}"
+
+    - name: Get installed WordPress plugins
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      ansible.builtin.command:
+        argv:
+          - "{{ wp_verify_php }}"
+          - "{{ wp_verify_cli }}"
+          - plugin
+          - list
+          - "--path={{ wp_verify_path }}"
+          - --format=json
+      register: wp_plugin_list
+      changed_when: false
+
+    - name: Parse installed WordPress plugins
+      ansible.builtin.set_fact:
+        wp_installed_plugins: "{{ wp_plugin_list.stdout | from_json }}"
+
+    - name: Verify configured plugins are installed
+      ansible.builtin.assert:
+        that:
+          - >-
+            wp_installed_plugins
+            | selectattr('name', 'equalto', item)
+            | list
+            | length == 1
+        fail_msg: "WordPress plugin {{ item }} is not installed"
+      loop: "{{ wp_plugins_install }}"
+
+    - name: Verify configured plugins are active
+      ansible.builtin.assert:
+        that:
+          - >-
+            wp_installed_plugins
+            | selectattr('name', 'equalto', item)
+            | selectattr('status', 'equalto', 'active')
+            | list
+            | length == 1
+        fail_msg: "WordPress plugin {{ item }} is not active"
+      loop: "{{ wp_plugins_install }}"
+
+    - name: Verify configured plugins have auto-updates enabled
+      ansible.builtin.assert:
+        that:
+          - >-
+            wp_installed_plugins
+            | selectattr('name', 'equalto', item)
+            | selectattr('auto_update', 'equalto', true)
+            | list
+            | length == 1
+        fail_msg: "Auto-updates are not enabled for plugin {{ item }}"
+      loop: "{{ wp_plugins_install }}"
+
+    - name: Get installed WordPress themes
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      ansible.builtin.command:
+        argv:
+          - "{{ wp_verify_php }}"
+          - "{{ wp_verify_cli }}"
+          - theme
+          - list
+          - "--path={{ wp_verify_path }}"
+          - --format=json
+      register: wp_theme_list
+      changed_when: false
+
+    - name: Parse installed WordPress themes
+      ansible.builtin.set_fact:
+        wp_installed_themes: "{{ wp_theme_list.stdout | from_json }}"
+
+    - name: Verify configured themes are installed
+      ansible.builtin.assert:
+        that:
+          - >-
+            wp_installed_themes
+            | selectattr('name', 'equalto', item)
+            | list
+            | length == 1
+        fail_msg: "WordPress theme {{ item }} is not installed"
+      loop: "{{ wp_themes_install }}"
+
+    - name: Verify configured themes have auto-updates enabled
+      ansible.builtin.assert:
+        that:
+          - >-
+            wp_installed_themes
+            | selectattr('name', 'equalto', item)
+            | selectattr('auto_update', 'equalto', true)
+            | list
+            | length == 1
+        fail_msg: "Auto-updates are not enabled for theme {{ item }}"
+      loop: "{{ wp_themes_install }}"
+
+    - name: Verify fallback theme is active
+      ansible.builtin.assert:
+        that:
+          - >-
+            wp_installed_themes
+            | selectattr('name', 'equalto', wp_fallback_theme)
+            | selectattr('status', 'equalto', 'active')
+            | list
+            | length == 1
+        fail_msg: "Fallback theme {{ wp_fallback_theme }} is not active"
+
+    - name: Check wp-config.php
+      ansible.builtin.stat:
+        path: "{{ wp_verify_path }}/wp-config.php"
+      register: wp_config
+
+    - name: Verify wp-config.php exists
+      ansible.builtin.assert:
+        that:
+          - wp_config.stat.exists
+          - wp_config.stat.isreg
+        fail_msg: "WordPress wp-config.php is missing"
+
+    - name: Verify WordPress directory ownership
+      ansible.builtin.stat:
+        path: "{{ wp_verify_path }}"
+      register: wp_wordpress_directory
+
+    - name: Verify WordPress directory belongs to the webserver user
+      ansible.builtin.assert:
+        that:
+          - wp_wordpress_directory.stat.pw_name == wp_webserver_user
+          - wp_wordpress_directory.stat.gr_name == wp_webserver_user
+        fail_msg: >-
+          WordPress directory {{ wp_verify_path }} is owned by
+          {{ wp_wordpress_directory.stat.pw_name }}:
+          {{ wp_wordpress_directory.stat.gr_name }}
