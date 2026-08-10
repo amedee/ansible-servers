@@ -1,0 +1,36 @@
+---
+- name: Verify swapfile
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Check swapfile
+      ansible.builtin.stat:
+        path: /swapfile
+      register: swapfile
+
+    - name: Verify swapfile
+      ansible.builtin.assert:
+        that:
+          - swapfile.stat.exists
+          - swapfile.stat.isreg
+
+    - name: Get active swap devices
+      ansible.builtin.command:
+        cmd: swapon --noheadings --bytes --show=NAME,SIZE
+      register: swapfile_active
+      changed_when: false
+
+    - name: Verify swapfile is active
+      ansible.builtin.assert:
+        that:
+          - swapfile_active.stdout_lines
+            | map('split')
+            | map('first')
+            | select('equalto','/swapfile')
+            | list
+            | length == 1
+        fail_msg: >-
+          /swapfile is not active.
+          Active swap devices: {{ swapfile_active.stdout_lines | join(', ') }}
