@@ -1,0 +1,4 @@
+---
+php_version: "8.5"
+php_fpm_service: "php{{ php_version }}-fpm"
+php_fpm_socket: /run/php/php-fpm.sock

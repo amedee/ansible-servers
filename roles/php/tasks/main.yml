@@ -1,0 +1,27 @@
+---
+- name: Gather distribution facts
+  ansible.builtin.setup:
+    gather_subset:
+      - distribution
+
+- name: Configure Ondrej APT repository for PHP
+  ansible.builtin.deb822_repository:
+    name: "{{ php_repository.name }}"
+    types:
+      - deb
+    uris:
+      - "{{ php_repository.uri }}"
+    suites:
+      - "{{ php_repository_suite }}"
+    components:
+      - "{{ php_repository.component }}"
+    signed_by: "{{ php_repository.key }}"
+
+- name: Install PHP
+  ansible.builtin.apt:
+    name:
+      - "php{{ php_version }}-cli"
+      - "php{{ php_version }}-fpm"
+    update_cache: true
+    cache_valid_time: 86400 # One day
+    lock_timeout: 300 # 5 minutes

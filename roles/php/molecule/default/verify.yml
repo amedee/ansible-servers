@@ -1,9 +1,51 @@
 ---
 - name: Verify
-  hosts: all
+  hosts: instance
+  become: true
   gather_facts: false
 
   tasks:
-    - name: Do nothing
-      ansible.builtin.debug:
-        msg: "Nothing to verify"
+    - name: Check PHP CLI
+      ansible.builtin.command:
+        argv:
+          - php
+          - -v
+      register: php_installed
+      changed_when: false
+
+    - name: Assert PHP CLI exists
+      ansible.builtin.assert:
+        that:
+          - php_installed.rc == 0
+        fail_msg: "{{ php_installed.stdout }}"
+        success_msg: "{{ php_installed.stdout_lines[0] }}"
+
+    - name: Check PHP runtime version
+      ansible.builtin.command:
+        argv:
+          - php
+          - -r
+          - "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;"
+      register: php_version_check
+      changed_when: false
+
+    - name: Assert PHP runtime version
+      ansible.builtin.assert:
+        that:
+          - php_version_check.rc == 0
+          - php_version_check.stdout == php_version
+        fail_msg: >-
+          Expected PHP {{ php_version }},
+          got {{ php_version_check.stdout }}
+        success_msg: "PHP {{ php_version_check.stdout }} is installed"
+
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Verify PHP-FPM service is running
+      ansible.builtin.assert:
+        that:
+          - php_fpm_service in ansible_facts.services
+          - ansible_facts.services[php_fpm_service].state == 'running'
+        fail_msg: >-
+          PHP-FPM service {{ php_fpm_service }} is not present or is not running
