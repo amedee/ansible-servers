@@ -49,3 +49,119 @@
           - ansible_facts.services[php_fpm_service].state == 'running'
         fail_msg: >-
           PHP-FPM service {{ php_fpm_service }} is not present or is not running
+        success_msg: >-
+          PHP-FPM service {{ php_fpm_service }} is running
+
+    - name: Check PHP-FPM socket
+      ansible.builtin.stat:
+        path: "{{ php_fpm_socket }}"
+        follow: true
+      register: php_fpm_socket_check
+
+    - name: Verify PHP-FPM socket is available
+      ansible.builtin.assert:
+        that:
+          - php_fpm_socket_check.stat.exists
+          - php_fpm_socket_check.stat.issock
+        fail_msg: >-
+          PHP-FPM socket {{ php_fpm_socket }} is not available
+        success_msg: >-
+          PHP-FPM socket {{ php_fpm_socket }} is available
+
+    - name: Verify PHP-FPM socket ownership
+      ansible.builtin.assert:
+        that:
+          - php_fpm_socket_check.stat.pw_name == php_fpm_owner
+          - php_fpm_socket_check.stat.gr_name == php_fpm_group
+        fail_msg: >-
+          PHP-FPM socket {{ php_fpm_socket }} is owned by
+          {{ php_fpm_socket_check.stat.pw_name }}:{{
+          php_fpm_socket_check.stat.gr_name
+          }} instead of {{ php_fpm_owner }}:{{ php_fpm_group }}
+        success_msg: >-
+          PHP-FPM socket ownership is
+          {{ php_fpm_socket_check.stat.pw_name }}:{{
+          php_fpm_socket_check.stat.gr_name
+          }}
+
+    - name: Resolve PHP-FPM socket
+      ansible.builtin.command:
+        argv:
+          - readlink
+          - -f
+          - "{{ php_fpm_socket }}"
+      register: php_fpm_socket_target
+      changed_when: false
+
+    - name: Verify PHP-FPM version matches PHP runtime version
+      ansible.builtin.assert:
+        that:
+          - php_fpm_socket_target.stdout == '/run/php/php' ~ php_version ~ '-fpm.sock'
+        fail_msg: >-
+          PHP-FPM socket {{ php_fpm_socket }} resolves to
+          {{ php_fpm_socket_target.stdout }}, expected
+          /run/php/php{{ php_version }}-fpm.sock
+
+    - name: Test PHP-FPM configuration
+      ansible.builtin.command:
+        argv:
+          - "php-fpm{{ php_version }}"
+          - --test
+      register: php_fpm_config_test
+      changed_when: false
+
+    - name: Verify PHP-FPM configuration
+      ansible.builtin.assert:
+        that:
+          - php_fpm_config_test.rc == 0
+        fail_msg: >-
+          PHP-FPM {{ php_version }} configuration test failed:
+          {{ php_fpm_config_test.stderr }}
+
+    - name: Test PHP-FPM socket accepts connections
+      ansible.builtin.command:
+        argv:
+          - python3
+          - -c
+          - |
+            import socket
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+                sock.connect("{{ php_fpm_socket }}")
+      changed_when: false
+
+    - name: Install FastCGI test utility
+      ansible.builtin.apt:
+        name: libfcgi-bin
+        state: present
+        update_cache: true
+        cache_valid_time: 86400 # One day
+        lock_timeout: 300 # 5 minutes
+
+    - name: Create PHP-FPM test script
+      ansible.builtin.copy:
+        content: |
+          <?php
+          echo "PHP-FPM works\n";
+          echo PHP_VERSION . "\n";
+        dest: /tmp/php-fpm-test.php
+        mode: "0644"
+
+    - name: Execute PHP script through PHP-FPM
+      ansible.builtin.command:
+        argv:
+          - cgi-fcgi
+          - -bind
+          - -connect
+          - "{{ php_fpm_socket }}"
+      environment:
+        SCRIPT_FILENAME: /tmp/php-fpm-test.php
+        REQUEST_METHOD: GET
+      register: php_fpm_execution
+      changed_when: false
+
+    - name: Verify PHP-FPM executes PHP
+      ansible.builtin.assert:
+        that:
+          - php_fpm_execution.rc == 0
+          - "'PHP-FPM works' in php_fpm_execution.stdout"
+          - "php_version in php_fpm_execution.stdout"

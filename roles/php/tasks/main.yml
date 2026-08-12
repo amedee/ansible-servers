@@ -25,3 +25,10 @@
     update_cache: true
     cache_valid_time: 86400 # One day
     lock_timeout: 300 # 5 minutes
+
+- name: Select PHP-FPM socket
+  community.general.alternatives:
+    name: php-fpm.sock
+    link: /run/php/php-fpm.sock
+    path: "/run/php/php{{ php_version }}-fpm.sock"
+    state: selected
