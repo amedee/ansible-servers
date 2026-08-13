@@ -1,0 +1,16 @@
+---
+# @meta author:value: [Amedee Van Gasse](https://amedee.be)
+galaxy_info:
+  role_name: php
+  author: Amedee Van Gasse
+  description: Install and configure PHP and PHP-FPM.
+  license: MIT
+
+  min_ansible_version: "2.17"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+
+dependencies: []
