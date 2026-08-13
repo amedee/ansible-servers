@@ -2,6 +2,7 @@
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
   role_name: php
+  namespace: amedee
   author: Amedee Van Gasse
   description: Install and configure PHP and PHP-FPM.
   license: MIT
