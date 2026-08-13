@@ -63,7 +63,7 @@
       mydestination: >-
         {{
           (['$myhostname', ansible_hostname, 'localhost.localdomain', 'localhost'] +
-           postfix_mydomains
+           mydomains
           ) | unique | join(', ')
         }}
 
@@ -154,12 +154,6 @@
     - postfix_check_line not in postfix_old_list
   changed_when: true
   notify: Restart Postfix
-
-- name: Ensure Postfix is enabled and running
-  ansible.builtin.service:
-    name: postfix
-    state: started
-    enabled: true
 
 - name: Configure logrotate for postfix logs
   ansible.builtin.import_tasks: logrotate.yml

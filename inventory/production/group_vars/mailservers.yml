@@ -36,10 +36,6 @@ postfix_invalid_recipients:
   - amedee-zoosk@amedee.be
   - amedee.be@amedee.be
 
-postfix_mydomains:
-  - amedee.be
-  - vangasse.eu
-
 imapsync_gmail_user: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   33363435376139356139383839303836646163343738306332376537656134376361376561636461
