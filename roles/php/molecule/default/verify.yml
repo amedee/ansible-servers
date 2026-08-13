@@ -179,3 +179,22 @@
         that:
           - item in php_modules.stdout_lines
       loop: "{{ php_modules_required }}"
+
+    - name: Check critical PHP extension
+      ansible.builtin.command:
+        argv:
+          - php
+          - -r
+          - "echo extension_loaded('{{ item }}') ? 'yes' : 'no';"
+      loop: "{{ php_modules_critical }}"
+      register: php_extensions_check
+      changed_when: false
+
+    - name: Verify critical PHP extensions
+      ansible.builtin.assert:
+        that:
+          - item.rc == 0
+          - item.stdout == 'yes'
+        fail_msg: "{{ item.item }} extension is not loaded"
+        success_msg: "{{ item.item }} extension is loaded"
+      loop: "{{ php_extensions_check.results }}"

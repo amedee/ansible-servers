@@ -17,3 +17,7 @@ php_modules_required:
   - xml
   - xmlrpc
   - zip
+php_modules_critical:
+  - imagick
+  - mysqli
+  - redis
