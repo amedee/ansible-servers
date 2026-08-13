@@ -165,3 +165,17 @@
           - php_fpm_execution.rc == 0
           - "'PHP-FPM works' in php_fpm_execution.stdout"
           - "php_version in php_fpm_execution.stdout"
+
+    - name: Get loaded PHP modules
+      ansible.builtin.command:
+        argv:
+          - php
+          - -m
+      register: php_modules
+      changed_when: false
+
+    - name: Verify required modules are loaded
+      ansible.builtin.assert:
+        that:
+          - item in php_modules.stdout_lines
+      loop: "{{ php_modules_required }}"

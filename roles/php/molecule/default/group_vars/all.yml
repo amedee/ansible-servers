@@ -4,3 +4,16 @@ php_fpm_service: "php{{ php_version }}-fpm"
 php_fpm_socket: /run/php/php-fpm.sock
 php_fpm_owner: www-data
 php_fpm_group: www-data
+php_modules_required:
+  - curl
+  - gd
+  - imagick
+  - intl
+  - json
+  - mbstring
+  - mysqli
+  - redis
+  - ssh2
+  - xml
+  - xmlrpc
+  - zip
