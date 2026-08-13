@@ -17,11 +17,9 @@
       - "{{ php_repository.component }}"
     signed_by: "{{ php_repository.key }}"
 
-- name: Install PHP
+- name: Install PHP packages
   ansible.builtin.apt:
-    name:
-      - "php{{ php_version }}-cli"
-      - "php{{ php_version }}-fpm"
+    name: "{{ php_packages + php_module_packages }}"
     update_cache: true
     cache_valid_time: 86400 # One day
     lock_timeout: 300 # 5 minutes
