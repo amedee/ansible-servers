@@ -4,12 +4,12 @@
   gather_facts: false
 
   tasks:
-    - name: Verify DNS update was called
-      ansible.builtin.stat:
-        path: /tmp/dns-update-was-called
-      register: mailinabox_dns_update_called
+    - name: Read DNS update calls
+      ansible.builtin.slurp:
+        src: /tmp/dns-update-calls
+      register: mailinabox_dns_update_calls
 
-    - name: Assert DNS update was called
+    - name: Assert DNS update was called with --force
       ansible.builtin.assert:
         that:
-          - mailinabox_dns_update_called.stat.exists
+          - "'--force' in (mailinabox_dns_update_calls.content | b64decode)"

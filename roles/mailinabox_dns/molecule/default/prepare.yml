@@ -25,7 +25,7 @@
       ansible.builtin.copy:
         content: |
           #!/bin/sh
-          touch /tmp/dns-update-was-called
+          echo "$@" >> /tmp/dns-update-calls
         dest: /root/mailinabox/tools/dns_update
         owner: root
         group: root
