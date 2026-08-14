@@ -9,8 +9,8 @@
     name: debops.debops.swapfile
   vars:
     swapfile__files:
-      - path: /swapfile
-        size: 4096
+      - path: "{{ swapfile_path }}"
+        size: "{{ swapfile_size }}"
         state: present
 
 - name: Get active swap info
