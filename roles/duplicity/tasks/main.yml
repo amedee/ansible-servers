@@ -1,7 +1,7 @@
 ---
 - name: Block broken Duplicity versions from installing
-  ansible.builtin.copy:
-    src: pin_duplicity.pref
+  ansible.builtin.template:
+    src: pin_duplicity.pref.j2
     dest: /etc/apt/preferences.d/pin_duplicity.pref
     owner: root
     group: root

@@ -1,0 +1,7 @@
+{% for version in duplicity_blocked_versions %}
+Explanation: Duplicity version {{ version }} has a bug and should not be installed
+Package: duplicity
+Pin: version {{ version }}
+Pin-Priority: -1
+
+{% endfor %}

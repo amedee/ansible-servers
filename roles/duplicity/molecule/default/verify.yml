@@ -14,18 +14,20 @@
           - "'duplicity' in ansible_facts.packages"
         fail_msg: "Duplicity package is not installed"
 
-    - name: Verify APT pin file
-      ansible.builtin.stat:
-        path: /etc/apt/preferences.d/pin_duplicity.pref
-      register: duplicity_pin
+    - name: Read Duplicity APT preferences
+      ansible.builtin.slurp:
+        src: /etc/apt/preferences.d/pin_duplicity.pref
+      register: duplicity_preferences
 
-    - name: Assert APT pin file properties
+    - name: Verify broken Duplicity versions are blocked
       ansible.builtin.assert:
         that:
-          - duplicity_pin.stat.exists
-          - duplicity_pin.stat.mode == "0644"
-          - duplicity_pin.stat.pw_name == "root"
-          - duplicity_pin.stat.gr_name == "root"
+          - >-
+            ('Package: duplicity\n'
+            ~ 'Pin: version ' ~ item ~ '\n'
+            ~ 'Pin-Priority: -1')
+            in (duplicity_preferences.content | b64decode)
+      loop: "{{ duplicity_blocked_versions }}"
 
     - name: Verify Duplicity config directory
       ansible.builtin.stat:
