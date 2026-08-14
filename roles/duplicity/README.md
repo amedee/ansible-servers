@@ -8,6 +8,7 @@ Role to do configuration of duplicity backup of mailinabox.
 - [Default Variables](#default-variables)
   - [duplicity_backup_age](#duplicity_backup_age)
   - [duplicity_backup_target](#duplicity_backup_target)
+  - [duplicity_blocked_versions](#duplicity_blocked_versions)
 - [Dependencies](#dependencies)
 - [License](#license)
 - [Author](#author)
@@ -34,6 +35,17 @@ duplicity_backup_age: 3
 
 ```YAML
 duplicity_backup_target: s3://s3.us-east-1.amazonaws.com/backups-by-amedee/mail-in-a-box
+```
+
+### duplicity_blocked_versions
+
+#### Default value
+
+```YAML
+duplicity_blocked_versions:
+  - 3.0.1*
+  - 3.0.5*
+  - 3.2.0*
 ```
 
 ## Dependencies
