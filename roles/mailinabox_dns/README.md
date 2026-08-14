@@ -13,6 +13,9 @@ Role to do DNS configuration of mailinabox.
 
 ## Requirements
 
+This role requires a Mail-in-a-Box installation with
+`/root/mailinabox/tools/dns_update` available.
+
 - Minimum Ansible version: `2.1`
 
 ## Dependencies
