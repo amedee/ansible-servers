@@ -17,12 +17,11 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate-docs:
     runs-on: ubuntu-slim
-    environment: production
     steps:
       - name: Collect Workflow Telemetry
         # yamllint disable-line rule:line-length
@@ -33,8 +32,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
 
       - name: 🐍 Setup Python and Install Dependencies
         uses: ./.github/actions/setup-python-pip
@@ -56,7 +54,7 @@ jobs:
       - name: Format Markdown
         uses: ./.github/actions/prettier
 
-      - name: Stage generated README files
+      - name: Stage generated documentation
         run: git add roles/*/README.md
 
       - name: Detect generated README changes
@@ -68,59 +66,11 @@ jobs:
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: 📤 Extract staged git diff
-        id: diff_outputs
+      - name: 🔁 Commit and Push
         if: steps.changes.outputs.has_changes == 'true'
         run: |
-          git diff --cached > diff.txt
-
-          printf "diff_content<<EOF\n%s\nEOF\n" "$(cat diff.txt)" >> "$GITHUB_OUTPUT"
-
-          {
-            echo "### 🔍 Diff"
-            echo
-            echo '```diff'
-            cat diff.txt
-            echo '```'
-          } | tee -a "$GITHUB_STEP_SUMMARY"
-
-      - name: 🤖 Generate AI commit message
-        id: ai_commit
-        if: steps.changes.outputs.has_changes == 'true'
-        uses: ./.github/actions/ai-commit-message
-        env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        with:
-          diff_content: ${{ steps.diff_outputs.outputs.diff_content }}
-          prompt_content: |
-            Write a concise Git commit message describing the staged changes
-            to Markdown documentation of Ansible roles.
-
-      - name: Ensure commit message exists
-        if: steps.changes.outputs.has_changes == 'true'
-        env:
-          AI_MESSAGE: ${{ steps.ai_commit.outputs.message }}
-        run: |
-          if [ -z "$AI_MESSAGE" ]; then
-            echo "AI commit message missing. Aborting workflow."
-            exit 1
-          fi
-
-      - name: 🔁 Commit, push, and PR
-        uses: ./.github/actions/create-or-update-pr
-        if: steps.changes.outputs.has_changes == 'true'
-        with:
-          branch: >-
-            ${{ github.event_name == 'workflow_dispatch'
-                && github.ref_name != 'main'
-                && github.ref_name
-                || 'chore/ansible-docs' }}
-          create_pr: >-
-            ${{ !(github.event_name == 'workflow_dispatch'
-                && github.ref_name != 'main') }}
-          commit_message: ${{ steps.ai_commit.outputs.message }}
-          pr_title: "📚️ Update Ansible role docs"
-          pr_body: ${{ steps.ai_commit.outputs.message }}
-          github_token: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
-          git_user_name: "github-actions[bot]"
-          git_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git diff --cached
+          git commit -m "docs: update generated Ansible role documentation"
+          git push
