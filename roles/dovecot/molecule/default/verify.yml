@@ -3,50 +3,91 @@
   hosts: all
   gather_facts: false
 
-  vars:
-    role_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"
-    expected_files:
-      - path: /etc/cron.d/doveadm_expunge
-        mode: "0644"
-        source: "{{ role_dir }}/files/doveadm_expunge.cron"
-
-      - path: /etc/cron.d/extract_image_attachments
-        mode: "0644"
-        source: "{{ role_dir }}/files/extract_image_attachments.cron"
-
-      - path: /usr/local/bin/extract_image_attachments.sh
-        mode: "0755"
-        source: "{{ role_dir }}/files/extract_image_attachments.sh"
-
-    required_packages:
-      - fdupes
-      - mpack
-
   tasks:
-    - name: Gather file stats
-      ansible.builtin.stat:
-        path: "{{ item.path }}"
-      loop: "{{ expected_files }}"
-      register: dovecot_file_stats
+    - name: Create test mail directory
+      ansible.builtin.file:
+        path: /tmp/dovecot-test-mail
+        state: directory
+        mode: "0755"
 
-    - name: Verify file properties
+    - name: Create test attachment directory
+      ansible.builtin.file:
+        path: /tmp/dovecot-test-attachments
+        state: directory
+        mode: "0755"
+
+    - name: Create first test mail with image attachment
+      ansible.builtin.copy:
+        dest: /tmp/dovecot-test-mail/message-1
+        mode: "0644"
+        content: |
+          From: test1@example.com
+          To: amedee@example.com
+          Subject: Test image 1
+          MIME-Version: 1.0
+          Content-Type: multipart/mixed; boundary="BOUNDARY"
+
+          --BOUNDARY
+          Content-Type: text/plain; charset="UTF-8"
+          Content-Transfer-Encoding: 7bit
+
+          Test message 1.
+
+          --BOUNDARY
+          Content-Type: image/jpeg; name="test.jpg"
+          Content-Disposition: attachment; filename="test.jpg"
+          Content-Transfer-Encoding: base64
+
+          /9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP////////////////////////////////////////////////////////////////////////////////////
+          //2wBDAf/////////////////////////////////////////////////////////////////////////////////////wAARCAABAAEDASIAAhEBAxEB
+          /8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAH/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAEFAqf/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDAQE/AX//xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/AX//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Aqf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAE/IV//2gAMAwEAAgADAAAAEP/EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8Qf//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8Qf//EABQQAQAAAAAAAAAAAAAAAAAAABD/2gAIAQEAAT8Qf//Z
+
+          --BOUNDARY--
+
+    - name: Create second test mail with identical image attachment
+      ansible.builtin.copy:
+        dest: /tmp/dovecot-test-mail/message-2
+        mode: "0644"
+        content: |
+          From: test2@example.com
+          To: amedee@example.com
+          Subject: Test image 2
+          MIME-Version: 1.0
+          Content-Type: multipart/mixed; boundary="BOUNDARY"
+
+          --BOUNDARY
+          Content-Type: text/plain; charset="UTF-8"
+          Content-Transfer-Encoding: 7bit
+
+          Test message 2.
+
+          --BOUNDARY
+          Content-Type: image/jpeg; name="test.jpg"
+          Content-Disposition: attachment; filename="test.jpg"
+          Content-Transfer-Encoding: base64
+
+          /9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP////////////////////////////////////////////////////////////////////////////////////
+          //2wBDAf/////////////////////////////////////////////////////////////////////////////////////wAARCAABAAEDASIAAhEBAxEB
+          /8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAH/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAEFAqf/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDAQE/AX//xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/AX//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Aqf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAE/IV//2gAMAwEAAgADAAAAEP/EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8Qf//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8Qf//EABQQAQAAAAAAAAAAAAAAAAAAABD/2gAIAQEAAT8Qf//Z
+
+          --BOUNDARY--
+
+    - name: Run image attachment extraction
+      ansible.builtin.command:
+        cmd: /usr/local/bin/extract_image_attachments.sh
+      environment:
+        MAILDIR: /tmp/dovecot-test-mail
+        SAVED_ATTACHMENTS: /tmp/dovecot-test-attachments
+      changed_when: false
+
+    - name: Find extracted JPEG attachments
+      ansible.builtin.find:
+        paths: /tmp/dovecot-test-attachments
+        patterns: "*.jpg*"
+        file_type: file
+      register: dovecot_extracted_attachments
+
+    - name: Assert duplicate attachments are deduplicated
       ansible.builtin.assert:
         that:
-          - item.stat.exists
-          - item.stat.isreg
-          - item.stat.pw_name == "root"
-          - item.stat.gr_name == "root"
-          - item.stat.mode == item.item.mode
-        fail_msg: "Invalid properties for {{ item.item.path }}"
-      loop: "{{ dovecot_file_stats.results }}"
-
-    - name: Gather installed package facts
-      ansible.builtin.package_facts:
-        manager: auto
-
-    - name: Verify required packages are installed
-      ansible.builtin.assert:
-        that:
-          - item in ansible_facts.packages
-        fail_msg: "Package {{ item }} is not installed"
-      loop: "{{ required_packages }}"
+          - dovecot_extracted_attachments.matched == 1

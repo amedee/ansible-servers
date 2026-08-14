@@ -1,7 +1,7 @@
 #!/bin/bash
 
-MAILDIR='/home/user-data/mail/mailboxes/vangasse.eu/amedee/.Spam/cur/'
-SAVED_ATTACHMENTS='/root/attachments/'
+MAILDIR="${MAILDIR:-/home/user-data/mail/mailboxes/vangasse.eu/amedee/.Spam/cur/}"
+SAVED_ATTACHMENTS="${SAVED_ATTACHMENTS:-/root/attachments/}"
 
 function cleanup() {
 	cd "$HOME" || exit
