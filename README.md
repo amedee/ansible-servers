@@ -54,6 +54,7 @@ This repository uses CI to continuously validate configuration quality:
 | [`munin_node`](https://github.com/amedee/ansible-servers/tree/main/roles/munin_node)         |    ✅    |
 | [`mysql`](https://github.com/amedee/ansible-servers/tree/main/roles/mysql)                   |    ✅    |
 | [`nginx`](https://github.com/amedee/ansible-servers/tree/main/roles/nginx)                   |    ✅    |
+| [`php`](https://github.com/amedee/ansible-servers/tree/main/roles/php)                       |    ✅    |
 | [`postfix`](https://github.com/amedee/ansible-servers/tree/main/roles/postfix)               |    ❌    |
 | [`postfix_ses`](https://github.com/amedee/ansible-servers/tree/main/roles/postfix_ses)       |    ✅    |
 | [`redis`](https://github.com/amedee/ansible-servers/tree/main/roles/redis)                   |    ✅    |
