@@ -2,3 +2,4 @@
 apt_packages_uninstall:
   - apport
   - mecab-utils
+  - multipath-tools
