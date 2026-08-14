@@ -16,6 +16,8 @@
       - universe
       - multiverse
     signed_by: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+  notify:
+    - APT update
 
 - name: Configure Ubuntu security repository
   ansible.builtin.deb822_repository:
@@ -32,6 +34,8 @@
       - universe
       - multiverse
     signed_by: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+  notify:
+    - APT update
 
 - name: Disable APT Phasing
   ansible.builtin.copy:

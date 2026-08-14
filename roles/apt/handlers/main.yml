@@ -1,4 +1,8 @@
 ---
+- name: APT update
+  ansible.builtin.apt:
+    update_cache: true
+
 - name: APT autoclean
   ansible.builtin.apt:
     autoclean: true
