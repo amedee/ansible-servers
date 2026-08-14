@@ -7,6 +7,7 @@ on: # yamllint disable-line rule:truthy
       - main
     paths:
       - ".github/workflows/ansible-doctor.yml"
+      - "roles/**/.ansibledoctor/**"
       - "roles/**/defaults/main.yml"
       - "roles/**/meta/main.yml"
   workflow_dispatch:
