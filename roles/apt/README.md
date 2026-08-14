@@ -27,6 +27,7 @@ Role to configure APT package management.
 apt_packages_uninstall:
   - apport
   - mecab-utils
+  - multipath-tools
 ```
 
 ## Dependencies
