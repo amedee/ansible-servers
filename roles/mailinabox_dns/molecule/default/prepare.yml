@@ -1,0 +1,32 @@
+---
+- name: Prepare
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Create DNS directory
+      ansible.builtin.file:
+        path: /home/user-data/dns
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Create Mail-in-a-Box tools directory
+      ansible.builtin.file:
+        path: /root/mailinabox/tools
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Create dummy DNS update script
+      ansible.builtin.copy:
+        content: |
+          #!/bin/sh
+          touch /tmp/dns-update-was-called
+        dest: /root/mailinabox/tools/dns_update
+        owner: root
+        group: root
+        mode: "0755"
