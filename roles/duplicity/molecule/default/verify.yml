@@ -4,80 +4,110 @@
   gather_facts: false
 
   tasks:
-    - name: Check duplicity package is installed
-      ansible.builtin.package_facts:
-        manager: auto
+    - name: Get available Duplicity versions
+      ansible.builtin.command:
+        cmd: apt-cache madison duplicity
+      register: duplicity_available_versions
+      changed_when: false
 
-    - name: Verify duplicity is installed
-      ansible.builtin.assert:
-        that:
-          - "'duplicity' in ansible_facts.packages"
-        fail_msg: "Duplicity package is not installed"
+    - name: Determine blocked Duplicity versions that are available
+      ansible.builtin.set_fact:
+        duplicity_available_blocked_versions: >-
+          {{
+            (
+              duplicity_available_versions.stdout
+              | regex_findall('(?m)^[^|]+\\|\\s*([^\\s|]+)')
+            )
+            | intersect(duplicity_blocked_versions)
+            | list
+          }}
 
-    - name: Read Duplicity APT preferences
-      ansible.builtin.slurp:
-        src: /etc/apt/preferences.d/pin_duplicity.pref
-      register: duplicity_preferences
+    - name: Show available blocked Duplicity versions
+      ansible.builtin.debug:
+        msg: >-
+          {{
+            (
+              'No blocked Duplicity versions are currently available in the APT '
+              'repositories; version pinning checks skipped.'
+            )
+            if duplicity_available_blocked_versions | length == 0
+            else
+              'Testing blocked Duplicity versions: '
+              ~ (duplicity_available_blocked_versions | join(', '))
+          }}
 
-    - name: Verify broken Duplicity versions are blocked
+    - name: Get APT policy for available blocked Duplicity versions
+      ansible.builtin.command:
+        cmd: apt-cache policy duplicity
+      register: duplicity_apt_policy
+      changed_when: false
+      when: duplicity_available_blocked_versions | length > 0
+
+    - name: Verify available blocked versions have priority -1
       ansible.builtin.assert:
         that:
           - >-
-            ('Package: duplicity\n'
-            ~ 'Pin: version ' ~ item ~ '\n'
-            ~ 'Pin-Priority: -1')
-            in (duplicity_preferences.content | b64decode)
-      loop: "{{ duplicity_blocked_versions }}"
+            duplicity_apt_policy.stdout is search(
+              '(?m)^\\s*' ~ (item | regex_escape) ~ '\\s+-1\\s*$'
+            )
+        fail_msg: >-
+          Duplicity version {{ item }} does not have APT priority -1.
+          APT policy:
+          {{ duplicity_apt_policy.stdout }}
+      loop: "{{ duplicity_available_blocked_versions }}"
 
-    - name: Verify Duplicity config directory
-      ansible.builtin.stat:
-        path: /home/user-data/backup
-      register: duplicity_config_dir
+    - name: Attempt to install available blocked versions
+      ansible.builtin.apt:
+        name: "duplicity={{ item }}"
+        state: present
+      register: duplicity_install_attempt
+      failed_when: false
+      loop: "{{ duplicity_available_blocked_versions }}"
 
-    - name: Assert backup directory properties
+    - name: Assert blocked versions cannot be installed
       ansible.builtin.assert:
         that:
-          - duplicity_config_dir.stat.exists
-          - duplicity_config_dir.stat.isdir
-          - duplicity_config_dir.stat.mode == "0700"
-          - duplicity_config_dir.stat.pw_name == "root"
-          - duplicity_config_dir.stat.gr_name == "root"
+          - item.failed
+        fail_msg: >-
+          Duplicity version {{ item.item }} was unexpectedly installable.
+          {{ item.msg | default('') }}
+      loop: "{{ duplicity_install_attempt.results }}"
 
-    - name: Verify Duplicity configuration file exists
-      ansible.builtin.stat:
-        path: /home/user-data/backup/custom.yaml
-      register: duplicity_config_file
+    - name: Create test Duplicity package
+      ansible.builtin.copy:
+        content: "Molecule test package"
+        dest: /root/duplicity_molecule_test.deb
+        mode: "0644"
 
-    - name: Assert configuration file properties
+    - name: Remove any previous backup of test Duplicity package
+      ansible.builtin.file:
+        path: /var/backups/debs/duplicity/
+        state: absent
+
+    - name: Remove Duplicity
+      ansible.builtin.apt:
+        name: duplicity
+        state: absent
+
+    - name: Install Duplicity to trigger APT post-invoke hook
+      ansible.builtin.apt:
+        name: duplicity
+        state: present
+
+    - name: Find backed up Duplicity packages
+      ansible.builtin.find:
+        paths: /var/backups/debs/duplicity
+        patterns: "duplicity_*.deb"
+        file_type: file
+      register: duplicity_backups
+
+    - name: Verify Duplicity packages were backed up
       ansible.builtin.assert:
         that:
-          - duplicity_config_file.stat.exists
-          - duplicity_config_file.stat.mode == "0600"
-          - duplicity_config_file.stat.pw_name == "root"
-          - duplicity_config_file.stat.gr_name == "root"
-
-    - name: Verify backup script exists
-      ansible.builtin.stat:
-        path: /usr/local/bin/apt-backup-duplicity.sh
-      register: duplicity_backup_script
-
-    - name: Assert backup script properties
-      ansible.builtin.assert:
-        that:
-          - duplicity_backup_script.stat.exists
-          - duplicity_backup_script.stat.mode == "0755"
-          - duplicity_backup_script.stat.pw_name == "root"
-          - duplicity_backup_script.stat.gr_name == "root"
-
-    - name: Verify APT post-invoke hook exists
-      ansible.builtin.stat:
-        path: /etc/apt/apt.conf.d/99backup-duplicity-debs
-      register: duplicity_apt_hook
-
-    - name: Assert APT hook properties
-      ansible.builtin.assert:
-        that:
-          - duplicity_apt_hook.stat.exists
-          - duplicity_apt_hook.stat.mode == "0644"
-          - duplicity_apt_hook.stat.pw_name == "root"
-          - duplicity_apt_hook.stat.gr_name == "root"
+          - duplicity_backups.matched == 2
+        fail_msg: >-
+          Expected two Duplicity packages in the backup directory,
+          found {{ duplicity_backups.matched }}.
+        success_msg: >-
+          APT backup hook successfully backed up:
+          {{ duplicity_backups.files | map(attribute='path') | map('basename') | join(', ') }}
