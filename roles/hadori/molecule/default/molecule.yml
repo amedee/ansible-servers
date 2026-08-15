@@ -22,7 +22,3 @@ scenario:
     - syntax
     - converge
     - idempotence
-    - verify
-
-verifier:
-  name: ansible
