@@ -45,6 +45,12 @@
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
+    - role: debops.debops.journald
+      journald__configuration:
+        - 'MaxRetentionSec': '1month'
+        - 'SystemKeepFree': '2G'
+        - 'SystemMaxFileSize': '100M'
+        - 'SystemMaxUse': '1G'
     - debops.debops.reboot
 
     - role: munin_node
