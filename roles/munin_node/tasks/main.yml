@@ -32,9 +32,20 @@
     - Reload systemd
     - Restart munin-node
 
-- name: Ensure UFW is installed
-  ansible.builtin.apt:
-    name: ufw
+- name: Find enabled NTP Munin plugins
+  ansible.builtin.find:
+    paths: /etc/munin/plugins
+    patterns: "ntp_*"
+    file_type: link
+  register: munin_node_ntp_plugins
+
+- name: Disable NTP Munin plugins
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ munin_node_ntp_plugins.files }}"
+  notify:
+    - Restart munin-node
 
 - name: Ensure UFW is enabled
   community.general.ufw:

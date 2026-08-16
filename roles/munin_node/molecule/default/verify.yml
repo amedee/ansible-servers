@@ -51,3 +51,15 @@
       ansible.builtin.assert:
         that:
           - "'munin-node.service' in ansible_facts.services"
+
+    - name: Find enabled NTP Munin plugins
+      ansible.builtin.find:
+        paths: /etc/munin/plugins
+        patterns: "ntp_*"
+        file_type: link
+      register: munin_node_ntp_plugins
+
+    - name: Verify no NTP Munin plugins are enabled
+      ansible.builtin.assert:
+        that:
+          - munin_node_ntp_plugins.files | length == 0
