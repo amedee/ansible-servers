@@ -21,9 +21,6 @@ wp_constants:
     value: amedee.be
   - name: WP_REDIS_PREFIX
     value: amedee.be_
-wp_db_name: wordpress
-wp_db_user: wordpress
-wp_db_host: localhost
 wp_db_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   63656632336463363961353261633135653865626132316661333433383435323032396439363037
@@ -48,20 +45,11 @@ wp_plugins_install:
   - syntaxhighlighter
   - videojs-html5-player
   - wordfence
+  - wp-redis
   - wp-youtube-lyte
 wp_plugins_uninstall:
   - better-robots-txt
   - health-check
   - hello
-wp_themes_install:
-  - neve
-wp_themes_uninstall:
-  - twentytwentytwo
-  - twentytwentythree
-  - twentytwentyfour
-wp_fallback_theme: neve
 
 php_version: "8.4"
-php_bin: "/usr/bin/php{{ php_version }}"
-
-wp_cli_bin: "/usr/local/bin/wp"

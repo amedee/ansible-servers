@@ -1,14 +1,14 @@
 ---
 - name: Get list of installed WordPress plugins
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
     argv:
-      - "{{ php_bin }}"
+      - "{{ wp_php_bin }}"
       - "{{ wp_cli_bin }}"
       - plugin
       - list
-      - "--path={{ webserver_directory }}"
+      - "--path={{ wp_directory }}"
       - --format=json
   register: wp_plugin_list
   changed_when: false
@@ -24,27 +24,27 @@
 
 - name: Ensure WordPress plugins are installed
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
     argv: >-
-      {{ [php_bin, wp_cli_bin, 'plugin', 'install'] +
+      {{ [wp_php_bin, wp_cli_bin, 'plugin', 'install'] +
           wp_plugins_to_install +
-          ['--path=' + webserver_directory] }}
+          ['--path=' + wp_directory] }}
   when: wp_plugins_to_install | length > 0
   register: wp_plugin_install
   changed_when: "'Installing' in wp_plugin_install.stdout"
 
 - name: Activate all installed WordPress plugins
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
     argv:
-      - "{{ php_bin }}"
+      - "{{ wp_php_bin }}"
       - "{{ wp_cli_bin }}"
       - plugin
       - activate
       - "--all"
-      - "--path={{ webserver_directory }}"
+      - "--path={{ wp_directory }}"
   register: wp_plugin_activate
   failed_when: wp_plugin_activate.rc != 0
   changed_when: >
@@ -53,16 +53,16 @@
 
 - name: Enable auto-updates for all WordPress plugins
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
     argv:
-      - "{{ php_bin }}"
+      - "{{ wp_php_bin }}"
       - "{{ wp_cli_bin }}"
       - plugin
       - auto-updates
       - enable
       - "--all"
-      - "--path={{ webserver_directory }}"
+      - "--path={{ wp_directory }}"
   register: wp_autoupdates
   failed_when:
     - wp_autoupdates.rc != 0
@@ -72,12 +72,12 @@
 
 - name: Deactivate and uninstall WordPress plugins
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
     argv: >-
-      {{ [php_bin, wp_cli_bin, 'plugin', 'deactivate'] +
+      {{ [wp_php_bin, wp_cli_bin, 'plugin', 'deactivate'] +
           wp_plugins_uninstall +
-          ['--uninstall', '--path=' + webserver_directory] }}
+          ['--uninstall', '--path=' + wp_directory] }}
   register: wp_plugin_deactivate
   changed_when: "'Success: Uninstalled' in wp_plugin_deactivate.stdout"
   failed_when: >

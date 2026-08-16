@@ -1,3 +1,45 @@
 ---
+wp_php_version: "{{ php_version | default('8.4') }}"
+wp_php_bin: "/usr/bin/php{{ wp_php_version }}"
+wp_cli_bin: /usr/local/bin/wp
+wp_webserver_user: "{{ webserver_user | default('www-data') }}"
+wp_directory: /var/www/html
+
 wp_archive_dir: /var/cache/wp-archive
 wp_archive: "{{ wp_archive_dir }}/uploads.tar.xz"
+
+wp_install: false
+wp_site_url: localhost
+wp_site_title: "Lorem Ipsum Blog"
+wp_admin_user: admin
+wp_admin_password: nimda # pragma: allowlist secret
+wp_admin_email: admin@example.test
+
+
+wp_plugins_install:
+  - redis-cache
+  - wp-redis
+wp_plugins_uninstall:
+  - hello
+
+wp_themes_install:
+  - neve
+wp_themes_uninstall:
+  - twentytwentytwo
+  - twentytwentythree
+  - twentytwentyfour
+
+wp_fallback_theme: "neve"
+
+wp_constants: []
+
+# Database
+wp_db_admin_user: root
+wp_db_admin_password: "" # pragma: allowlist secret
+wp_db_name: wordpress
+wp_db_user: wordpress
+wp_db_password: wordpress # pragma: allowlist secret
+wp_db_host: localhost
+
+wp_restore_archive: true
+wp_restore_database: true
