@@ -9,6 +9,7 @@ on: # yamllint disable-line rule:truthy
       - "roles/**/.ansibledoctor/**"
       - "roles/**/defaults/main.yml"
       - "roles/**/meta/main.yml"
+      - "roles/**/vars/main.yml"
   workflow_dispatch:
 
 concurrency:
@@ -39,8 +40,15 @@ jobs:
           python-version: "3.13"
           requirements-file: "requirements-docs.txt"
 
-      - name: Run ansible-doctor
-        run: ansible-doctor --force --recursive roles
+      - name: Run ansible-doctor-enhanced
+        run: |
+          set -euo pipefail
+
+          for role in roles/*/; do
+            echo "Generating ${role}README.md"
+            ansible-doctor-enhanced generate "$role" \
+              --output "${role}README.md"
+          done
 
       - name: 📦 Cache npm
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
