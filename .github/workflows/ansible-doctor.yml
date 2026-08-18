@@ -3,10 +3,9 @@ name: 📚 Ansible Role Docs
 
 on: # yamllint disable-line rule:truthy
   push:
-    branches:
-      - main
     paths:
       - ".github/workflows/ansible-doctor.yml"
+      - "requirements-docs.txt"
       - "roles/**/.ansibledoctor/**"
       - "roles/**/defaults/main.yml"
       - "roles/**/meta/main.yml"
@@ -66,11 +65,16 @@ jobs:
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: 🔁 Commit and Push
+      - name: Show generated changes
         if: steps.changes.outputs.has_changes == 'true'
+        run: git diff --cached
+
+      - name: 🔁 Commit and Push
+        if: |
+          github.ref == 'refs/heads/main' &&
+          steps.changes.outputs.has_changes == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git diff --cached
           git commit -m "docs: update generated Ansible role documentation"
           git push
