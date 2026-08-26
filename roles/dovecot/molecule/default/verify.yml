@@ -3,22 +3,30 @@
   hosts: all
   gather_facts: false
 
-  tasks:
-    - name: Create test mail directory
-      ansible.builtin.file:
-        path: /tmp/dovecot-test-mail
-        state: directory
-        mode: "0755"
+  vars:
+    dovecot_jpeg_attachment: |
+      Content-Type: image/jpeg; name="test.jpg"
+      Content-Disposition: attachment; filename="test.jpg"
+      Content-Transfer-Encoding: base64
 
-    - name: Create test attachment directory
+      /9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP////////////////////////////////////////////////////////////////////////////////////
+      //2wBDAf/////////////////////////////////////////////////////////////////////////////////////wAARCAABAAEDASIAAhEBAxEB
+      /8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAH/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAEFAqf/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDAQE/AX//xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/AX//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Aqf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAE/IV//2gAMAwEAAgADAAAAEP/EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8Qf//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8Qf//EABQQAQAAAAAAAAAAAAAAAAAAABD/2gAIAQEAAT8Qf//Z
+
+  tasks:
+    - name: Create test directories
       ansible.builtin.file:
-        path: /tmp/dovecot-test-attachments
+        path: "{{ item }}"
         state: directory
         mode: "0755"
+      loop:
+        - /tmp/molecule-dovecot
+        - /tmp/molecule-dovecot/mail
+        - /tmp/molecule-dovecot/attachments
 
     - name: Create first test mail with image attachment
       ansible.builtin.copy:
-        dest: /tmp/dovecot-test-mail/message-1
+        dest: /tmp/molecule-dovecot/mail/message-1
         mode: "0644"
         content: |
           From: test1@example.com
@@ -34,19 +42,13 @@
           Test message 1.
 
           --BOUNDARY
-          Content-Type: image/jpeg; name="test.jpg"
-          Content-Disposition: attachment; filename="test.jpg"
-          Content-Transfer-Encoding: base64
-
-          /9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP////////////////////////////////////////////////////////////////////////////////////
-          //2wBDAf/////////////////////////////////////////////////////////////////////////////////////wAARCAABAAEDASIAAhEBAxEB
-          /8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAH/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAEFAqf/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDAQE/AX//xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/AX//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Aqf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAE/IV//2gAMAwEAAgADAAAAEP/EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8Qf//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8Qf//EABQQAQAAAAAAAAAAAAAAAAAAABD/2gAIAQEAAT8Qf//Z
+          {{ dovecot_jpeg_attachment }}
 
           --BOUNDARY--
 
     - name: Create second test mail with identical image attachment
       ansible.builtin.copy:
-        dest: /tmp/dovecot-test-mail/message-2
+        dest: /tmp/molecule-dovecot/mail/message-2
         mode: "0644"
         content: |
           From: test2@example.com
@@ -62,13 +64,7 @@
           Test message 2.
 
           --BOUNDARY
-          Content-Type: image/jpeg; name="test.jpg"
-          Content-Disposition: attachment; filename="test.jpg"
-          Content-Transfer-Encoding: base64
-
-          /9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP////////////////////////////////////////////////////////////////////////////////////
-          //2wBDAf/////////////////////////////////////////////////////////////////////////////////////wAARCAABAAEDASIAAhEBAxEB
-          /8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAH/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAEFAqf/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDAQE/AX//xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/AX//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Aqf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAE/IV//2gAMAwEAAgADAAAAEP/EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8Qf//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8Qf//EABQQAQAAAAAAAAAAAAAAAAAAABD/2gAIAQEAAT8Qf//Z
+          {{ dovecot_jpeg_attachment }}
 
           --BOUNDARY--
 
@@ -76,13 +72,13 @@
       ansible.builtin.command:
         cmd: /usr/local/bin/extract_image_attachments.sh
       environment:
-        MAILDIR: /tmp/dovecot-test-mail
-        SAVED_ATTACHMENTS: /tmp/dovecot-test-attachments
+        MAILDIR: /tmp/molecule-dovecot/mail
+        SAVED_ATTACHMENTS: /tmp/molecule-dovecot/attachments
       changed_when: false
 
     - name: Find extracted JPEG attachments
       ansible.builtin.find:
-        paths: /tmp/dovecot-test-attachments
+        paths: /tmp/molecule-dovecot/attachments
         patterns: "*.jpg*"
         file_type: file
       register: dovecot_extracted_attachments
