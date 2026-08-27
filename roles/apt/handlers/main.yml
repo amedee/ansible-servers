@@ -2,6 +2,10 @@
 - name: APT update
   ansible.builtin.apt:
     update_cache: true
+  retries: 10
+  delay: 5
+  register: apt_result
+  until: apt_result is succeeded
 
 - name: APT autoclean
   ansible.builtin.apt:
