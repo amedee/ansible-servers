@@ -1,12 +1,24 @@
 ---
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Role to configure my WordPress blog.
+  description: Configure a WordPress installation with MySQL, Redis, plugins, themes and backup restoration.
   author: Amedee Van Gasse
-  license: MIT
-  min_ansible_version: "2.1"
   namespace: amedee
+  license: MIT
+
+  min_ansible_version: "2.15"
+
   platforms:
     - name: Ubuntu
       versions:
         - noble
+
+  galaxy_tags:
+    - wordpress
+    - blog
+    - mysql
+    - redis
+    - php
+    - ubuntu
+
+dependencies: []

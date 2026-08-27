@@ -1,0 +1,28 @@
+## Requirements
+
+This role is intended for Ubuntu hosts running WordPress and assumes the following components are available or managed elsewhere:
+
+### Operating System
+
+- Ubuntu 24.04 (Noble Numbat)
+
+### Services
+
+- A web server (Apache or Nginx) is installed and configured
+- MariaDB or MySQL server running locally and accessible through:
+  `/run/mysqld/mysqld.sock`
+- PHP installed and configured
+- Redis server available for WordPress object caching
+- AWS S3 bucket containing optional database and uploads backups
+
+### Ansible Collections
+
+The following collections are required:
+
+```yaml
+collections:
+  - ansible.mysql
+  - amazon.aws
+```
+
+- Minimum Ansible version: `{{ meta.min_ansible_version.value | default("not specified") }}`
