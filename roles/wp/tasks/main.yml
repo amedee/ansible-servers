@@ -1,20 +1,8 @@
 ---
-- name: Install WordPress dependencies
+- name: Install WordPress packages
   ansible.builtin.apt:
-    name:
-      - curl
-      - ghostscript
-      - imagemagick
-      - php-curl
-      - php-gd
-      - php-imagick
-      - php-intl
-      - php-json
-      - php-mbstring
-      - php-ssh2
-      - php-xml
-      - php-xmlrpc
-      - php-zip
+    name: "{{ wp_packages + wp_php_packages + wp_python_packages }}"
+    state: present
 
 - name: Create WordPress MySQL database and user
   ansible.builtin.import_tasks:

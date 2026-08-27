@@ -1,3 +1,29 @@
 ---
 wp_archive_dir: /var/cache/wp-archive
 wp_archive: "{{ wp_archive_dir }}/uploads.tar.xz"
+
+wp_packages:
+  - curl
+  - ghostscript
+  - imagemagick
+  - mysql-client
+
+wp_php_packages:
+  - php-curl
+  - php-gd
+  - php-imagick
+  - php-intl
+  - php-json
+  - php-mbstring
+  - php-mysql
+  - php-redis
+  - php-ssh2
+  - php-xml
+  - php-xmlrpc
+  - php-zip
+
+wp_python_packages:
+  - python3-boto3
+  - python3-mysqldb
+  - python3-packaging
+  - python3-pip
