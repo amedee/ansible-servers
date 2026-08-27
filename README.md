@@ -42,6 +42,7 @@ This repository uses CI to continuously validate configuration quality:
 | Role                                                                                         | Molecule |
 | -------------------------------------------------------------------------------------------- | :------: |
 | [`apt`](https://github.com/amedee/ansible-servers/tree/main/roles/apt)                       |    ✅    |
+| [`base_linux`](https://github.com/amedee/ansible-servers/tree/main/roles/base_linux)         |    ✅    |
 | [`dovecot`](https://github.com/amedee/ansible-servers/tree/main/roles/dovecot)               |    ✅    |
 | [`duplicity`](https://github.com/amedee/ansible-servers/tree/main/roles/duplicity)           |    ✅    |
 | [`hadori`](https://github.com/amedee/ansible-servers/tree/main/roles/hadori)                 |    ✅    |
