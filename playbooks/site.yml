@@ -17,28 +17,10 @@
           - hardware
           - network
 
-    - name: Set hostname
-      ansible.builtin.hostname:
-        name: "{{ hostname }}"
-
-    - name: Add rsyslog logrotate config
-      ansible.builtin.copy:
-        src: rsyslog-logrotate
-        dest: /etc/logrotate.d/rsyslog
-        owner: root
-        group: root
-        mode: "0644"
-
-    - name: Install some quality of life software
-      ansible.builtin.apt:
-        name:
-          - mc
-          - ncdu
-          - nmap
-
   roles:
     - swapfile
     - apt
+    - base_linux
     - localepurge
     - hadori
     - debops.debops.etckeeper

@@ -14,6 +14,7 @@
     delaycompress
     missingok
     notifempty
+    su root syslog
     sharedscripts
 
     postrotate

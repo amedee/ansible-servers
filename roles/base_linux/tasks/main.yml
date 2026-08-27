@@ -1,0 +1,19 @@
+---
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ hostname }}"
+  when: hostname is defined
+
+- name: Add rsyslog logrotate config
+  ansible.builtin.copy:
+    src: rsyslog-logrotate
+    dest: /etc/logrotate.d/rsyslog
+    owner: root
+    group: root
+    mode: "0644"
+    validate: "logrotate -d %s"
+
+- name: Install baseline packages
+  ansible.builtin.apt:
+    name: "{{ base_linux_packages }}"
+    state: present
