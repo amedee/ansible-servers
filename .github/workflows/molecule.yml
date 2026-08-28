@@ -58,6 +58,9 @@ jobs:
       - name: Restore Ansible cache
         uses: ./.github/actions/restore-ansible-cache
 
+      - name: Prepare Ansible temporary directory
+        run: mkdir -p "$HOME/.ansible/tmp"
+
       - name: Run Molecule
         run: molecule test -s "${MATRIX_SCENARIO}"
         working-directory: roles/${{ matrix.scenario.role }}

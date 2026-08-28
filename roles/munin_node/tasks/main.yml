@@ -6,6 +6,9 @@
       - munin-node
       - ufw
       - uptimed
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
 
 - name: Ensure munin-node is enabled and running
   ansible.builtin.service:

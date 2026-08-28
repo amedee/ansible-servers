@@ -20,6 +20,7 @@ provisioner:
 scenario:
   test_sequence:
     - syntax
+    - prepare
     - converge
     - idempotence
     - verify

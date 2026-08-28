@@ -1,8 +1,10 @@
 ---
 - name: Install Munin
   ansible.builtin.apt:
-    name:
-      - munin
+    name: munin
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
 
 - name: Install Munin host configuration files
   ansible.builtin.copy:

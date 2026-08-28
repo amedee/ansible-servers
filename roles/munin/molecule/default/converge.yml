@@ -1,7 +1,8 @@
 ---
 - name: Converge
   hosts: all
-  gather_facts: false
+  gather_facts: true
+  become: true
 
   roles:
     - munin

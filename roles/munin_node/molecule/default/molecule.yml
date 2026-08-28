@@ -25,6 +25,7 @@ scenario:
   test_sequence:
     - dependency
     - syntax
+    - prepare
     - converge
     - idempotence
     - verify
