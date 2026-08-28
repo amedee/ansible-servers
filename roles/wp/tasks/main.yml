@@ -4,9 +4,9 @@
     name: "{{ wp_packages + wp_php_packages + wp_python_packages }}"
     state: present
 
-- name: Create WordPress MySQL database and user
+- name: Configure WordPress database
   ansible.builtin.import_tasks:
-    file: wordpress_db.yml
+    file: database_init.yml
 
 - name: "Install WordPress in {{ webserver_directory }}"
   ansible.builtin.import_tasks:
@@ -23,7 +23,3 @@
 - name: Manage WordPress themes
   ansible.builtin.import_tasks:
     file: wordpress_themes.yml
-
-- name: Restore WordPress archive
-  ansible.builtin.import_tasks:
-    file: wordpress_restore_archive.yml

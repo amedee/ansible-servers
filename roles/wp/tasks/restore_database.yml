@@ -1,22 +1,4 @@
 ---
-- name: "Create database '{{ wp_db_name }}'"
-  ansible.mysql.mysql_db:
-    name: "{{ wp_db_name }}"
-    state: present
-    login_user: root
-    login_unix_socket: /run/mysqld/mysqld.sock
-
-- name: "Create database user '{{ wp_db_user }}'"
-  ansible.mysql.mysql_user:
-    name: "{{ wp_db_user }}"
-    password: "{{ wp_db_password }}"
-    priv: "{{ wp_db_name }}.*:ALL"
-    column_case_sensitive: true
-    state: present
-    login_user: root
-    login_unix_socket: /run/mysqld/mysqld.sock
-  no_log: true
-
 - name: Check if WordPress tables exist
   ansible.mysql.mysql_query:
     login_db: "{{ wp_db_name }}"
