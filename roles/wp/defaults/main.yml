@@ -27,3 +27,8 @@ wp_python_packages:
   - python3-mysqldb
   - python3-packaging
   - python3-pip
+
+wp_constants: []
+wp_plugins: []
+wp_themes: []
+wp_table_prefix: wp_

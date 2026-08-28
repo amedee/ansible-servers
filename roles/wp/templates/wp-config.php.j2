@@ -1,0 +1,37 @@
+<?php
+
+define( 'WP_CACHE', true );
+
+define( 'DB_NAME', {{ wp_db_name | to_json }} );
+define( 'DB_USER', {{ wp_db_user | to_json }} );
+define( 'DB_PASSWORD', {{ wp_db_password | to_json }} );
+define( 'DB_HOST', {{ wp_db_host | to_json }} );
+
+define( 'DB_CHARSET', 'utf8' );
+define( 'DB_COLLATE', '' );
+
+define( 'AUTH_KEY', {{ wp_secret_keys.auth_key | to_json }} );
+define( 'SECURE_AUTH_KEY', {{ wp_secret_keys.secure_auth_key | to_json }} );
+define( 'LOGGED_IN_KEY', {{ wp_secret_keys.logged_in_key | to_json }} );
+define( 'NONCE_KEY', {{ wp_secret_keys.nonce_key | to_json }} );
+
+define( 'AUTH_SALT', {{ wp_secret_keys.auth_salt | to_json }} );
+define( 'SECURE_AUTH_SALT', {{ wp_secret_keys.secure_auth_salt | to_json }} );
+define( 'LOGGED_IN_SALT', {{ wp_secret_keys.logged_in_salt | to_json }} );
+define( 'NONCE_SALT', {{ wp_secret_keys.nonce_salt | to_json }} );
+
+{% for constant in wp_constants %}
+define( {{ constant.name | to_json }}, {{ constant.value | to_json }} );
+{% endfor %}
+
+$table_prefix = {{ wp_table_prefix | to_json }};
+
+if ( ! defined( 'WP_DEBUG' ) ) {
+    define( 'WP_DEBUG', false );
+}
+
+if ( ! defined( 'ABSPATH' ) ) {
+    define( 'ABSPATH', __DIR__ . '/' );
+}
+
+require_once ABSPATH . 'wp-settings.php';

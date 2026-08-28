@@ -7,13 +7,13 @@
     group: "{{ webserver_user }}"
     mode: "0750"
 
-- name: Check if wp-config-sample.php exists
+- name: Check if WordPress is already installed
   ansible.builtin.stat:
-    path: "{{ webserver_directory }}/wp-config-sample.php"
-  register: wp_config_sample
+    path: "{{ webserver_directory }}/wp-includes/version.php"
+  register: wp_core
 
 - name: Download WordPress
-  when: not wp_config_sample.stat.exists
+  when: not wp_core.stat.exists
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
@@ -23,34 +23,13 @@
       - core
       - download
       - "--path={{ webserver_directory }}"
-  register: wp_core_download
   changed_when: true
 
-- name: Check if wp-config.php exists
-  ansible.builtin.stat:
-    path: "{{ webserver_directory }}/wp-config.php"
-  register: wp_config
-
-- name: Create a new wp-config.php
-  when: not wp_config.stat.exists
-  become: true
-  become_user: "{{ webserver_user }}"
-  ansible.builtin.command:
-    argv:
-      - "{{ php_bin }}"
-      - "{{ wp_cli_bin }}"
-      - config
-      - create
-      - "--dbname={{ wp_db_name }}"
-      - "--dbuser={{ wp_db_user }}"
-      - "--dbpass={{ wp_db_password }}"
-      - "--dbhost={{ wp_db_host }}"
-      - "--path={{ webserver_directory }}"
+- name: Deploy wp-config.php
+  ansible.builtin.template:
+    src: wp-config.php.j2
+    dest: "{{ webserver_directory }}/wp-config.php"
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_user }}"
+    mode: "0640"
   no_log: true
-  register: wp_core_download
-  changed_when: true
-
-- name: Ensure constants in wp-config.php
-  ansible.builtin.include_tasks:
-    file: wordpress_config.yml
-  loop: "{{ wp_constants }}"
