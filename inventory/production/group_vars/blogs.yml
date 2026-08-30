@@ -129,6 +129,7 @@ wp_plugins_install:
   - syntaxhighlighter
   - videojs-html5-player
   - wordfence
+  - wp-redis
   - wp-youtube-lyte
 wp_plugins_uninstall:
   - better-robots-txt

@@ -1,5 +1,5 @@
 ---
-- name: Check if WordPress is connected to Redis
+- name: Enable WP Redis
   become: true
   become_user: "{{ webserver_user }}"
   ansible.builtin.command:
@@ -7,8 +7,10 @@
       - "{{ php_bin }}"
       - "{{ wp_cli_bin }}"
       - redis
-      - status
+      - enable
       - "--path={{ webserver_directory }}"
-  register: wp_redis_status
-  changed_when: false
-  failed_when: "'Status: Connected' not in wp_redis_status.stdout"
+  register: wp_redis_enable
+  changed_when: "'Enabled WP Redis' in wp_redis_enable.stdout"
+  failed_when: >
+    'WP Redis is already enabled.' not in wp_redis_enable.stdout and
+    'Enabled WP Redis' not in wp_redis_enable.stdout

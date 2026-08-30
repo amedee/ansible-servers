@@ -12,13 +12,13 @@
   ansible.builtin.import_tasks:
     file: wordpress.yml
 
-- name: Configure Redis for WordPress
-  ansible.builtin.import_tasks:
-    file: wordpress_redis.yml
-
 - name: Manage WordPress plugins
   ansible.builtin.import_tasks:
     file: wordpress_plugins.yml
+
+- name: Configure Redis for WordPress
+  ansible.builtin.import_tasks:
+    file: wordpress_redis.yml
 
 - name: Manage WordPress themes
   ansible.builtin.import_tasks:
