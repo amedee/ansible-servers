@@ -8,7 +8,7 @@
   ansible.builtin.import_tasks:
     file: database_init.yml
 
-- name: "Install WordPress in {{ webserver_directory }}"
+- name: "Install WordPress in {{ wp_webserver_directory }}"
   ansible.builtin.import_tasks:
     file: wordpress.yml
 

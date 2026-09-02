@@ -1,35 +1,64 @@
 ---
 - name: Create wp-cli cache directory
   ansible.builtin.file:
-    path: /var/www/.wp-cli/cache
+    path: "{{ item }}"
     state: directory
-    owner: "{{ webserver_user }}"
-    group: "{{ webserver_user }}"
-    mode: "0750"
+    owner: "{{ wp_webserver_user }}"
+    group: "{{ wp_webserver_user }}"
+    mode: "0700"
+  loop:
+    - /var/www/.wp-cli/cache
+    - /var/www/.ansible/tmp
 
-- name: Check if WordPress is already installed
-  ansible.builtin.stat:
-    path: "{{ webserver_directory }}/wp-includes/version.php"
-  register: wp_core
+- name: Check whether WordPress is installed
+  become: true
+  become_user: "{{ wp_webserver_user }}"
+  ansible.builtin.command:
+    argv: "{{ wp_cli + ['core', 'is-installed'] }}"
+  register: wp_is_installed
+  changed_when: false
+  failed_when: false
 
 - name: Download WordPress
-  when: not wp_core.stat.exists
+  when: wp_is_installed.rc != 0
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
-    argv:
-      - "{{ php_bin }}"
-      - "{{ wp_cli_bin }}"
-      - core
-      - download
-      - "--path={{ webserver_directory }}"
+    argv: "{{ wp_cli + ['core', 'download'] }}"
   changed_when: true
 
 - name: Deploy wp-config.php
   ansible.builtin.template:
     src: wp-config.php.j2
-    dest: "{{ webserver_directory }}/wp-config.php"
-    owner: "{{ webserver_user }}"
-    group: "{{ webserver_user }}"
+    dest: "{{ wp_webserver_directory }}/wp-config.php"
+    owner: "{{ wp_webserver_user }}"
+    group: "{{ wp_webserver_user }}"
     mode: "0640"
   no_log: true
+
+- name: Validate WordPress administrator settings
+  ansible.builtin.assert:
+    that:
+      - wp_admin_user is defined
+      - wp_admin_user | length > 0
+      - wp_admin_password is defined
+      - wp_admin_password | length > 0
+      - wp_admin_email is defined
+      - wp_admin_email | length > 0
+    fail_msg: >-
+      WordPress administrator settings are incomplete or invalid.
+      Set wp_admin_user, wp_admin_password and wp_admin_email.
+
+- name: Install WordPress
+  when: wp_is_installed.rc != 0
+  become: true
+  become_user: "{{ wp_webserver_user }}"
+  ansible.builtin.command:
+    argv: "{{ wp_cli + ['core', 'install',
+      '--url=' ~ wp_site_url,
+      '--title=' ~ wp_site_title,
+      '--admin_user=' ~ wp_admin_user,
+      '--admin_password=' ~ wp_admin_password,
+      '--admin_email=' ~ wp_admin_email] }}"
+  no_log: true
+  changed_when: true

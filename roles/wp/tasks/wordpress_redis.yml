@@ -1,16 +1,8 @@
 ---
 - name: Enable WP Redis
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
-    argv:
-      - "{{ php_bin }}"
-      - "{{ wp_cli_bin }}"
-      - redis
-      - enable
-      - "--path={{ webserver_directory }}"
+    argv: "{{ wp_cli + ['redis', 'enable'] }}"
   register: wp_redis_enable
-  changed_when: "'Enabled WP Redis' in wp_redis_enable.stdout"
-  failed_when: >
-    'WP Redis is already enabled.' not in wp_redis_enable.stdout and
-    'Enabled WP Redis' not in wp_redis_enable.stdout
+  changed_when: "'Object cache enabled' in wp_redis_enable.stdout"

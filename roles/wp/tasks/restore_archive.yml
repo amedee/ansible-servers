@@ -3,8 +3,8 @@
   ansible.builtin.file:
     path: "{{ wp_archive_dir }}"
     state: directory
-    owner: "{{ webserver_user }}"
-    group: "{{ webserver_user }}"
+    owner: "{{ wp_webserver_user }}"
+    group: "{{ wp_webserver_user }}"
     mode: "0750"
 
 - name: Download WordPress uploads archive
@@ -36,9 +36,9 @@
   ansible.builtin.unarchive:
     remote_src: true
     src: "{{ wp_archive }}"
-    dest: "{{ webserver_directory }}/wp-content/"
-    owner: "{{ webserver_user }}"
-    group: "{{ webserver_user }}"
+    dest: "{{ wp_webserver_directory }}/wp-content/"
+    owner: "{{ wp_webserver_user }}"
+    group: "{{ wp_webserver_user }}"
   when:
     - not ansible_check_mode
     - wp_archive_stat.stat.exists

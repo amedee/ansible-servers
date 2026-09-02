@@ -1,12 +1,10 @@
 ---
 - name: Ensure WordPress themes are installed
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
-    argv: >-
-      {{ [php_bin, wp_cli_bin, 'theme', 'install'] +
-          wp_themes_install +
-          ['--path=' + webserver_directory] }}
+    argv: "{{ wp_cli + ['theme', 'install'] + wp_themes }}"
+  when: wp_themes | length > 0
   register: wp_theme_install
   changed_when: "'Installing' in wp_theme_install.stdout"
   failed_when: >
@@ -15,16 +13,10 @@
 
 - name: Ensure WordPress theme auto-updates are enabled
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
-    argv:
-      - "{{ php_bin }}"
-      - "{{ wp_cli_bin }}"
-      - theme
-      - auto-updates
-      - enable
-      - "--all"
-      - "--path={{ webserver_directory }}"
+    argv: "{{ wp_cli + ['theme', 'auto-updates', 'enable', '--all'] }}"
+  when: wp_themes | length > 0
   register: wp_theme_autoupdate
   changed_when: "'Success' in wp_theme_autoupdate.stdout"
   failed_when: >
@@ -33,27 +25,19 @@
 
 - name: Activate fallback theme {{ wp_fallback_theme }}
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
-    argv:
-      - "{{ php_bin }}"
-      - "{{ wp_cli_bin }}"
-      - theme
-      - activate
-      - "{{ wp_fallback_theme }}"
-      - "--path={{ webserver_directory }}"
+    argv: "{{ wp_cli + ['theme', 'activate', wp_fallback_theme] }}"
   register: wp_theme_activate_fallback
   changed_when: "'Success' in wp_theme_activate_fallback.stdout"
   failed_when: false
 
 - name: Delete WordPress themes
   become: true
-  become_user: "{{ webserver_user }}"
+  become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
-    argv: >-
-      {{ [php_bin, wp_cli_bin, 'theme', 'delete'] +
-          wp_themes_uninstall +
-          ['--path=' + webserver_directory] }}
+    argv: "{{ wp_cli + ['theme', 'delete'] + wp_themes_uninstall }}"
+  when: wp_themes_uninstall | length > 0
   register: wp_theme_delete
   changed_when: "'Deleted' in wp_theme_delete.stdout"
   failed_when: >
