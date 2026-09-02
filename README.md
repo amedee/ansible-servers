@@ -60,7 +60,7 @@ This repository uses CI to continuously validate configuration quality:
 | [`postfix_ses`](https://github.com/amedee/ansible-servers/tree/main/roles/postfix_ses)       |    ✅    |
 | [`redis`](https://github.com/amedee/ansible-servers/tree/main/roles/redis)                   |    ✅    |
 | [`swapfile`](https://github.com/amedee/ansible-servers/tree/main/roles/swapfile)             |    ✅    |
-| [`wp`](https://github.com/amedee/ansible-servers/tree/main/roles/wp)                         |    ❌    |
+| [`wp`](https://github.com/amedee/ansible-servers/tree/main/roles/wp)                         |    ✅    |
 
 <!-- molecule-coverage:end -->
 
