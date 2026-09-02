@@ -3,6 +3,29 @@
   hosts: all
   gather_facts: false
 
+  vars:
+    journald__configuration:
+      - 'MaxRetentionSec': '1month'
+      - 'SystemKeepFree': '2G'
+      - 'SystemMaxFileSize': '100M'
+      - 'SystemMaxUse': '1G'
+
+    munin_node_config: >-
+      {{
+        (munin_node_config_base | default({}))
+        | combine(munin_node_config_extra | default({}), recursive=True)
+      }}
+    munin_node_install_plugins: >-
+      {{
+        (munin_node_install_plugins_base | default([]))
+        + (munin_node_install_plugins_extra | default([]))
+      }}
+    munin_node_plugins: >-
+      {{
+        (munin_node_plugins_base | default([]))
+        + (munin_node_plugins_extra | default([]))
+      }}
+
   pre_tasks:
     - name: Gather minimal facts for swapfile, postfix, ufw, munin-node
       ansible.builtin.setup:
@@ -27,34 +50,11 @@
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
-    - role: debops.debops.journald
-      journald__configuration:
-        - 'MaxRetentionSec': '1month'
-        - 'SystemKeepFree': '2G'
-        - 'SystemMaxFileSize': '100M'
-        - 'SystemMaxUse': '1G'
-    - debops.debops.reboot
-
-    - role: munin_node
-      vars:
-        munin_node_config: >-
-          {{
-            (munin_node_config_base | default({}))
-            | combine(munin_node_config_extra | default({}), recursive=True)
-          }}
-        munin_node_install_plugins: >-
-          {{
-            (munin_node_install_plugins_base | default([]))
-            + (munin_node_install_plugins_extra | default([]))
-          }}
-        munin_node_plugins: >-
-          {{
-            (munin_node_plugins_base | default([]))
-            + (munin_node_plugins_extra | default([]))
-          }}
-
+    - debops.debops.journald
+    - munin_node
     - postfix
     - postfix_ses
+    - debops.debops.reboot
 
 - name: Configure Mail-in-a-Box servers
   hosts: mailservers
@@ -79,13 +79,25 @@
   hosts: blogs
   gather_facts: false
 
+  vars:
+    keyring__dependent_gpg_keys:
+      - id: 63AF7AA15067C05616FDDD88A3A2E8F226F0BC06
+    wpcli__version: "2.12.0"
+    wpcli__release_files:
+      - url: 'https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar.gpg'
+        dest: '{{ wpcli__src }}/wp-cli-2.12.0.phar.gpg'
+        checksum: 'sha256:f12126a3ca1c48e53b7f89fd30e60b9cf3335dfb0c94403a2e5c125be0e66c77'
+        version: '2.12.0'
+      - url: 'https://raw.githubusercontent.com/wp-cli/wp-cli/v2.12.0/utils/wp-completion.bash'
+        dest: '{{ wpcli__src }}/wp-cli-2.12.0.completion.bash'
+        checksum: 'sha256:443ca0610ccae8d2d6aceba0ec4aa7929b87ed6cf54f666afed18d663a18a395'
+        version: '2.12.0'
+
   roles:
     - mysql
     - redis
     - nginx
     - letsencrypt
-    - role: debops.debops.keyring
-      keyring__dependent_gpg_keys:
-        - id: 63AF7AA15067C05616FDDD88A3A2E8F226F0BC06
+    - debops.debops.keyring
     - debops.debops.wpcli
     - wp
