@@ -72,7 +72,7 @@ nginx_default_indexfiles:
 #### Default value
 
 ```YAML
-nginx_directory: '{{ webserver_directory }}'
+nginx_directory: "{{ webserver_directory | default('/var/www/html') }}"
 ```
 
 ### nginx_hostname
@@ -80,7 +80,7 @@ nginx_directory: '{{ webserver_directory }}'
 #### Default value
 
 ```YAML
-nginx_hostname: '{{ hostname }}'
+nginx_hostname: "{{ hostname | default('localhost') }}"
 ```
 
 ### nginx_php_version
@@ -88,7 +88,7 @@ nginx_hostname: '{{ hostname }}'
 #### Default value
 
 ```YAML
-nginx_php_version: '{{ php_version }}'
+nginx_php_version: "{{ php_version | default('8.4') }}"
 ```
 
 ### nginx_repositories

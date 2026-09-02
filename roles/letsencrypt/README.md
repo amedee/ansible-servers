@@ -7,7 +7,7 @@ Role to configure letsencrypt.
 - [Requirements](#requirements)
 - [Default Variables](#default-variables)
   - [letsencrypt_primary_domain](#letsencrypt_primary_domain)
-  - [letsencrypt_restore_from_backup](#letsencrypt_restore_from_backup)
+  - [letsencrypt_restore_enabled](#letsencrypt_restore_enabled)
 - [Dependencies](#dependencies)
 - [License](#license)
 - [Author](#author)
@@ -28,12 +28,12 @@ Role to configure letsencrypt.
 letsencrypt_primary_domain: amedee.be
 ```
 
-### letsencrypt_restore_from_backup
+### letsencrypt_restore_enabled
 
 #### Default value
 
 ```YAML
-letsencrypt_restore_from_backup: true
+letsencrypt_restore_enabled: true
 ```
 
 ## Dependencies
