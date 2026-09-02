@@ -24,3 +24,20 @@
           - "'mysql.service' in ansible_facts.services"
           - ansible_facts.services['mysql.service'].state == 'running'
         fail_msg: MySQL service is not running.
+
+    - name: Get MySQL root authentication plugin
+      ansible.mysql.mysql_query:
+        query: >
+          SELECT plugin
+          FROM mysql.user
+          WHERE User = 'root'
+            AND Host = 'localhost';
+        login_user: root
+        login_unix_socket: /run/mysqld/mysqld.sock
+      register: mysql_root_plugin
+      changed_when: false
+
+    - name: Verify MySQL root uses auth_socket
+      ansible.builtin.assert:
+        that:
+          - mysql_root_plugin.query_result[0][0].plugin == 'auth_socket'
