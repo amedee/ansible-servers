@@ -4,4 +4,4 @@
 
 - name: Restore LetsEncrypt configuration
   ansible.builtin.import_tasks: restore.yml
-  when: letsencrypt_restore_from_backup
+  when: letsencrypt_restore_enabled

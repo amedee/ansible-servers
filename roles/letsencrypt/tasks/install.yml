@@ -7,13 +7,11 @@
       - certbot
     state: absent
     autoremove: true
-  notify: Reload nginx
 
 - name: Install snap Certbot (new version)
   community.general.snap:
     name: certbot
     classic: true
-  notify: Reload nginx
 
 - name: Create Certbot symlink
   ansible.builtin.file:

@@ -3,10 +3,8 @@
   hosts: all
   gather_facts: true
 
-  tasks:
-    - name: Install nginx
-      ansible.builtin.apt:
-        name: nginx
+  vars:
+    letsencrypt_restore_enabled: false
 
   roles:
     - role: letsencrypt

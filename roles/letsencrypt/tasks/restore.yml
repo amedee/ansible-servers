@@ -7,7 +7,10 @@
 - name: Determine whether a restore is needed
   ansible.builtin.set_fact:
     letsencrypt_restore_required: >-
-      {{ not (letsencrypt_config.stat.exists and letsencrypt_config.stat.isreg) }}
+      {{
+        letsencrypt_restore_enabled | bool and
+        not (letsencrypt_config.stat.exists and letsencrypt_config.stat.isreg)
+      }}
 
 - name: Restore LetsEncrypt configuration
   when: letsencrypt_restore_required
@@ -38,7 +41,6 @@
         dest: /etc/
         owner: root
         group: root
-      notify: Reload nginx
 
   rescue:
     - name: Remove incomplete LetsEncrypt backup
