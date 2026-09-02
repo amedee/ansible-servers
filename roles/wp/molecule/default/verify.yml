@@ -1,0 +1,190 @@
+---
+- name: Verify WordPress
+  hosts: all
+
+  tasks:
+    - name: Verify PHP MySQL extension is available
+      ansible.builtin.command:
+        argv:
+          - "{{ wp_php_bin }}"
+          - -m
+      register: wp_php_modules
+      changed_when: false
+
+    - name: Assert PHP MySQL extension is loaded
+      ansible.builtin.assert:
+        that:
+          - "'mysqli' in wp_php_modules.stdout_lines"
+
+    - name: Check WordPress installation
+      ansible.builtin.command:
+        argv: "{{ wp_cli + ['core', 'is-installed'] }}"
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      changed_when: false
+
+    - name: Get WordPress version
+      ansible.builtin.command:
+        argv: "{{ wp_cli + ['core', 'version'] }}"
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      register: wp_version
+      changed_when: false
+
+    - name: Verify WordPress version is available
+      ansible.builtin.assert:
+        that:
+          - wp_version.stdout | trim is match('^[0-9]+\\.[0-9]+')
+
+    - name: Read WordPress configuration
+      ansible.builtin.command:
+        argv: "{{ wp_cli + ['config', 'list', '--format=json'] }}"
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      register: wp_config
+      changed_when: false
+
+    - name: Parse WordPress configuration
+      ansible.builtin.set_fact:
+        wp_config_values: >-
+          {{
+            wp_config.stdout
+            | from_json
+            | items2dict(key_name='name', value_name='value')
+          }}
+
+    - name: Verify WordPress database configuration
+      ansible.builtin.assert:
+        that:
+          - wp_config_values.DB_NAME == wp_db_name
+          - wp_config_values.DB_USER == wp_db_user
+          - wp_config_values.DB_HOST == wp_db_host
+
+    - name: Verify WordPress constants
+      ansible.builtin.command:
+        argv: "{{ wp_cli + ['config', 'get', item.name] }}"
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      register: wp_constant
+      changed_when: false
+      loop: "{{ wp_constants }}"
+
+    - name: Verify WordPress constants have expected values
+      ansible.builtin.assert:
+        that:
+          - item.stdout | trim == (item.item.value | string)
+      loop: "{{ wp_constant.results }}"
+
+    - name: Get installed plugins
+      ansible.builtin.command:
+        argv: "{{ wp_cli + ['plugin', 'list', '--format=json'] }}"
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      register: wp_plugins_installed
+      changed_when: false
+
+    - name: Parse installed plugins
+      ansible.builtin.set_fact:
+        wp_plugin_data: "{{ wp_plugins_installed.stdout | from_json }}"
+
+    - name: Verify required plugins are installed
+      ansible.builtin.assert:
+        that:
+          - item in wp_plugin_data | map(attribute='name') | list
+      loop: "{{ wp_plugins }}"
+
+    - name: Verify required plugins are active
+      ansible.builtin.assert:
+        that:
+          - >
+            (
+              wp_plugin_data
+              | selectattr('name', 'equalto', item)
+              | map(attribute='status')
+              | first
+            ) == 'active'
+      loop: "{{ wp_plugins }}"
+
+    - name: Verify unwanted plugins are not installed
+      ansible.builtin.assert:
+        that:
+          - item not in wp_plugin_data | map(attribute='name') | list
+      loop: "{{ wp_plugins_uninstall }}"
+
+    - name: Get plugin auto-update status
+      ansible.builtin.command:
+        argv: "{{ wp_cli + ['plugin', 'auto-updates', 'status', '--all', '--format=json'] }}"
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      register: wp_plugin_autoupdates
+      changed_when: false
+
+    - name: Parse auto-update status
+      ansible.builtin.set_fact:
+        wp_plugin_autoupdate_data: "{{ wp_plugin_autoupdates.stdout | from_json }}"
+
+    - name: Verify plugin auto-updates
+      ansible.builtin.assert:
+        that:
+          - item.status == 'enabled'
+      loop: "{{ wp_plugin_autoupdate_data }}"
+
+    - name: Check WP Redis status
+      ansible.builtin.command:
+        argv: "{{ wp_cli + ['redis', 'status'] }}"
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      register: wp_redis_status
+      changed_when: false
+
+    - name: Verify WP Redis is connected
+      ansible.builtin.assert:
+        that:
+          - "'Status: Connected' in wp_redis_status.stdout"
+
+    - name: Get installed themes
+      ansible.builtin.command:
+        argv: "{{ wp_cli + ['theme', 'list', '--format=json'] }}"
+      become: true
+      become_user: "{{ wp_webserver_user }}"
+      register: wp_themes_installed
+      changed_when: false
+
+    - name: Parse installed themes
+      ansible.builtin.set_fact:
+        wp_theme_data: "{{ wp_themes_installed.stdout | from_json }}"
+
+    - name: Verify required themes are installed
+      ansible.builtin.assert:
+        that:
+          - item in wp_theme_data | map(attribute='name') | list
+      loop: "{{ wp_themes }}"
+
+    - name: Verify unwanted themes are not installed
+      ansible.builtin.assert:
+        that:
+          - item not in wp_theme_data | map(attribute='name') | list
+      loop: "{{ wp_themes_uninstall }}"
+
+    - name: Verify fallback theme is active
+      ansible.builtin.assert:
+        that:
+          - >
+            (
+              wp_theme_data
+              | selectattr('name', 'equalto', wp_fallback_theme)
+              | map(attribute='status')
+              | first
+            ) == 'active'
+
+    - name: Verify theme auto-updates
+      ansible.builtin.assert:
+        that:
+          - >
+            (
+              wp_theme_data
+              | selectattr('name', 'equalto', item)
+              | map(attribute='auto_update')
+              | first
+            ) == 'on'
+      loop: "{{ wp_themes }}"

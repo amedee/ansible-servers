@@ -1,0 +1,39 @@
+---
+wp_db_name: wordpress
+wp_db_user: wordpress
+wp_db_host: localhost
+wp_db_password: culemole # pragma: allowlist secret
+wp_secret_keys:
+  auth_key: molecule-auth-key # pragma: allowlist secret
+  secure_auth_key: molecule-secure-auth-key # pragma: allowlist secret
+  logged_in_key: molecule-logged-in-key # pragma: allowlist secret
+  nonce_key: molecule-nonce-key # pragma: allowlist secret
+  auth_salt: molecule-auth-salt # pragma: allowlist secret
+  secure_auth_salt: molecule-secure-auth-salt # pragma: allowlist secret
+  logged_in_salt: molecule-logged-in-salt # pragma: allowlist secret
+  nonce_salt: molecule-nonce-salt # pragma: allowlist secret
+
+wp_php_bin: "/usr/bin/php"
+wp_cli_bin: "/usr/local/bin/wp"
+wp_cli:
+  - "{{ wp_php_bin }}"
+  - "{{ wp_cli_bin }}"
+  - "--path={{ wp_webserver_directory }}"
+
+wp_webserver_user: www-data
+wp_webserver_directory: "/var/www/html"
+wp_constants:
+  - name: WP_CACHE_KEY_SALT
+    value: localhost
+wp_plugins:
+  - redis-cache
+  - wp-redis
+wp_plugins_uninstall:
+  - hello
+wp_themes:
+  - neve
+wp_themes_uninstall:
+  - twentytwentytwo
+  - twentytwentythree
+  - twentytwentyfour
+wp_fallback_theme: neve
