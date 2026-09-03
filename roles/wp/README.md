@@ -15,6 +15,7 @@ restoration.
   - [wp_cli](#wp_cli)
   - [wp_cli_bin](#wp_cli_bin)
   - [wp_constants](#wp_constants)
+  - [wp_database_constants](#wp_database_constants)
   - [wp_db_host](#wp_db_host)
   - [wp_db_name](#wp_db_name)
   - [wp_db_password](#wp_db_password)
@@ -138,6 +139,18 @@ wp_cli_bin: /usr/local/bin/wp
 wp_constants:
   - name: WP_CACHE_KEY_SALT
     value: localhost
+```
+
+### wp_database_constants
+
+#### Default value
+
+```YAML
+wp_database_constants:
+  DB_NAME: '{{ wp_db_name }}'
+  DB_USER: '{{ wp_db_user }}'
+  DB_PASSWORD: '{{ wp_db_password }}'
+  DB_HOST: '{{ wp_db_host }}'
 ```
 
 ### wp_db_host
