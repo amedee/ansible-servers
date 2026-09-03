@@ -77,4 +77,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "docs: update generated Ansible role documentation"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main
