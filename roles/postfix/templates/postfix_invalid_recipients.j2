@@ -1,4 +1,7 @@
 /^(?!.*@(amedee\.be|vangasse\.eu)$)/    REJECT
+{% if postfix_invalid_recipients %}
+{% set recipient_width = postfix_invalid_recipients | map('replace', '.', '\\.') | map('length') | max + 4 %}
 {% for address in postfix_invalid_recipients -%}
-/^{{ address | replace('.', '\\.') }}$/ REJECT Invalid recipient
+/^{{ '%-*s' | format(recipient_width, address | replace('.', '\\.') ~ '$/') }} REJECT Invalid recipient
 {% endfor %}
+{% endif %}
