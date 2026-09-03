@@ -2,27 +2,28 @@
 
 define( 'WP_CACHE', true );
 
-define( 'DB_NAME', {{ wp_db_name | to_json }} );
-define( 'DB_USER', {{ wp_db_user | to_json }} );
-define( 'DB_PASSWORD', {{ wp_db_password | to_json }} );
-define( 'DB_HOST', {{ wp_db_host | to_json }} );
+{# Database configuration #}
+{% set database_width = wp_database_constants.keys() | map('length') | max + 2 %}
+{% for key, value in wp_database_constants.items() %}
+define( {{ '%-*s' | format(database_width, key | to_json) }}, {{ value | to_json }} );
+{% endfor %}
 
 define( 'DB_CHARSET', 'utf8' );
 define( 'DB_COLLATE', '' );
 
-define( 'AUTH_KEY', {{ wp_secret_keys.auth_key | to_json }} );
-define( 'SECURE_AUTH_KEY', {{ wp_secret_keys.secure_auth_key | to_json }} );
-define( 'LOGGED_IN_KEY', {{ wp_secret_keys.logged_in_key | to_json }} );
-define( 'NONCE_KEY', {{ wp_secret_keys.nonce_key | to_json }} );
-
-define( 'AUTH_SALT', {{ wp_secret_keys.auth_salt | to_json }} );
-define( 'SECURE_AUTH_SALT', {{ wp_secret_keys.secure_auth_salt | to_json }} );
-define( 'LOGGED_IN_SALT', {{ wp_secret_keys.logged_in_salt | to_json }} );
-define( 'NONCE_SALT', {{ wp_secret_keys.nonce_salt | to_json }} );
-
-{% for constant in wp_constants %}
-define( {{ constant.name | to_json }}, {{ constant.value | to_json }} );
+{# Secret keys and salts #}
+{% set secret_key_width = wp_secret_keys.keys() | map('length') | max + 2 %}
+{% for key, value in wp_secret_keys.items() %}
+define( {{ '%-*s' | format(secret_key_width, key | upper | to_json) }}, {{ value | to_json }} );
 {% endfor %}
+
+{# Additional constants #}
+{% if wp_constants %}
+{% set constant_width = wp_constants | map(attribute='name') | map('length') | max + 2 %}
+{% for constant in wp_constants %}
+define( {{ '%-*s' | format(constant_width, constant.name | to_json) }}, {{ constant.value | to_json }} );
+{% endfor %}
+{% endif %}
 
 $table_prefix = {{ wp_table_prefix | to_json }};
 

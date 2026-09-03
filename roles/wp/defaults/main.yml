@@ -51,6 +51,11 @@ wp_db_name: wordpress
 wp_db_user: wordpress
 wp_db_host: localhost
 wp_db_password: ""
+wp_database_constants:
+  DB_NAME: "{{ wp_db_name }}"
+  DB_USER: "{{ wp_db_user }}"
+  DB_PASSWORD: "{{ wp_db_password }}"
+  DB_HOST: "{{ wp_db_host }}"
 
 wp_webserver_user: "{{ webserver_user | default('www-data') }}"
 wp_webserver_directory: "{{ webserver_directory | default('/var/www/html') }}"
