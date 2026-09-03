@@ -41,7 +41,7 @@
   become: true
   become_user: "{{ wp_webserver_user }}"
   ansible.builtin.command:
-    argv: "{{ wp_cli + ['plugin', 'auto-updates', 'enable', '--all'] }}"
+    argv: "{{ wp_cli + ['plugin', 'auto-updates', 'enable', '--all', '--disabled-only'] }}"
   when: wp_plugins_to_install | length > 0
   register: wp_autoupdates
   failed_when:
