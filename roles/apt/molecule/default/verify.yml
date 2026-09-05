@@ -17,6 +17,9 @@
             == 'APT::Get::Always-Include-Phased-Updates "true";'
 
     - name: Validate APT sources are usable # noqa: command-instead-of-module
-      ansible.builtin.command:
-        cmd: apt-get update
+      ansible.builtin.command: apt-get update
+      register: apt_update
+      retries: 5
+      delay: 15
+      until: apt_update.rc == 0
       changed_when: false
