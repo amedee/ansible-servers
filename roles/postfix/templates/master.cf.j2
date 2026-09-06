@@ -1,0 +1,91 @@
+# ============================================================================
+# Postfix master process configuration file
+# ============================================================================
+
+# ==========================================================================
+# service type  private unpriv  chroot  wakeup  maxproc command + args
+#               (yes)   (yes)   (no)    (never) (100)
+# ==========================================================================
+
+# ============================================================================
+# SMTP server
+# ============================================================================
+
+smtp      inet  n       -       y       -       -       smtpd
+
+{% if postfix_mailserver %}
+# Submission service
+submission inet n       -       -       -       -       smtpd
+  -o smtpd_sasl_auth_enable=yes
+  -o syslog_name=postfix/submission
+  -o smtpd_milters=inet:127.0.0.1:8891
+  -o smtpd_tls_security_level=encrypt
+  -o cleanup_service_name=authclean
+
+# SMTPS service
+smtps     inet  n       -       -       -       -       smtpd
+  -o smtpd_tls_wrappermode=yes
+  -o smtpd_sasl_auth_enable=yes
+  -o syslog_name=postfix/submission
+  -o smtpd_milters=inet:127.0.0.1:8891
+  -o cleanup_service_name=authclean
+{% endif %}
+
+# ============================================================================
+# Postfix queue and delivery services
+# ============================================================================
+
+pickup    unix  n       -       y       60      1       pickup
+cleanup   unix  n       -       y       -       0       cleanup
+qmgr      unix  n       -       n       300     1       qmgr
+tlsmgr    unix  -       -       y       1000?   1       tlsmgr
+rewrite   unix  -       -       y       -       -       trivial-rewrite
+bounce    unix  -       -       y       -       0       bounce
+defer     unix  -       -       y       -       0       bounce
+trace     unix  -       -       y       -       0       bounce
+verify    unix  -       -       y       -       1       verify
+flush     unix  n       -       y       1000?   0       flush
+proxymap  unix  -       -       n       -       -       proxymap
+proxywrite unix -       -       n       -       1       proxymap
+smtp      unix  -       -       y       -       -       smtp
+relay     unix  -       -       y       -       -       smtp
+  -o syslog_name=postfix/$service_name
+showq     unix  n       -       y       -       -       showq
+error     unix  -       -       y       -       -       error
+retry     unix  -       -       y       -       -       error
+discard   unix  -       -       y       -       -       discard
+
+# ============================================================================
+# Local and virtual delivery
+# ============================================================================
+
+local     unix  -       n       n       -       -       local
+virtual   unix  -       n       n       -       -       virtual
+lmtp      unix  -       -       y       -       -       lmtp
+
+# ============================================================================
+# Miscellaneous Postfix services
+# ============================================================================
+
+anvil     unix  -       -       y       -       1       anvil
+scache    unix  -       -       y       -       1       scache
+postlog   unix-dgram n  -       n       -       1       postlogd
+
+{% if postfix_mailserver %}
+# ============================================================================
+# Mail-in-a-Box authentication cleanup
+# ============================================================================
+
+authclean unix  n       -       -       -       0       cleanup
+  -o header_checks=pcre:/etc/postfix/outgoing_mail_header_filters
+  -o nested_header_checks=
+{% endif %}
+
+{% if postfix_ses_enabled %}
+# ============================================================================
+# Amazon SES transport
+# ============================================================================
+
+ses       unix  -       n       n       -       -       pipe
+  flags=Rq user=ses argv=/usr/local/bin/ses_wrapper.sh ${recipient}
+{% endif %}

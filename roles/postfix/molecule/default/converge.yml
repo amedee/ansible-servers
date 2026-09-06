@@ -1,6 +1,7 @@
 ---
 - name: Converge
   hosts: all
+  become: true
   gather_facts: true
 
   vars:
@@ -9,4 +10,5 @@
     aws_ses_default_region: "eu-west-1"
 
   roles:
-    - role: postfix_ses
+    - postfix_ses
+    - postfix

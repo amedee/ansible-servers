@@ -59,10 +59,6 @@ munin_node_config_base:
   "diskstats*":
     env.include_only: vd
 
-mydomains: []
-
-postfix_invalid_recipients: []
-
 aws_ses_access_key_id: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   31623431373065383032376534346565356335363963613865363665623364646462663961636631
@@ -79,3 +75,5 @@ aws_ses_secret_access_key: !vault |
   63306433386362383539303638393737386330646238366163666561303534663735613037613532
   6162373961663538663539376534656362313837613235613139
 aws_ses_default_region: eu-central-1
+
+postfix_ses_enabled: true

@@ -1,0 +1,4 @@
+---
+postfix_mailserver: false
+postfix_ses_enabled: false
+postfix_invalid_recipients: []

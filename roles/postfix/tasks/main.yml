@@ -1,13 +1,14 @@
 ---
-- name: Install Postfix
+- name: Install Postfix dependencies
   ansible.builtin.apt:
     name:
+      - logrotate
       - mailutils
       - postfix
       - postfix-pcre
       - procmail
-      - python3-venv
       - swaks
+    state: present
 
 - name: Ensure /etc/postfix/checks/ directory exists
   ansible.builtin.file:
@@ -24,8 +25,6 @@
     owner: root
     group: root
     mode: "0644"
-  notify:
-    - Restart Postfix
 
 - name: Generate Postfix recipient access map
   ansible.builtin.template:
@@ -57,102 +56,22 @@
     mode: "0644"
   notify: Restart Postfix
 
-- name: Build dynamic Postfix settings
-  ansible.builtin.set_fact:
-    postfix_dynamic_settings:
-      mydestination: >-
-        {{
-          (['$myhostname', ansible_hostname, 'localhost.localdomain', 'localhost'] +
-           mydomains
-          ) | unique | join(', ')
-        }}
-
-- name: Merge static and dynamic Postfix settings
-  ansible.builtin.set_fact:
-    postfix_settings: "{{ postfix_dynamic_settings | combine(postfix_static_settings) }}"
-
-- name: Get current Postfix settings
-  ansible.builtin.command: postconf -n
-  register: postfix_current_settings
-  changed_when: false
-
-- name: Parse current Postfix settings into a dict
-  ansible.builtin.set_fact:
-    postfix_current_settings: >-
-      {{
-        dict(
-          postfix_current_settings.stdout_lines
-          | map('split', ' =', 1)
-          | map('map', 'trim')
-        )
-      }}
-
-- name: Apply Postfix settings - set or delete
-  ansible.builtin.command: >
-    {% if item.value is none %}
-      postconf -X {{ item.key }}
-    {% else %}
-      postconf -e {{ (item.key ~ ' = ' ~ (item.value | string)) | quote }}
-    {% endif %}
-  loop: "{{ postfix_settings | dict2items }}"
-  when: >
-    (item.value is none and item.key in postfix_current_settings)
-    or
-    (item.value is not none and
-     (item.key not in postfix_current_settings or
-      postfix_current_settings[item.key] != (item.value | string)))
-  changed_when: true
-  check_mode: false
+- name: Configure Postfix main.cf
+  ansible.builtin.template:
+    src: main.cf.j2
+    dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: '0644'
   notify: Restart Postfix
 
-- name: Read current smtpd_recipient_restrictions from Postfix
-  ansible.builtin.command: postconf -h smtpd_recipient_restrictions
-  register: postfix_smtpd_restrictions
-  changed_when: false
-  failed_when: false
-  check_mode: false
-
-- name: Define the check_line value
-  ansible.builtin.set_fact:
-    postfix_check_line: "check_recipient_access pcre:/etc/postfix/checks/invalid_recipients.pcre"
-
-- name: Set default smtpd_recipient_restrictions if empty
-  ansible.builtin.set_fact:
-    postfix_old_list: ["permit_mynetworks", "reject_unauth_destination"]
-  when: postfix_smtpd_restrictions.stdout | length == 0
-
-- name: Parse current smtpd_recipient_restrictions into list
-  ansible.builtin.set_fact:
-    postfix_old_list: "{{ postfix_smtpd_restrictions.stdout.split(',') | map('trim') | list }}"
-  when:
-    - postfix_smtpd_restrictions.stdout is defined
-    - postfix_smtpd_restrictions.stdout | length > 0
-
-- name: Prepare new smtpd_recipient_restrictions list
-  ansible.builtin.set_fact:
-    postfix_new_list: >-
-      {%- if 'permit_mynetworks' in postfix_old_list -%}
-      {{
-        postfix_old_list[: postfix_old_list.index('permit_mynetworks') + 1]
-        + [postfix_check_line]
-        + postfix_old_list[postfix_old_list.index('permit_mynetworks') + 1 :]
-      }}
-      {%- else -%}
-      {{ postfix_old_list + [postfix_check_line] }}
-      {%- endif -%}
-  when:
-    - not ansible_check_mode
-    - postfix_old_list is defined
-    - postfix_check_line not in postfix_old_list
-
-- name: Update smtpd_recipient_restrictions using postconf
-  ansible.builtin.command: >
-    postconf -e smtpd_recipient_restrictions="{{ postfix_new_list | join(', ') }}"
-  when:
-    - not ansible_check_mode
-    - postfix_new_list is defined
-    - postfix_check_line not in postfix_old_list
-  changed_when: true
+- name: Configure Postfix master.cf
+  ansible.builtin.template:
+    src: master.cf.j2
+    dest: /etc/postfix/master.cf
+    owner: root
+    group: root
+    mode: '0644'
   notify: Restart Postfix
 
 - name: Configure logrotate for postfix logs

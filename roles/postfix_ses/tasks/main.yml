@@ -28,6 +28,7 @@
     name:
       - python3-boto3
       - python3-botocore
+      - python3-venv
     state: present
     update_cache: true
 
@@ -56,6 +57,14 @@
     group: ses
     mode: "0750"
 
+- name: Ensure Postfix directory exists
+  ansible.builtin.file:
+    path: /etc/postfix/
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Deploy SES transport map
   ansible.builtin.template:
     src: transport.pcre.j2
@@ -63,21 +72,3 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Reload Postfix
-
-- name: Ensure Postfix transport_maps is configured for SES
-  ansible.builtin.lineinfile:
-    path: /etc/postfix/main.cf
-    regexp: '^transport_maps\s*='
-    line: 'transport_maps = pcre:/etc/postfix/transport.pcre'
-  notify: Reload Postfix
-
-- name: Ensure SES transport exists
-  ansible.builtin.blockinfile:
-    path: /etc/postfix/master.cf
-    marker: "# {mark} ANSIBLE SES TRANSPORT"
-    insertafter: EOF
-    block: |
-      ses       unix  -       n       n       -       -       pipe
-        flags=Rq user=ses argv=/usr/local/bin/ses_wrapper.sh ${recipient}
-  notify: Reload Postfix

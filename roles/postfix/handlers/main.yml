@@ -1,5 +1,5 @@
 ---
 - name: Restart Postfix
-  ansible.builtin.service:
+  ansible.builtin.systemd_service:
     name: postfix
     state: restarted
