@@ -1,0 +1,151 @@
+# ============================================================================
+# Postfix main configuration
+# ============================================================================
+
+smtpd_banner = $myhostname ESMTP
+compatibility_level = 3.6
+
+# ============================================================================
+# Basic configuration
+# ============================================================================
+
+myhostname = {{ ansible_fqdn }}
+mydestination = $myhostname, {{ ansible_hostname }}, localhost.localdomain, localhost
+
+mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+recipient_delimiter = +-
+smtputf8_enable = yes
+
+# ============================================================================
+# Queue and message limits
+# ============================================================================
+
+maximal_queue_lifetime = 30d
+bounce_queue_lifetime = 3d
+message_size_limit = 52428800
+header_size_limit = 4096000
+delay_warning_time = 0
+
+{% if postfix_mailserver %}
+mailbox_size_limit = 0
+smtpd_forbid_bare_newline = normalize
+{% endif %}
+
+# ============================================================================
+# Relay restrictions
+# ============================================================================
+
+smtpd_relay_restrictions = permit_mynetworks,permit_sasl_authenticated,reject_unauth_destination
+
+# ============================================================================
+# TLS
+# ============================================================================
+
+{% if postfix_mailserver %}
+smtpd_tls_cert_file = /home/user-data/ssl/ssl_certificate.pem
+smtpd_tls_key_file = /home/user-data/ssl/ssl_private_key.pem
+{% else %}
+smtpd_tls_cert_file = /etc/ssl/certs/ssl-cert-snakeoil.pem
+smtpd_tls_key_file = /etc/ssl/private/ssl-cert-snakeoil.key
+{% endif %}
+
+smtpd_tls_security_level = may
+
+{% if postfix_mailserver %}
+smtpd_tls_auth_only = yes
+smtpd_tls_protocols = !SSLv2,!SSLv3
+smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1
+smtpd_tls_mandatory_ciphers = high
+smtpd_tls_mandatory_exclude_ciphers = aNULL,DES,3DES,MD5,DES+MD5,RC4
+smtpd_tls_exclude_ciphers = aNULL,RC4
+smtpd_tls_received_header = yes
+smtpd_tls_dh1024_param_file = /home/user-data/ssl/dh2048.pem
+
+smtp_tls_CApath = /etc/ssl/certs
+smtp_tls_protocols = !SSLv2,!SSLv3
+smtp_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1
+smtp_tls_mandatory_ciphers = high
+smtp_tls_exclude_ciphers = aNULL,RC4
+smtp_tls_loglevel = 2
+smtp_dns_support_level = dnssec
+{% endif %}
+
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+
+# ============================================================================
+# SASL
+# ============================================================================
+
+smtpd_sasl_auth_enable = yes
+smtp_sasl_tls_security_options = noanonymous
+
+{% if postfix_mailserver %}
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/auth
+smtpd_sender_login_maps = sqlite:/etc/postfix/sender-login-maps.cf
+{% endif %}
+
+# ============================================================================
+# Content checks
+# ============================================================================
+
+body_checks = pcre:/etc/postfix/checks/body_checks.pcre
+header_checks = pcre:/etc/postfix/checks/header_checks.pcre
+mime_header_checks = pcre:/etc/postfix/checks/mime_header_checks.pcre
+
+# ============================================================================
+# Address rewriting
+# ============================================================================
+
+recipient_canonical_maps = pcre:/etc/postfix/recipient-canonical-maps.pcre
+smtp_generic_maps = pcre:/etc/postfix/generic.pcre
+sender_canonical_maps = pcre:/etc/postfix/sender-canonical-maps.pcre
+{% if not postfix_mailserver %}
+alias_maps = hash:/etc/aliases
+{% endif %}
+
+# ============================================================================
+# Transport
+# ============================================================================
+
+{% if postfix_ses_enabled %}
+transport_maps = pcre:/etc/postfix/transport.pcre
+{% endif %}
+
+# ============================================================================
+# Recipient restrictions
+# ============================================================================
+
+{% if postfix_mailserver %}
+smtpd_recipient_restrictions = permit_mynetworks,permit_sasl_authenticated,check_recipient_access pcre:/etc/postfix/checks/invalid_recipients.pcre,reject_rbl_client zen.spamhaus.org=127.0.0.[2..11],reject_unlisted_recipient,check_policy_service inet:127.0.0.1:10023,check_policy_service inet:127.0.0.1:12340
+{% else %}
+smtpd_recipient_restrictions = permit_mynetworks,permit_sasl_authenticated,check_recipient_access pcre:/etc/postfix/checks/invalid_recipients.pcre,reject_unauth_destination
+{% endif %}
+
+# ============================================================================
+# Mail server configuration
+# ============================================================================
+
+{% if postfix_mailserver %}
+default_transport = lmtp:[127.0.0.1]:10025
+virtual_transport = lmtp:[127.0.0.1]:10025
+
+virtual_mailbox_domains = sqlite:/etc/postfix/virtual-mailbox-domains.cf
+virtual_mailbox_maps = sqlite:/etc/postfix/virtual-mailbox-maps.cf
+virtual_alias_maps = sqlite:/etc/postfix/virtual-alias-maps.cf
+
+local_recipient_maps = $virtual_mailbox_maps
+
+smtpd_milters = inet:127.0.0.1:8891 inet:127.0.0.1:8893
+non_smtpd_milters = $smtpd_milters
+milter_default_action = accept
+
+smtp_bind_address = 142.93.227.16
+
+smtpd_sender_restrictions = reject_non_fqdn_sender,reject_unknown_sender_domain,reject_authenticated_sender_login_mismatch,reject_rhsbl_sender dbl.spamhaus.org=127.0.1.[2..99]
+
+# Mail-in-a-Box TLS cipher lists
+tls_medium_cipherlist = ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA256:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA
+
+tls_high_cipherlist = ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+{% endif %}

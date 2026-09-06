@@ -52,8 +52,8 @@
     - debops.debops.unattended_upgrades
     - debops.debops.journald
     - munin_node
-    - postfix
     - postfix_ses
+    - postfix
     - debops.debops.reboot
 
 - name: Configure Mail-in-a-Box servers

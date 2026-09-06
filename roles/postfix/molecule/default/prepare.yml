@@ -5,13 +5,9 @@
   gather_facts: false
 
   tasks:
-    - name: Set predictable hostname
-      ansible.builtin.hostname:
-        name: "{{ inventory_hostname }}.test"
-
     - name: Ensure /etc/mailname exists
       ansible.builtin.copy:
-        content: "{{ inventory_hostname }}.test\n"
+        content: "{{ inventory_hostname }}\n"
         dest: /etc/mailname
         owner: root
         group: root
@@ -30,11 +26,3 @@
         - question: postfix/mailname
           value: "{{ 'amedee.be' if 'mailservers' in group_names else 'instance' }}"
           vtype: string
-
-    - name: Install Postfix for testing
-      ansible.builtin.apt:
-        name:
-          - postfix
-          - postfix-pcre
-        state: present
-        update_cache: true

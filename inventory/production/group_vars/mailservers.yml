@@ -1,4 +1,7 @@
 ---
+# mailservers
+postfix_mailserver: true
+
 environment__group_variables:
   - name: NONINTERACTIVE
     value: "1"

@@ -1,6 +1,0 @@
----
-- name: Reload Postfix
-  ansible.builtin.service:
-    name: postfix
-    state: reloaded
-  when: not postfix_ses_molecule | default(false)

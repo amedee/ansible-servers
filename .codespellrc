@@ -1,2 +1,3 @@
 [codespell]
 skip = */dist/*, */package-lock.json, */roles/mailinabox_dns/files/custom.yaml
+ignore-words = .codespell-ignore

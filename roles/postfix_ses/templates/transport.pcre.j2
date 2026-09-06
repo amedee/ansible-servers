@@ -3,7 +3,7 @@
 /^localhost$/             :
 /^.*@localhost$/          :*
 
-{% if inventory_hostname in groups['mailservers'] %}
+{% if postfix_mailserver | default(false) %}
 /^.*@vangasse\.eu$/       :
 /^.*@.*\.vangasse\.eu$/   :
 /^.*@amedee\.be$/         :
