@@ -14,6 +14,24 @@ wp_secret_keys:
   nonce_salt: molecule-nonce-salt # pragma: allowlist secret
 
 wp_php_bin: "/usr/bin/php"
+wp_php_modules_required:
+  - curl
+  - gd
+  - imagick
+  - intl
+  - json
+  - mbstring
+  - mysqli
+  - redis
+  - ssh2
+  - xml
+  - xmlrpc
+  - zip
+wp_php_modules_critical:
+  - imagick
+  - mysqli
+  - redis
+
 wp_cli_bin: "/usr/local/bin/wp"
 wp_cli:
   - "{{ wp_php_bin }}"

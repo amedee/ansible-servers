@@ -88,7 +88,7 @@ nginx_hostname: "{{ hostname | default('localhost') }}"
 #### Default value
 
 ```YAML
-nginx_php_version: "{{ php_version | default('8.4') }}"
+nginx_php_version: "{{ php_version | default('8.5') }}"
 ```
 
 ### nginx_repositories

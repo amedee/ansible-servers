@@ -23,6 +23,7 @@
     - mysql
     - redis
     - letsencrypt
+    - php
     - nginx
     - debops.debops.keyring
     - debops.debops.wpcli

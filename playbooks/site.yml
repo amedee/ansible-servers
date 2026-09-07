@@ -95,6 +95,7 @@
   roles:
     - mysql
     - redis
+    - php
     - nginx
     - letsencrypt
     - debops.debops.keyring

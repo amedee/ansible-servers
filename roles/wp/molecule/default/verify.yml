@@ -3,7 +3,7 @@
   hosts: all
 
   tasks:
-    - name: Verify PHP MySQL extension is available
+    - name: Get loaded PHP modules
       ansible.builtin.command:
         argv:
           - "{{ wp_php_bin }}"
@@ -11,10 +11,30 @@
       register: wp_php_modules
       changed_when: false
 
-    - name: Assert PHP MySQL extension is loaded
+    - name: Verify required modules are loaded
       ansible.builtin.assert:
         that:
-          - "'mysqli' in wp_php_modules.stdout_lines"
+          - item in wp_php_modules.stdout_lines
+      loop: "{{ wp_php_modules_required }}"
+
+    - name: Check critical PHP extension
+      ansible.builtin.command:
+        argv:
+          - php
+          - -r
+          - "echo extension_loaded('{{ item }}') ? 'yes' : 'no';"
+      loop: "{{ wp_php_modules_critical }}"
+      register: wp_php_extensions_check
+      changed_when: false
+
+    - name: Verify critical PHP extensions
+      ansible.builtin.assert:
+        that:
+          - item.rc == 0
+          - item.stdout == 'yes'
+        fail_msg: "{{ item.item }} extension is not loaded"
+        success_msg: "{{ item.item }} extension is loaded"
+      loop: "{{ wp_php_extensions_check.results }}"
 
     - name: Check WordPress installation
       ansible.builtin.command:

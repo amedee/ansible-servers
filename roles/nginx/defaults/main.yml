@@ -5,7 +5,7 @@ nginx_default_indexfiles:
   - index.html
 nginx_directory: "{{ webserver_directory | default('/var/www/html') }}"
 nginx_hostname: "{{ hostname | default('localhost') }}"
-nginx_php_version: "{{ php_version | default('8.4') }}"
+nginx_php_version: "{{ php_version | default('8.5') }}"
 nginx_user: "{{ webserver_user | default('www-data') }}"
 
 nginx_repositories:
