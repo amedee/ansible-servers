@@ -54,7 +54,6 @@
     - munin_node
     - postfix
     - postfix_ses
-    - debops.debops.reboot
 
 - name: Configure Mail-in-a-Box servers
   hosts: mailservers
@@ -101,3 +100,10 @@
     - debops.debops.keyring
     - debops.debops.wpcli
     - wp
+
+- name: Reboot servers if needed
+  hosts: all
+  become: true
+
+  roles:
+    - debops.debops.reboot
