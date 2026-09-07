@@ -139,4 +139,4 @@ wp_themes_uninstall:
   - twentytwentyfour
 wp_fallback_theme: neve
 
-php_version: "8.4"
+php_version: "8.5"
