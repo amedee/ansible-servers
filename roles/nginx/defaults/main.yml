@@ -1,5 +1,5 @@
 ---
-nginx_apt_suite: "{{ ansible_distribution_release }}"
+nginx_apt_suite: "{{ ansible_facts['distribution_release'] }}"
 nginx_default_indexfiles:
   - index.php
   - index.html

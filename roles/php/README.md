@@ -67,7 +67,8 @@ php_repository:
 #### Default value
 
 ```YAML
-php_repository_suite: "{{ ansible_distribution_release | default('noble') }}"
+php_repository_suite: >-
+  {{ ansible_facts['distribution_release'] | default('noble') }}
 ```
 
 ### php_version

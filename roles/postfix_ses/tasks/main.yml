@@ -14,7 +14,7 @@
     uris:
       - "http://archive.ubuntu.com/ubuntu"
     suites:
-      - "{{ ansible_distribution_release }}"
+      - "{{ ansible_facts['distribution_release'] }}"
     components:
       - main
       - universe

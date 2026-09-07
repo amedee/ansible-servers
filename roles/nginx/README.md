@@ -42,7 +42,7 @@ nginx_apt_pinning_files:
 #### Default value
 
 ```YAML
-nginx_apt_suite: '{{ ansible_distribution_release }}'
+nginx_apt_suite: "{{ ansible_facts['distribution_release'] }}"
 ```
 
 ### nginx_config_files

@@ -7,9 +7,9 @@
     uris:
       - http://mirrors.digitalocean.com/ubuntu/
     suites:
-      - "{{ ansible_distribution_release }}"
-      - "{{ ansible_distribution_release }}-updates"
-      - "{{ ansible_distribution_release }}-backports"
+      - "{{ ansible_facts['distribution_release'] }}"
+      - "{{ ansible_facts['distribution_release'] }}-updates"
+      - "{{ ansible_facts['distribution_release'] }}-backports"
     components:
       - main
       - restricted
@@ -27,7 +27,7 @@
     uris:
       - http://security.ubuntu.com/ubuntu
     suites:
-      - "{{ ansible_distribution_release }}-security"
+      - "{{ ansible_facts['distribution_release'] }}-security"
     components:
       - main
       - restricted
