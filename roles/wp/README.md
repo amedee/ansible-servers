@@ -24,6 +24,7 @@ restoration.
   - [wp_packages](#wp_packages)
   - [wp_php_bin](#wp_php_bin)
   - [wp_php_packages](#wp_php_packages)
+  - [wp_php_version](#wp_php_version)
   - [wp_plugins](#wp_plugins)
   - [wp_plugins_uninstall](#wp_plugins_uninstall)
   - [wp_python_packages](#wp_python_packages)
@@ -219,19 +220,25 @@ wp_php_bin: /usr/bin/php
 
 ```YAML
 wp_php_packages:
-  - php-cli
-  - php-curl
-  - php-gd
-  - php-imagick
-  - php-intl
-  - php-json
-  - php-mbstring
-  - php-mysql
-  - php-redis
-  - php-ssh2
-  - php-xml
-  - php-xmlrpc
-  - php-zip
+  - php{{ wp_php_version }}-curl
+  - php{{ wp_php_version }}-gd
+  - php{{ wp_php_version }}-imagick
+  - php{{ wp_php_version }}-intl
+  - php{{ wp_php_version }}-mbstring
+  - php{{ wp_php_version }}-mysql
+  - php{{ wp_php_version }}-redis
+  - php{{ wp_php_version }}-ssh2
+  - php{{ wp_php_version }}-xml
+  - php{{ wp_php_version }}-xmlrpc
+  - php{{ wp_php_version }}-zip
+```
+
+### wp_php_version
+
+#### Default value
+
+```YAML
+wp_php_version: "{{ php_version | default('8.5') }}"
 ```
 
 ### wp_plugins

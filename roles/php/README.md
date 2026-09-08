@@ -37,18 +37,7 @@ php_fpm_socket: /run/php/php-fpm.sock
 #### Default value
 
 ```YAML
-php_module_packages:
-  - php{{ php_version }}-curl
-  - php{{ php_version }}-gd
-  - php{{ php_version }}-imagick
-  - php{{ php_version }}-intl
-  - php{{ php_version }}-mbstring
-  - php{{ php_version }}-mysql
-  - php{{ php_version }}-redis
-  - php{{ php_version }}-ssh2
-  - php{{ php_version }}-xml
-  - php{{ php_version }}-xmlrpc
-  - php{{ php_version }}-zip
+php_module_packages: []
 ```
 
 ### php_packages
