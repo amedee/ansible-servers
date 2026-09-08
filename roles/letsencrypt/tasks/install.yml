@@ -8,10 +8,10 @@
     state: absent
     autoremove: true
 
-- name: Install snap Certbot (new version)
-  community.general.snap:
-    name: certbot
-    classic: true
+- name: Install snap Certbot
+  ansible.builtin.command:
+    cmd: snap install --classic certbot
+    creates: /snap/bin/certbot
 
 - name: Create Certbot symlink
   ansible.builtin.file:
