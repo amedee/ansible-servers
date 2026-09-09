@@ -1,0 +1,7 @@
+---
+- name: Awaken the Ancient Fortunes
+  ansible.builtin.command:
+    cmd: "strfile {{ fortune_file }}"
+  vars:
+    fortune_file: "{{ magic_fortune }}"
+  changed_when: true

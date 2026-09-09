@@ -54,6 +54,7 @@
     - munin_node
     - postfix_ses
     - postfix
+    - magic
 
 - name: Configure Mail-in-a-Box servers
   hosts: mailservers
