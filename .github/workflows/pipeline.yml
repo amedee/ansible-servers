@@ -12,6 +12,7 @@ on: # yamllint disable-line rule:truthy
       - "!.github/workflows/gource.yml"
       - "!.github/workflows/molecule-coverage.yml"
       - "!.pre-commit-config.yaml"
+      - "!package-lock.json"
   schedule:
     - cron: "10 3 * * SAT"
   workflow_dispatch:
