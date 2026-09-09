@@ -1,0 +1,49 @@
+By the spell of apt and the charm of cache,
+Let Ubuntu's packages settle in place.
+With idempotent whispers and no needless fright,
+May every desired state be made right.
+%
+Gather, little facts, from kernel to shell;
+Tell us which secrets the host would tell.
+With gathered knowledge, both tidy and bright,
+Ansible shall conjure the configuration right.
+%
+O handlers of change, awaken and run,
+Only when summoned by tasks well begun.
+Restart the service with graceful delight,
+Then let it slumber throughout the night.
+%
+By become and sudo, ascend without fuss;
+Grant just enough power, and no more than thus.
+May privilege flow like a carefully measured stream,
+While root's mighty crown remains part of the dream.
+%
+In /etc place order, in /var keep the lore;
+Let templates render what was written before.
+When variables dance and Jinja bells ring,
+A stable configuration is the gift they shall bring.
+%
+Guard every secret with vault's silver key;
+Keep passwords concealed from logs and the sea.
+May encrypted variables, quiet and wise,
+Remain hidden from curious terminal eyes.
+%
+With ufw as sentinel at the gate,
+Permit what is needed and banish the late.
+Let SSH pass safely, let stray ports depart;
+May the firewall guard both machine and heart.
+%
+Cron sprites assemble at minutes precise,
+Running backups as steady as ice.
+When scheduled tasks whisper their tune,
+May disks have room beneath sun and moon.
+%
+If a task should fail, let the playbook speak clear;
+Name the true cause and banish vague fear.
+With check mode's lantern held steady and bright,
+Preview each change before casting it right.
+%
+From inventory hosts, both local and far,
+Summon each server by its symbolic star.
+With groups as circles and vars as the guide,
+May Ubuntu's many spirits align side by side.

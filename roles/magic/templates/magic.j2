@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export PATH="/usr/games:${PATH}"
+
+fortune_file="{{ magic_fortune }}"
+cowsay_creature="{{ magic_creature }}"
+
+fortune "$fortune_file" | cowsay -f "$cowsay_creature"

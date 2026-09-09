@@ -1,0 +1,9 @@
+---
+magic_creature: dragon
+magic_fortune_directory: /usr/share/games/fortunes/
+magic_fortune: "{{ magic_fortune_directory }}magic"
+magic_fortune_index: "{{ magic_fortune }}.dat"
+magic_script_dest: /usr/local/bin/magic
+magic_software:
+  - cowsay
+  - fortune
