@@ -1,0 +1,58 @@
+---
+driver:
+  name: docker
+
+platforms:
+  - name: archmage2204
+    hostname: archmage2204
+    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    pre_build_image: true
+    groups:
+      - default_hosts
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    command: /sbin/init
+
+  - name: wizard2404
+    hostname: wizard2404
+    image: geerlingguy/docker-ubuntu2404-ansible:latest
+    pre_build_image: true
+    groups:
+      - default_hosts
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    command: /sbin/init
+
+  - name: apprentice2604
+    hostname: apprentice2604
+    image: geerlingguy/docker-ubuntu2604-ansible:latest
+    pre_build_image: true
+    groups:
+      - default_hosts
+    privileged: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    command: /sbin/init
+
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: "${MOLECULE_PROJECT_DIRECTORY}/.."
+    ANSIBLE_REMOTE_TMP: /tmp/.ansible/tmp
+
+scenario:
+  test_sequence:
+    - syntax
+    - create
+    - converge
+    - idempotence
+    - verify
+    - destroy
+
+verifier:
+  name: ansible

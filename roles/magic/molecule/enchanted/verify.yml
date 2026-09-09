@@ -1,0 +1,72 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Verify the Sacred Cow
+      block:
+        - name: Consult the Sacred Cow
+          ansible.builtin.command: /usr/games/cowsay moo
+          changed_when: false
+
+      rescue:
+        - name: The Sacred Cow refuses to manifest
+          ansible.builtin.fail:
+            msg: >
+              🧙 The ritual has failed.
+              The Sacred Cow refuses to manifest.
+
+    - name: Verify the Oracle
+      block:
+        - name: Read the Ancient Scrolls of Fortune
+          ansible.builtin.command: /usr/games/fortune
+          changed_when: false
+
+      rescue:
+        - name: The Oracle remains silent
+          ansible.builtin.fail:
+            msg: >
+              🔮 The stars are unreadable.
+              The Oracle's grimoire is missing.
+
+    - name: Verify the Spellbook
+      block:
+        - name: Locate the Spellbook
+          ansible.builtin.command: /usr/games/fortune ✨
+          changed_when: false
+
+      rescue:
+        - name: The Spellbook has been misplaced
+          ansible.builtin.fail:
+            msg: >
+              📖 The Spellbook has been misplaced.
+              Seek the missing tome before attempting further enchantments.
+
+    - name: Verify the Weave
+      block:
+        - name: Cast a Minor Cantrip
+          ansible.builtin.command: ✨
+          changed_when: false
+          register: magic_spell_result
+
+        - name: Ensure the cantrip produced magic
+          ansible.builtin.fail:
+            msg: >
+              ⚡ The Weave is disturbed.
+              The cantrip completed, but no magic escaped into the world.
+          when: magic_spell_result.stdout | length == 0
+
+      rescue:
+        - name: Wild magic surge detected
+          ansible.builtin.fail:
+            msg: |
+              💥 A surge of wild magic erupted.
+              The incantation failed unexpectedly.
+
+              STDERR:
+              {{ ansible_failed_result.stderr | default('Unknown magical interference') }}
+
+    - name: The Council Is Pleased
+      ansible.builtin.debug:
+        msg: "🏆 Quest complete. The Sacred Cow has spoken and the Oracle approves."

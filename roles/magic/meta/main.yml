@@ -1,0 +1,28 @@
+---
+# @meta author:value: [Ameðee Van Gasse](https://amedee.be)
+# @meta license:value: MIT
+# @meta description: >
+# Teaches Linux systems the ancient arts of prophecy and bovine
+# communication. Provides the `✨` command for consulting the
+# mysterious forces governing YAML and CI pipelines.
+# the default description with an annotation.
+# @end
+galaxy_info:
+  namespace: amedee
+  author: Ameðee Van Gasse
+  description: >
+    Teaches Linux systems the ancient arts of prophecy and bovine
+    communication. Provides the `✨` command for consulting the
+    mysterious forces governing YAML and CI pipelines.
+
+  license: MIT
+  min_ansible_version: "2.16"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+        - noble
+        - resolute
+
+dependencies: []

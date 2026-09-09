@@ -1,0 +1,26 @@
+---
+- name: Prepare the Arcane Laboratory
+  ansible.builtin.apt:
+    name: "{{ magic_software }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 86400 # One day
+    lock_timeout: 300 # 5 minutes
+
+- name: Teach the Apprentice New Spells
+  ansible.builtin.copy:
+    src: ✨
+    dest: "{{ magic_fortune }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Awaken the Ancient Fortunes
+
+- name: Imbue the System With Magic
+  ansible.builtin.template:
+    src: ✨.j2
+    dest: "{{ magic_script_dest }}"
+    owner: root
+    group: root
+    mode: "0755"
+    validate: "/usr/bin/env bash -n %s"
