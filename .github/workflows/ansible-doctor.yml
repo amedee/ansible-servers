@@ -40,7 +40,7 @@ jobs:
           requirements-file: "requirements-docs.txt"
 
       - name: Run ansible-doctor
-        run: ansible-doctor --force --recursive roles
+        run: ansible-doctor -v --force --recursive roles
 
       - name: 📦 Cache npm
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
