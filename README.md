@@ -39,29 +39,29 @@ This repository uses CI to continuously validate configuration quality:
 
 <!-- molecule-coverage:start -->
 
-| Role                                                                                         | Molecule |
-| -------------------------------------------------------------------------------------------- | :------: |
-| [`apt`](https://github.com/amedee/ansible-servers/tree/main/roles/apt)                       |    ✅    |
-| [`base_linux`](https://github.com/amedee/ansible-servers/tree/main/roles/base_linux)         |    ✅    |
-| [`dovecot`](https://github.com/amedee/ansible-servers/tree/main/roles/dovecot)               |    ✅    |
-| [`duplicity`](https://github.com/amedee/ansible-servers/tree/main/roles/duplicity)           |    ✅    |
-| [`hadori`](https://github.com/amedee/ansible-servers/tree/main/roles/hadori)                 |    ✅    |
-| [`imapsync`](https://github.com/amedee/ansible-servers/tree/main/roles/imapsync)             |    ✅    |
-| [`letsencrypt`](https://github.com/amedee/ansible-servers/tree/main/roles/letsencrypt)       |    ✅    |
-| [`localepurge`](https://github.com/amedee/ansible-servers/tree/main/roles/localepurge)       |    ✅    |
-| [`magic`](https://github.com/amedee/ansible-servers/tree/main/roles/magic)                   |    ✅    |
-| [`mailinabox_dns`](https://github.com/amedee/ansible-servers/tree/main/roles/mailinabox_dns) |    ✅    |
-| [`mailinabox_ufw`](https://github.com/amedee/ansible-servers/tree/main/roles/mailinabox_ufw) |    ✅    |
-| [`munin`](https://github.com/amedee/ansible-servers/tree/main/roles/munin)                   |    ✅    |
-| [`munin_node`](https://github.com/amedee/ansible-servers/tree/main/roles/munin_node)         |    ✅    |
-| [`mysql`](https://github.com/amedee/ansible-servers/tree/main/roles/mysql)                   |    ✅    |
-| [`nginx`](https://github.com/amedee/ansible-servers/tree/main/roles/nginx)                   |    ✅    |
-| [`php`](https://github.com/amedee/ansible-servers/tree/main/roles/php)                       |    ✅    |
-| [`postfix`](https://github.com/amedee/ansible-servers/tree/main/roles/postfix)               |    ✅    |
-| [`postfix_ses`](https://github.com/amedee/ansible-servers/tree/main/roles/postfix_ses)       |    ✅    |
-| [`redis`](https://github.com/amedee/ansible-servers/tree/main/roles/redis)                   |    ✅    |
-| [`swapfile`](https://github.com/amedee/ansible-servers/tree/main/roles/swapfile)             |    ✅    |
-| [`wp`](https://github.com/amedee/ansible-servers/tree/main/roles/wp)                         |    ✅    |
+| Role                                                                                         | Description                                                                                                                                                                                             | Molecule |
+| :------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------: |
+| [`apt`](https://github.com/amedee/ansible-servers/tree/main/roles/apt)                       | Role to configure APT package management.                                                                                                                                                               |    ✅    |
+| [`base_linux`](https://github.com/amedee/ansible-servers/tree/main/roles/base_linux)         | Baseline Linux configuration                                                                                                                                                                            |    ✅    |
+| [`dovecot`](https://github.com/amedee/ansible-servers/tree/main/roles/dovecot)               | Dovecot-related maintenance tasks for Mail-in-a-Box, including mailbox expunge jobs and helper scripts scheduled via /etc/cron.d.                                                                       |    ✅    |
+| [`duplicity`](https://github.com/amedee/ansible-servers/tree/main/roles/duplicity)           | Role to do configuration of duplicity backup of mailinabox.                                                                                                                                             |    ✅    |
+| [`hadori`](https://github.com/amedee/ansible-servers/tree/main/roles/hadori)                 | Role to configure hadori.                                                                                                                                                                               |    ✅    |
+| [`imapsync`](https://github.com/amedee/ansible-servers/tree/main/roles/imapsync)             | Role to configure imapsync. See the upstream installation instructions: [imapsync Ubuntu installation instructions](https://imapsync.lamiral.info/INSTALL.d/INSTALL.Ubuntu.txt)                         |    ✅    |
+| [`letsencrypt`](https://github.com/amedee/ansible-servers/tree/main/roles/letsencrypt)       | Role to configure letsencrypt.                                                                                                                                                                          |    ✅    |
+| [`localepurge`](https://github.com/amedee/ansible-servers/tree/main/roles/localepurge)       | Role to install and configure localepurge.                                                                                                                                                              |    ✅    |
+| [`magic`](https://github.com/amedee/ansible-servers/tree/main/roles/magic)                   | Teaches Linux systems the ancient arts of prophecy and bovine communication. Provides the `✨` command for consulting the mysterious forces governing YAML and CI pipelines.                            |    ✅    |
+| [`mailinabox_dns`](https://github.com/amedee/ansible-servers/tree/main/roles/mailinabox_dns) | Role to do DNS configuration of mailinabox.                                                                                                                                                             |    ✅    |
+| [`mailinabox_ufw`](https://github.com/amedee/ansible-servers/tree/main/roles/mailinabox_ufw) | Work around Mail-in-a-Box's outbound SMTP connectivity check by redirecting outbound TCP/25 to localhost. Intended for servers that send mail via an SMTP relay or API instead of direct SMTP delivery. |    ✅    |
+| [`munin`](https://github.com/amedee/ansible-servers/tree/main/roles/munin)                   | Installs Munin monitoring server and configures monitored hosts with custom settings and maintenance fixes.                                                                                             |    ✅    |
+| [`munin_node`](https://github.com/amedee/ansible-servers/tree/main/roles/munin_node)         | Role to configure munin-node.                                                                                                                                                                           |    ✅    |
+| [`mysql`](https://github.com/amedee/ansible-servers/tree/main/roles/mysql)                   | Role to install and configure a MySQL database server.                                                                                                                                                  |    ✅    |
+| [`nginx`](https://github.com/amedee/ansible-servers/tree/main/roles/nginx)                   | Role to configure nginx.                                                                                                                                                                                |    ✅    |
+| [`php`](https://github.com/amedee/ansible-servers/tree/main/roles/php)                       | Install and configure PHP and PHP-FPM.                                                                                                                                                                  |    ✅    |
+| [`postfix`](https://github.com/amedee/ansible-servers/tree/main/roles/postfix)               | Role to configure Postfix.                                                                                                                                                                              |    ✅    |
+| [`postfix_ses`](https://github.com/amedee/ansible-servers/tree/main/roles/postfix_ses)       | Role to configure Amazon SES integration for Postfix.                                                                                                                                                   |    ✅    |
+| [`redis`](https://github.com/amedee/ansible-servers/tree/main/roles/redis)                   | Role to configure Redis.                                                                                                                                                                                |    ✅    |
+| [`swapfile`](https://github.com/amedee/ansible-servers/tree/main/roles/swapfile)             | Wrapper role for `debops.debops.swapfile` because it doesn't run `swapon --all`.                                                                                                                        |    ✅    |
+| [`wp`](https://github.com/amedee/ansible-servers/tree/main/roles/wp)                         | Configure a WordPress installation with MySQL, Redis, plugins, themes and backup restoration.                                                                                                           |    ✅    |
 
 <!-- molecule-coverage:end -->
 
