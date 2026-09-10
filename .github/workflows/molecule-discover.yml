@@ -35,6 +35,12 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: 🐍 Setup Python and Install Dependencies
+        uses: ./.github/actions/setup-python-pip
+        with:
+          python-version: "3.13"
+          requirements-file: ".github/requirements-molecule.txt"
+
       - name: Discover roles and scenarios
         id: discover
         run: |

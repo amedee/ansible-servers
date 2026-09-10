@@ -9,6 +9,8 @@ import os
 import pathlib
 import subprocess
 
+from ruamel.yaml import YAML
+
 COVERAGE_START = "<!-- molecule-coverage:start -->"
 COVERAGE_END = "<!-- molecule-coverage:end -->"
 
@@ -37,6 +39,22 @@ def discover_scenarios() -> list[dict[str, str]]:
         )
 
     return scenarios
+
+
+def discover_descriptions(roles: list[str]) -> dict[str, str]:
+    """Return the descriptions from each role's metadata."""
+    yaml = YAML(typ="safe")
+    descriptions = {}
+
+    for role in roles:
+        metadata_directory = pathlib.Path("roles") / role / "meta"
+        metadata_path = metadata_directory / "main.yml"
+
+        metadata = yaml.load(metadata_path.read_text(encoding="utf-8")) or {}
+        description = metadata.get("galaxy_info", {}).get("description", "")
+        descriptions[role] = " ".join(str(description).split()).replace("|", "\\|")
+
+    return descriptions
 
 
 def write_output(path: str, roles: list[str], scenarios: list[dict[str, str]]) -> None:
@@ -112,19 +130,20 @@ def render_coverage(
 ) -> str:
     """Render the Molecule coverage section."""
     covered_roles = {scenario["role"] for scenario in scenarios}
+    descriptions = discover_descriptions(roles)
 
     lines = [
         COVERAGE_START,
         "",
-        "| Role | Molecule |",
-        "| --- | :---: |",
+        "| Role | Description | Molecule |",
+        "| :--- | :--- | :---: |",
     ]
 
     for role in roles:
         role_url = f"https://github.com/{repository()}/tree/main/roles/{role}"
 
         molecule = "✅" if role in covered_roles else "❌"
-        lines.append(f"| [`{role}`]({role_url}) | {molecule} |")
+        lines.append(f"| [`{role}`]({role_url}) | {descriptions[role]} | {molecule} |")
 
     lines.extend(
         [
