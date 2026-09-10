@@ -8,6 +8,7 @@ on: # yamllint disable-line rule:truthy
     paths:
       - "**"
       - "!**/*.md"
+      - "!.github/scripts/molecule-coverage.py"
       - "!.github/workflows/ansible-doctor.yml"
       - "!.github/workflows/gource.yml"
       - "!.github/workflows/molecule-coverage.yml"
