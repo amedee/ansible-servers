@@ -49,6 +49,7 @@ This repository uses CI to continuously validate configuration quality:
 | [`imapsync`](https://github.com/amedee/ansible-servers/tree/main/roles/imapsync)             |    ✅    |
 | [`letsencrypt`](https://github.com/amedee/ansible-servers/tree/main/roles/letsencrypt)       |    ✅    |
 | [`localepurge`](https://github.com/amedee/ansible-servers/tree/main/roles/localepurge)       |    ✅    |
+| [`magic`](https://github.com/amedee/ansible-servers/tree/main/roles/magic)                   |    ✅    |
 | [`mailinabox_dns`](https://github.com/amedee/ansible-servers/tree/main/roles/mailinabox_dns) |    ✅    |
 | [`mailinabox_ufw`](https://github.com/amedee/ansible-servers/tree/main/roles/mailinabox_ufw) |    ✅    |
 | [`munin`](https://github.com/amedee/ansible-servers/tree/main/roles/munin)                   |    ✅    |
