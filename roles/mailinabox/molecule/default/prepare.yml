@@ -5,21 +5,17 @@
   gather_facts: false
 
   tasks:
-    - name: Create DNS directory
+    - name: Create directories for Mail-in-a-Box configuration
       ansible.builtin.file:
-        path: /home/user-data/dns
+        path: "{{ item }}"
         state: directory
         owner: root
         group: root
         mode: "0755"
-
-    - name: Create Mail-in-a-Box tools directory
-      ansible.builtin.file:
-        path: /root/mailinabox/tools
-        state: directory
-        owner: root
-        group: root
-        mode: "0755"
+      loop:
+        - /home/user-data/dns
+        - /home/user-data/www/default
+        - /root/mailinabox/tools
 
     - name: Create dummy DNS update script
       ansible.builtin.copy:

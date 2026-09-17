@@ -1,0 +1,8 @@
+---
+- name: Copy static web page
+  ansible.builtin.copy:
+    src: index.html
+    dest: /home/user-data/www/default/index.html
+    owner: root
+    group: root
+    mode: "0644"

@@ -1,0 +1,12 @@
+---
+- name: Configure Mail-in-a-Box DNS settings
+  ansible.builtin.import_tasks:
+    file: dns.yml
+
+- name: Configure Mail-in-a-Box firewall
+  ansible.builtin.import_tasks:
+    file: firewall.yml
+
+- name: Configure Mail-in-a-Box webserver
+  ansible.builtin.import_tasks:
+    file: web.yml

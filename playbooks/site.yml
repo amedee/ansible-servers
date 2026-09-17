@@ -69,10 +69,9 @@
   roles:
     - debops.debops.environment
     - imapsync
-    - mailinabox_dns
+    - mailinabox
     - dovecot
     - duplicity
-    - mailinabox_ufw
     - munin
 
 - name: Configure WordPress servers

@@ -1,18 +1,18 @@
 ---
-- name: Verify
+- name: Verify Mail-in-a-Box configuration
   hosts: all
-  become: true
   gather_facts: false
 
   tasks:
-    - name: Gather package facts
-      ansible.builtin.package_facts:
+    - name: Read DNS update calls
+      ansible.builtin.slurp:
+        src: /tmp/dns-update-calls
+      register: mailinabox_dns_update_calls
 
-    - name: Verify UFW is installed
+    - name: Assert DNS update was called with --force
       ansible.builtin.assert:
         that:
-          - "'ufw' in ansible_facts.packages"
-        fail_msg: UFW package is not installed
+          - "'--force' in (mailinabox_dns_update_calls.content | b64decode)"
 
     - name: Read UFW configuration
       ansible.builtin.slurp:
