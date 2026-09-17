@@ -1,14 +1,17 @@
-# Domains hosted by this server
-/@amedea\.be$/     DUNNO
-/@amedee\.be$/     DUNNO
-/@vangasse\.eu$/   DUNNO
+{% set pattern_width = 40 -%}
 
-{% if postfix_invalid_recipients %}
-{% set recipient_width = postfix_invalid_recipients | map('replace', '.', '\\.') | map('length') | max + 4 %}
+{% if postfix_recipient_domains -%}
+# Domains hosted by this server
+{% for domain in postfix_recipient_domains | sort -%}
+/@{{ '%-*s' | format(pattern_width, domain | regex_escape ~ '$/') }} DUNNO
+{% endfor %}
+{% endif %}
+
+{% if postfix_invalid_recipients -%}
 {% for address in postfix_invalid_recipients -%}
-/^{{ '%-*s' | format(recipient_width, address | replace('.', '\\.') ~ '$/') }} REJECT Invalid recipient
+/^{{ '%-*s' | format(pattern_width, address | regex_escape ~ '$/') }} REJECT Invalid recipient
 {% endfor %}
 {% endif %}
 
 # Everything else is rejected
-/.*/                                         REJECT
+{{ '%-*s' | format(pattern_width, '/.*/') }} REJECT

@@ -1,2 +1,5 @@
 ---
 hostname: amedee.be
+
+postfix_recipient_domains:
+  - amedee.be

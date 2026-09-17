@@ -8,6 +8,7 @@ Role to configure Postfix.
 - [Default Variables](#default-variables)
   - [postfix_invalid_recipients](#postfix_invalid_recipients)
   - [postfix_mailserver](#postfix_mailserver)
+  - [postfix_recipient_domains](#postfix_recipient_domains)
   - [postfix_ses_enabled](#postfix_ses_enabled)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -35,6 +36,15 @@ postfix_invalid_recipients: []
 
 ```YAML
 postfix_mailserver: false
+```
+
+### postfix_recipient_domains
+
+#### Default value
+
+```YAML
+postfix_recipient_domains:
+  - localhost
 ```
 
 ### postfix_ses_enabled
