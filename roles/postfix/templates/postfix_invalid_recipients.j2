@@ -1,7 +1,14 @@
-/^(?!.*@(amedee\.be|vangasse\.eu)$)/    REJECT
+# Domains hosted by this server
+/@amedea\.be$/     DUNNO
+/@amedee\.be$/     DUNNO
+/@vangasse\.eu$/   DUNNO
+
 {% if postfix_invalid_recipients %}
 {% set recipient_width = postfix_invalid_recipients | map('replace', '.', '\\.') | map('length') | max + 4 %}
 {% for address in postfix_invalid_recipients -%}
 /^{{ '%-*s' | format(recipient_width, address | replace('.', '\\.') ~ '$/') }} REJECT Invalid recipient
 {% endfor %}
 {% endif %}
+
+# Everything else is rejected
+/.*/                                         REJECT
