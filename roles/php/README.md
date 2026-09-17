@@ -29,7 +29,7 @@ Install and configure PHP and PHP-FPM.
 #### Default value
 
 ```YAML
-php_fpm_socket: /run/php/php-fpm.sock
+php_fpm_socket: /run/php/php{{ php_version }}-fpm.sock
 ```
 
 ### php_module_packages
