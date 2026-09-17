@@ -25,6 +25,8 @@
     owner: root
     group: root
     mode: "0644"
+  notify:
+    - Reload Postfix
 
 - name: Generate Postfix recipient access map
   ansible.builtin.template:
@@ -34,7 +36,7 @@
     group: root
     mode: "0644"
   notify:
-    - Restart Postfix
+    - Reload Postfix
 
 - name: Ensure sender canonical PCRE map exists
   ansible.builtin.copy:
@@ -44,7 +46,7 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Restart Postfix
+  notify: Reload Postfix
 
 - name: Ensure recipient canonical PCRE map exists
   ansible.builtin.copy:
@@ -54,7 +56,7 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Restart Postfix
+  notify: Reload Postfix
 
 - name: Configure Postfix main.cf
   ansible.builtin.template:
@@ -63,7 +65,7 @@
     owner: root
     group: root
     mode: '0644'
-  notify: Restart Postfix
+  notify: Reload Postfix
 
 - name: Configure Postfix master.cf
   ansible.builtin.template:
@@ -72,7 +74,7 @@
     owner: root
     group: root
     mode: '0644'
-  notify: Restart Postfix
+  notify: Reload Postfix
 
 - name: Configure logrotate for postfix logs
   ansible.builtin.import_tasks: logrotate.yml
