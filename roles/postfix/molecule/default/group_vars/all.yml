@@ -1,2 +1,2 @@
 ---
-postfix_ses_enabled: true
+postfix_inbound: false

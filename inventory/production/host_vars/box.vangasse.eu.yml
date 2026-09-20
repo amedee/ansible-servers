@@ -5,3 +5,4 @@ postfix_recipient_domains:
   - amedea.be
   - amedee.be
   - vangasse.eu
+postfix_inbound: true

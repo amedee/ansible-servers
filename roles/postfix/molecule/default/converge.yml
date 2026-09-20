@@ -10,5 +10,4 @@
     aws_ses_default_region: "eu-west-1"
 
   roles:
-    - postfix_ses
     - postfix

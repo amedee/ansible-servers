@@ -3,7 +3,7 @@
 /^localhost$/             :
 /^.*@localhost$/          :*
 
-{% if postfix_mailserver | default(false) %}
+{% if postfix_inbound %}
 /^.*@vangasse\.eu$/       :
 /^.*@.*\.vangasse\.eu$/   :
 /^.*@amedee\.be$/         :

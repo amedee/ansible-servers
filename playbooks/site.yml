@@ -52,7 +52,6 @@
     - debops.debops.unattended_upgrades
     - debops.debops.journald
     - munin_node
-    - postfix_ses
     - postfix
     - magic
 

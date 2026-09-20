@@ -27,7 +27,7 @@ bounce_queue_lifetime = 3d
 message_size_limit = 52428800
 header_size_limit = 4096000
 delay_warning_time = 0
-{% if postfix_mailserver %}
+{% if postfix_inbound %}
 mailbox_size_limit = 0
 smtpd_forbid_bare_newline = normalize
 {% endif %}
@@ -44,7 +44,7 @@ smtpd_relay_restrictions = permit_mynetworks,permit_sasl_authenticated,reject_un
 # TLS
 # ============================================================================
 
-{% if postfix_mailserver %}
+{% if postfix_inbound %}
 smtpd_tls_cert_file = /home/user-data/ssl/ssl_certificate.pem
 smtpd_tls_key_file = /home/user-data/ssl/ssl_private_key.pem
 {% else %}
@@ -52,7 +52,7 @@ smtpd_tls_cert_file = /etc/ssl/certs/ssl-cert-snakeoil.pem
 smtpd_tls_key_file = /etc/ssl/private/ssl-cert-snakeoil.key
 {% endif %}
 smtpd_tls_security_level = may
-{% if postfix_mailserver %}
+{% if postfix_inbound %}
 smtpd_tls_auth_only = yes
 smtpd_tls_protocols = !SSLv2,!SSLv3
 smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1
@@ -63,7 +63,7 @@ smtpd_tls_received_header = yes
 smtpd_tls_dh1024_param_file = /home/user-data/ssl/dh2048.pem
 {% endif %}
 
-{% if postfix_mailserver %}
+{% if postfix_inbound %}
 smtp_tls_CApath = /etc/ssl/certs
 smtp_tls_protocols = !SSLv2,!SSLv3
 smtp_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1
@@ -81,12 +81,13 @@ smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 
 smtp_sasl_tls_security_options = noanonymous
 smtpd_sasl_auth_enable = yes
-{% if postfix_mailserver %}
+{% if postfix_inbound %}
 smtpd_sasl_type = dovecot
 smtpd_sasl_path = private/auth
 smtpd_sender_login_maps = sqlite:/etc/postfix/sender-login-maps.cf
 {% endif %}
 
+{% if postfix_inbound %}
 
 # ============================================================================
 # Content checks
@@ -96,6 +97,7 @@ body_checks = pcre:/etc/postfix/checks/body_checks.pcre
 header_checks = pcre:/etc/postfix/checks/header_checks.pcre
 mime_header_checks = pcre:/etc/postfix/checks/mime_header_checks.pcre
 
+{% endif %}
 
 # ============================================================================
 # Address rewriting
@@ -104,7 +106,7 @@ mime_header_checks = pcre:/etc/postfix/checks/mime_header_checks.pcre
 recipient_canonical_maps = pcre:/etc/postfix/recipient-canonical-maps.pcre
 smtp_generic_maps = pcre:/etc/postfix/generic.pcre
 sender_canonical_maps = pcre:/etc/postfix/sender-canonical-maps.pcre
-{% if not postfix_mailserver %}
+{% if not postfix_inbound %}
 alias_maps = hash:/etc/aliases
 {% endif %}
 
@@ -113,22 +115,20 @@ alias_maps = hash:/etc/aliases
 # Transport
 # ============================================================================
 
-{% if postfix_ses_enabled %}
 transport_maps = pcre:/etc/postfix/transport.pcre
-{% endif %}
 
 
 # ============================================================================
 # Recipient restrictions
 # ============================================================================
 
-{% if postfix_mailserver %}
+{% if postfix_inbound %}
 smtpd_recipient_restrictions = permit_mynetworks,permit_sasl_authenticated,check_recipient_access pcre:/etc/postfix/checks/invalid_recipients.pcre,reject_rbl_client zen.spamhaus.org=127.0.0.[2..11],reject_unlisted_recipient,check_policy_service inet:127.0.0.1:10023,check_policy_service inet:127.0.0.1:12340
 {% else %}
 smtpd_recipient_restrictions = permit_mynetworks,permit_sasl_authenticated,check_recipient_access pcre:/etc/postfix/checks/invalid_recipients.pcre,reject_unauth_destination
 {% endif %}
 
-{% if postfix_mailserver %}
+{% if postfix_inbound %}
 
 # ============================================================================
 # Mail server configuration

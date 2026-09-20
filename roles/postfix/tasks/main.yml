@@ -9,6 +9,8 @@
       - procmail
       - swaks
     state: present
+    update_cache: true
+    cache_valid_time: 3600
 
 - name: Ensure /etc/postfix/checks/ directory exists
   ansible.builtin.file:
@@ -25,6 +27,7 @@
     owner: root
     group: root
     mode: "0644"
+  when: postfix_inbound
   notify:
     - Reload Postfix
 
@@ -57,6 +60,9 @@
     group: root
     mode: "0644"
   notify: Reload Postfix
+
+- name: Configure Amazon SES outbound email transport
+  ansible.builtin.import_tasks: ses.yml
 
 - name: Configure Postfix main.cf
   ansible.builtin.template:

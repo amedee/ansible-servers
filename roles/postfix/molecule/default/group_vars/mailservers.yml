@@ -1,2 +1,2 @@
 ---
-postfix_mailserver: true
+postfix_inbound: true

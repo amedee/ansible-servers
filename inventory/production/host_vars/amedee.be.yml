@@ -3,3 +3,4 @@ hostname: amedee.be
 
 postfix_recipient_domains:
   - amedee.be
+postfix_inbound: false
