@@ -12,6 +12,10 @@
   ansible.builtin.command:
     cmd: snap install --classic certbot
     creates: /snap/bin/certbot
+  register: letsencrypt_certbot_install
+  retries: 3
+  delay: 10
+  until: letsencrypt_certbot_install.rc == 0
 
 - name: Create Certbot symlink
   ansible.builtin.file:
