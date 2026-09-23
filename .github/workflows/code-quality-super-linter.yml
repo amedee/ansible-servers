@@ -24,6 +24,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: write
   contents: read
   issues: write
   pull-requests: write
@@ -52,7 +53,7 @@ jobs:
           # super-linter needs the full git history to get the
           # list of files that changed across commits
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
 
       - name: Restore Ansible cache
         uses: ./.github/actions/restore-ansible-cache
@@ -155,7 +156,7 @@ jobs:
       - name: Stage changed files
         run: git add .
 
-      - name: Check if there are changes
+      - name: Detect requirements changes
         id: changes
         run: |
           if git diff --cached --quiet; then
@@ -164,62 +165,39 @@ jobs:
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: 📤 Extract staged git diff
-        id: diff_outputs
+      - name: Show generated changes
         if: steps.changes.outputs.has_changes == 'true'
+        run: git diff --cached
+
+      - name: 🔁 Commit and Push
+        if: |
+          github.ref == 'refs/heads/main' &&
+          steps.changes.outputs.has_changes == 'true'
         run: |
-          git diff --cached > diff.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "⬆️ Applying Super-Linter fixes"
+          git restore --worktree -- .
 
-          printf "diff_content<<EOF\n%s\nEOF\n" "$(cat diff.txt)" >> "$GITHUB_OUTPUT"
+          retries=0
+          while [ "$retries" -lt 3 ]; do
+            git pull --rebase origin main
 
-          {
-            echo "### 🔍 Diff"
-            echo
-            echo '```diff'
-            cat diff.txt
-            echo '```'
-          } | tee -a "$GITHUB_STEP_SUMMARY"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
 
-      - name: 🤖 Generate AI commit message
-        id: ai_commit
+            retries=$((retries + 1))
+            echo "Push failed, retrying ($retries/3)..."
+          done
+
+          exit 1
+
+      - name: Trigger pipeline
         if: steps.changes.outputs.has_changes == 'true'
-        uses: ./.github/actions/ai-commit-message
+        run: gh workflow run pipeline.yml --ref main
         env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        with:
-          diff_content: ${{ steps.diff_outputs.outputs.diff_content }}
-          prompt_content: |
-            Write a concise Git commit message describing the staged changes.
-
-      - name: Ensure commit message exists
-        if: ${{ steps.changes.outputs.has_changes == 'true' &&
-                github.event_name != 'pull_request' }}
-        env:
-          AI_MESSAGE: ${{ steps.ai_commit.outputs.message }}
-        run: |
-          if [ -z "$AI_MESSAGE" ]; then
-            echo "AI commit message missing. Aborting workflow."
-            exit 1
-          fi
-
-      - name: 🔁 Commit, push, and PR
-        if: ${{ steps.changes.outputs.has_changes == 'true' &&
-                github.event_name != 'pull_request' }}
-        uses: ./.github/actions/create-or-update-pr
-        with:
-          branch: chore/super-linter
-          commit_message: ${{ steps.ai_commit.outputs.message }}
-          pr_title: "⬆️ Super-Linter"
-          pr_body: |
-            ## 🤖 Automated Super-Linter Fixes
-
-            ${{ steps.ai_commit.outputs.message }}
-
-            ---
-            **Diff included in workflow summary.**
-          github_token: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
-          git_user_name: "github-actions[bot]"
-          git_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
+          GH_TOKEN: ${{ github.token }}
 
       - name: Fail workflow if super-linter failed
         env:

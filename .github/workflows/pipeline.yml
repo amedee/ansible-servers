@@ -33,7 +33,8 @@ jobs:
   super-linter:
     name: 🛠️ Code Quality — Super-Linter
     permissions:
-      contents: read
+      actions: write
+      contents: write
       issues: write
       packages: read
       pull-requests: write
