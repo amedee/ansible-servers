@@ -42,15 +42,29 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: 🔍 Check for NodeJS custom action
+        id: check_nodejs_actions
+        shell: bash
+        run: |
+          if compgen -G ".github/actions/*/package.json" > /dev/null; then
+            echo "has_nodejs_actions=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No Node.js custom actions found."
+            echo "has_nodejs_actions=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: ⚡ Set up Node.js
+        if: steps.check_nodejs_actions.outputs.has_nodejs_actions == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "20"
 
       - name: 📦 Install root dependencies
+        if: steps.check_nodejs_actions.outputs.has_nodejs_actions == 'true'
         run: npm ci
 
       - name: 🛠 Install dependencies for custom actions
+        if: steps.check_nodejs_actions.outputs.has_nodejs_actions == 'true'
         run: |
           echo "Scanning for action directories with package.json..."
           for dir in .github/actions/*; do
@@ -69,9 +83,11 @@ jobs:
           done
 
       - name: Check ESLint version
+        if: steps.check_nodejs_actions.outputs.has_nodejs_actions == 'true'
         run: npx eslint --version
 
       - name: 📦 Cache npm and action node_modules
+        if: steps.check_nodejs_actions.outputs.has_nodejs_actions == 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
@@ -86,6 +102,7 @@ jobs:
             ${{ runner.os }}-eslint-
 
       - name: 🔍 Run ESLint
+        if: steps.check_nodejs_actions.outputs.has_nodejs_actions == 'true'
         run: |
           echo "Starting ESLint scan..."
           npx eslint \

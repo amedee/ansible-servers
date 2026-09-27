@@ -10,7 +10,6 @@ export default [
 	{
 		files: [
 			".github/linters/eslint.config.js",
-			".github/actions/ai-commit-message/index.js",
 		],
 		...js.configs.recommended,
 		...prettier,
