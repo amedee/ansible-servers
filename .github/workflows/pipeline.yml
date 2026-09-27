@@ -45,10 +45,6 @@ jobs:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       ANSIBLE_DEP_UPDATER_TOKEN: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
 
-  eslint:
-    name: 🛠️ Code Quality — ESLint
-    uses: ./.github/workflows/code-quality-eslint.yml
-
   pylint:
     name: 🛠️ Code Quality — Pylint
     uses: ./.github/workflows/code-quality-pylint.yml
@@ -87,7 +83,6 @@ jobs:
       - super-linter
       - ansible-lint
       - molecule
-      - eslint
       - pylint
       - validate-configs
       - pre-commit
