@@ -21,11 +21,14 @@ runs:
           /home/runner/.ansible/collections
           /home/runner/.ansible/roles
         key: ansible-deps-${{ hashFiles('requirements.yml') }}
+        restore-keys: |
+          ansible-deps-
 
     - name: Install Galaxy roles
       shell: bash
       run: |
         ansible-galaxy role install \
+          --force \
           -r requirements.yml \
           -p /home/runner/.ansible/roles
 
@@ -33,5 +36,6 @@ runs:
       shell: bash
       run: |
         ansible-galaxy collection install \
+          --force \
           -r requirements.yml \
           -p /home/runner/.ansible/collections

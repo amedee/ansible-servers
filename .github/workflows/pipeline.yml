@@ -26,10 +26,6 @@ permissions:
   contents: read
 
 jobs:
-  preheat-ansible-cache:
-    name: 🔥 Preheat Ansible Cache
-    uses: ./.github/workflows/preheat-ansible-cache.yml
-
   super-linter:
     name: 🛠️ Code Quality — Super-Linter
     permissions:
@@ -40,7 +36,6 @@ jobs:
       pull-requests: write
       statuses: write
     uses: ./.github/workflows/code-quality-super-linter.yml
-    needs: preheat-ansible-cache
     secrets:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       ANSIBLE_DEP_UPDATER_TOKEN: ${{ secrets.ANSIBLE_DEP_UPDATER_TOKEN }}
@@ -60,12 +55,10 @@ jobs:
   ansible-lint:
     name: 🛠️ Code Quality — Ansible Lint
     uses: ./.github/workflows/code-quality-ansible-lint.yml
-    needs: preheat-ansible-cache
 
   molecule:
     name: 🧪 Molecule Tests
     uses: ./.github/workflows/molecule.yml
-    needs: preheat-ansible-cache
 
   detect-changes:
     name: 🔎 Detect production changes
@@ -79,7 +72,6 @@ jobs:
     uses: ./.github/workflows/ansible-run.yml
     needs:
       - detect-changes
-      - preheat-ansible-cache
       - super-linter
       - ansible-lint
       - molecule
