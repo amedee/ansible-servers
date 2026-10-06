@@ -25,7 +25,7 @@ concurrency:
 
 permissions:
   actions: write
-  contents: read
+  contents: write
   issues: write
   pull-requests: write
   statuses: write
@@ -194,7 +194,9 @@ jobs:
           exit 1
 
       - name: Trigger pipeline
-        if: steps.changes.outputs.has_changes == 'true'
+        if: |
+          github.ref == 'refs/heads/main' &&
+          steps.changes.outputs.has_changes == 'true'
         run: gh workflow run pipeline.yml --ref main
         env:
           GH_TOKEN: ${{ github.token }}
