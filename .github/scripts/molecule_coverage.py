@@ -183,7 +183,7 @@ def update_readme(path: str, coverage: str) -> None:
     start = contents.find(COVERAGE_START)
     end = contents.find(COVERAGE_END)
 
-    if 0 <= start <= end and end >= 0:
+    if 0 <= start <= end:
         end += len(COVERAGE_END)
         contents = contents[:start] + coverage + contents[end:]
     else:
