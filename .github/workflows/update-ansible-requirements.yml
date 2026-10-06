@@ -6,6 +6,10 @@ on: # yamllint disable-line rule:truthy
     branches:
       - main
     paths:
+      - "requirements.txt"
+      - "requirements.yml"
+      - ".github/actions/setup-python-pip/action.yml"
+      - ".github/scripts/update_ansible_requirements.py"
       - ".github/workflows/update-ansible-requirements.yml"
   schedule:
     - cron: "0 5 * * 1" # Every Monday at 05:00 UTC
@@ -39,7 +43,7 @@ jobs:
       - name: 🐍 Setup Python and Install Dependencies
         uses: ./.github/actions/setup-python-pip
         with:
-          python-version: "3.13"
+          python-version: "3.x"
           requirements-file: "requirements.txt"
 
       - name: 🔄 Update requirements.yml
