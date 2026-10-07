@@ -41,7 +41,7 @@ jobs:
       - name: 🐍 Setup Python and Install Dependencies
         uses: ./.github/actions/setup-python-pip
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           requirements-file: "requirements.txt"
 
       - name: 💾 Cache pre-commit environments
