@@ -64,6 +64,20 @@ jobs:
     name: 🔎 Detect production changes
     uses: ./.github/workflows/detect-changes.yml
 
+  quality-gate:
+    name: 🚦 Quality Gate
+    runs-on: ubuntu-latest
+    needs:
+      - super-linter
+      - ansible-lint
+      - molecule
+      - pylint
+      - validate-configs
+      - pre-commit
+    steps:
+      - name: 🚦 Quality gate passed
+        run: echo "All quality checks passed."
+
   deploy:
     name: 🚀 Deploy to Production
     if: >
@@ -72,12 +86,7 @@ jobs:
     uses: ./.github/workflows/ansible-run.yml
     needs:
       - detect-changes
-      - super-linter
-      - ansible-lint
-      - molecule
-      - pylint
-      - validate-configs
-      - pre-commit
+      - quality-gate
     with:
       check-mode: false
     secrets:
