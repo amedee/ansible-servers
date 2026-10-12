@@ -111,6 +111,7 @@ wp_secret_keys:
 wp_plugins:
   - activitypub
   - akismet
+  - code-snippets
   - editorial-calendar
   - google-site-kit
   - jetpack
