@@ -17,6 +17,11 @@
       - "{{ php_repository.component }}"
     signed_by: "{{ php_repository.key }}"
 
+- name: Update apt cache
+  ansible.builtin.apt:
+    name: "{{ php_packages + php_module_packages }}"
+    update_cache: true
+
 - name: Install PHP packages
   ansible.builtin.apt:
     name: "{{ php_packages + php_module_packages }}"
