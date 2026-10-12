@@ -20,6 +20,7 @@
 - name: Install PHP packages
   ansible.builtin.apt:
     name: "{{ php_packages + php_module_packages }}"
+    state: present
     update_cache: true
     cache_valid_time: 86400 # One day
     lock_timeout: 300 # 5 minutes

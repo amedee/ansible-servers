@@ -12,6 +12,10 @@
     name:
       - fdupes
       - mpack
+    state: present
+    update_cache: true
+    cache_valid_time: 86400 # One day
+    lock_timeout: 300 # 5 minutes
 
 - name: Copy script for image extraction
   ansible.builtin.copy:

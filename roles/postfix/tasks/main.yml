@@ -10,7 +10,8 @@
       - swaks
     state: present
     update_cache: true
-    cache_valid_time: 3600
+    cache_valid_time: 86400 # One day
+    lock_timeout: 300 # 5 minutes
 
 - name: Ensure /etc/postfix/checks/ directory exists
   ansible.builtin.file:

@@ -3,6 +3,9 @@
   ansible.builtin.apt:
     name: "{{ wp_packages + wp_php_packages + wp_python_packages }}"
     state: present
+    update_cache: true
+    cache_valid_time: 86400 # One day
+    lock_timeout: 300 # 5 minutes
 
 - name: Configure WordPress database
   ansible.builtin.import_tasks:

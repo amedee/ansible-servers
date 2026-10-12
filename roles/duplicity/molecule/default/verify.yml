@@ -60,6 +60,9 @@
       ansible.builtin.apt:
         name: "duplicity={{ item }}"
         state: present
+        update_cache: true
+        cache_valid_time: 86400 # One day
+        lock_timeout: 300 # 5 minutes
       register: duplicity_install_attempt
       failed_when: false
       loop: "{{ duplicity_available_blocked_versions }}"

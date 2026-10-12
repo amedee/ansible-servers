@@ -3,6 +3,10 @@
   ansible.builtin.apt:
     name:
       - hadori
+    state: present
+    update_cache: true
+    cache_valid_time: 86400 # One day
+    lock_timeout: 300 # 5 minutes
 
 - name: Configure cron job for hadori
   ansible.builtin.copy:
