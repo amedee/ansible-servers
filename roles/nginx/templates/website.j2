@@ -62,10 +62,6 @@ server {
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 {% endif %}
-
-    if ($http_content_type ~* "^multipart/form-data") {
-        return 403;
-    }
 }
 
 # Redirect all HTTP traffic to HTTPS
