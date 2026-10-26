@@ -48,10 +48,6 @@ jobs:
     name: 🛠️ Code Quality — Validate Configs
     uses: ./.github/workflows/code-quality-validate-configs.yml
 
-  pre-commit:
-    name: 🛠️ Code Quality — Pre-Commit
-    uses: ./.github/workflows/code-quality-pre-commit.yml
-
   ansible-lint:
     name: 🛠️ Code Quality — Ansible Lint
     uses: ./.github/workflows/code-quality-ansible-lint.yml
@@ -73,7 +69,6 @@ jobs:
       - molecule
       - pylint
       - validate-configs
-      - pre-commit
     steps:
       - name: 🚦 Quality gate passed
         run: echo "All quality checks passed."

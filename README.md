@@ -67,6 +67,7 @@ This repository uses CI to continuously validate configuration quality:
 [![Codacy Badge][codacy-badge]][codacy-grade]
 [![Super-Linter][superlinter-badge]][superlinter-status]
 [![CodeFactor][codefactor-badge]][codefactor-status]
+[![pre-commit.ci status][pre-commit-badge]][pre-commit-status]
 
 [![License: MIT][license-badge]][license-link]
 
@@ -101,6 +102,10 @@ Timelapse visualisation of how this infrastructure codebase evolved over time.
   https://www.codefactor.io/repository/github/amedee/ansible-servers/badge
 [codefactor-status]:
   https://www.codefactor.io/repository/github/amedee/ansible-servers
+[pre-commit-badge]:
+  https://results.pre-commit.ci/badge/github/amedee/ansible-servers/main.svg
+[pre-commit-status]:
+  https://results.pre-commit.ci/latest/github/amedee/ansible-servers/main
 [license-badge]: https://img.shields.io/badge/License-MIT-yellow.svg
 [license-link]: https://opensource.org/licenses/MIT
 [checks files]: roles/postfix/files/checks
