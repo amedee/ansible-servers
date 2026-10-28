@@ -12,6 +12,7 @@ outputs:
 
 runs:
   using: composite
+
   steps:
     - name: Restore Ansible roles and collections cache
       id: cache
@@ -25,17 +26,17 @@ runs:
           ansible-deps-
 
     - name: Install Galaxy roles
+      if: steps.cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
         ansible-galaxy role install \
-          --force \
           -r requirements.yml \
           -p /home/runner/.ansible/roles
 
     - name: Install Galaxy collections
+      if: steps.cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
         ansible-galaxy collection install \
-          --force \
           -r requirements.yml \
           -p /home/runner/.ansible/collections
