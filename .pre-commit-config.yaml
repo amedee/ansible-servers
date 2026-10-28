@@ -28,10 +28,6 @@ repos:
     hooks:
       - id: detect-secrets
         args: [--baseline, .config/.secrets.baseline]
-  - repo: https://github.com/PrincetonUniversity/blocklint
-    rev: v0.3.0
-    hooks:
-      - id: blocklint
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.38.2
     hooks:
