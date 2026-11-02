@@ -15,7 +15,7 @@
     priv: "{{ wp_db_name }}.*:ALL"
     column_case_sensitive: true
     state: present
-    update_password: on_create
+    update_password: on_create # pragma: allowlist secret
     login_user: root
     login_unix_socket: /run/mysqld/mysqld.sock
   no_log: "{{ not lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
