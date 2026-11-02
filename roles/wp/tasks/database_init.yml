@@ -24,13 +24,19 @@
       - "ansible_python_interpreter={{ ansible_python_interpreter | default('undefined') }}"
       - "discovered={{ ansible_facts.discovered_interpreter_python | default('undefined') }}"
 
-- name: Check PyMySQL in discovered interpreter
-  ansible.builtin.shell: |
-    {{ ansible_facts.discovered_interpreter_python }} -c "
-    import pymysql
-    print(pymysql.__version__)
-    "
+- name: Show Python executables
+  shell: |
+    which python3
+    ls -l /usr/bin/python3
   changed_when: false
+  register: wp_python_info
+
+- debug:
+    var: wp_python_info.stdout_lines
+
+- name: Display connection type
+  debug:
+    var: ansible_connection
 
 - name: Create WordPress database
   ansible.mysql.mysql_db:
