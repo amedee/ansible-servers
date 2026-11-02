@@ -33,7 +33,7 @@ runs:
       env:
         INPUTS_REQUIREMENTS_FILE: ${{ inputs.requirements-file }}
         PIP_DISABLE_PIP_VERSION_CHECK: "1"
-      run: |
+      run: | # zizmor: ignore[github-env] Safe: adds a workflow-created virtualenv to PATH
         if [ ! -x .venv/bin/python ]; then
           python -m venv .venv
 
@@ -41,6 +41,4 @@ runs:
           .venv/bin/pip install -r "${INPUTS_REQUIREMENTS_FILE}"
         fi
 
-        # zizmor: ignore[github-env]
-        # Safe: adds a repository-local virtualenv created by this workflow.
         echo "${PWD}/.venv/bin" >> "${GITHUB_PATH}"
