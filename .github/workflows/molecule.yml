@@ -58,6 +58,20 @@ jobs:
       - name: Restore Ansible cache
         uses: ./.github/actions/restore-ansible-cache
 
+      - name: Check workspace permissions
+        run: |
+          whoami
+          ls -ld \
+            /home \
+            /home/runner \
+            /home/runner/work \
+            /home/runner/work/ansible-servers \
+            /home/runner/work/ansible-servers/ansible-servers \
+            /home/runner/work/ansible-servers/ansible-servers/.venv \
+            /home/runner/work/ansible-servers/ansible-servers/.venv/bin
+      
+          namei -l /home/runner/work/ansible-servers/ansible-servers/.venv/bin/python3.11
+
       - name: Prepare Ansible temporary directory
         run: mkdir -p "$HOME/.ansible/tmp"
 
