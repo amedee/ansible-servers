@@ -50,6 +50,7 @@
     name: "{{ wp_db_user }}"
     host: "{{ wp_db_host }}"
     password: "{{ wp_db_password }}"
+    plugin: caching_sha2_password
     priv: "{{ wp_db_name }}.*:ALL"
     column_case_sensitive: true
     state: present
