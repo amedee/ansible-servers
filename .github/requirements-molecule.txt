@@ -1,4 +1,6 @@
 ansible
 molecule
 molecule-plugins[docker]
+PyMySQL
+python-debian
 ruamel.yaml

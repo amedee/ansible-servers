@@ -1,6 +1,6 @@
 ---
 name: Setup Python and Install Dependencies
-description: Setup Python, cache pip packages, and install dependencies from a requirements file
+description: Setup Python, restore cached virtualenv, and install dependencies if needed
 
 inputs:
   python-version:
@@ -17,14 +17,26 @@ runs:
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
       with:
         python-version: ${{ inputs.python-version }}
-        cache: pip
-        cache-dependency-path: ${{ inputs.requirements-file }}
 
-    - name: 📦 Install dependencies from requirements file
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r "${INPUTS_REQUIREMENTS_FILE}"
+    - name: ♻️ Restore virtualenv cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .venv
+        key: >
+          venv-${{ runner.os }}-${{ inputs.python-version }}-${{
+          hashFiles(inputs.requirements-file) }}
+
+    - name: 📦 Create virtualenv and install dependencies
       shell: bash
-
       env:
         INPUTS_REQUIREMENTS_FILE: ${{ inputs.requirements-file }}
+        PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      run: | # zizmor: ignore[github-env] Safe: adds a workflow-created virtualenv to PATH
+        if [ ! -x .venv/bin/python ]; then
+          python -m venv .venv
+
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/pip install -r "${INPUTS_REQUIREMENTS_FILE}"
+        fi
+
+        echo "${PWD}/.venv/bin" >> "${GITHUB_PATH}"
