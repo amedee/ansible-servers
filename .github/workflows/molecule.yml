@@ -62,7 +62,7 @@ jobs:
         run: mkdir -p "$HOME/.ansible/tmp"
 
       - name: Run Molecule
-        run: molecule test -s "${MATRIX_SCENARIO}" -- -vvv
+        run: molecule test -s "${MATRIX_SCENARIO}"
         working-directory: roles/${{ matrix.scenario.role }}
         env:
           MATRIX_SCENARIO: ${{ matrix.scenario.scenario }}
