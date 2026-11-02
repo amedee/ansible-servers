@@ -38,6 +38,32 @@
   debug:
     var: ansible_connection
 
+- name: Show MySQL version
+  command: mysql -NBe "SELECT VERSION()"
+  register: wp_mysql_version
+  changed_when: false
+
+- debug:
+    var: wp_mysql_version.stdout
+
+- name: Show authentication plugins
+  command: mysql -NBe "SHOW PLUGINS"
+  register: wp_mysql_plugins
+  changed_when: false
+
+- debug:
+    var: wp_mysql_plugins.stdout_lines
+
+- name: Show users and plugins
+  command: >
+    mysql -NBe
+    "SELECT user,host,plugin FROM mysql.user"
+  register: wp_mysql_users
+  changed_when: false
+
+- debug:
+    var: wp_mysql_users.stdout_lines
+
 - name: Create WordPress database
   ansible.mysql.mysql_db:
     name: "{{ wp_db_name }}"
@@ -56,4 +82,4 @@
     state: present
     login_user: root
     login_unix_socket: /run/mysqld/mysqld.sock
-  no_log: true
+  no_log: "{{ not lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
