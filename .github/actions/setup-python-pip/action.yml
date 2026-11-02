@@ -25,6 +25,8 @@ runs:
         key: >
           venv-${{ runner.os }}-${{ inputs.python-version }}-${{
           hashFiles(inputs.requirements-file) }}
+        restore-keys: |
+          venv-${{ runner.os }}-${{ inputs.python-version }}-
 
     - name: 📦 Create virtualenv and install dependencies
       shell: bash
