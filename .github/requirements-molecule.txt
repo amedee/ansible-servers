@@ -1,5 +1,5 @@
 ansible
-debian
 molecule
 molecule-plugins[docker]
+python-debian
 ruamel.yaml
