@@ -25,6 +25,12 @@
           - ansible_facts.services['mysql.service'].state == 'running'
         fail_msg: MySQL service is not running.
 
+    # Required by ansible.mysql.mysql_query on the test instance.
+    - name: Install PyMySQL for verification
+      ansible.builtin.package:
+        name: python3-pymysql
+        state: present
+
     - name: Get MySQL root authentication plugin
       ansible.mysql.mysql_query:
         query: >
