@@ -19,15 +19,6 @@
   changed_when: false
   failed_when: false
 
-- name: Check venv access as www-data
-  become: true
-  become_user: www-data
-  command:
-    argv:
-      - /home/runner/work/ansible-servers/ansible-servers/.venv/bin/python3.11
-      - --version
-  changed_when: false
-
 - name: Download WordPress
   when: wp_is_installed.rc != 0
   become: true
