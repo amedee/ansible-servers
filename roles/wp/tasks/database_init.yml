@@ -1,15 +1,21 @@
 ---
-- name: Show Python interpreter
-  ansible.builtin.debug:
-    var: ansible_facts.python
+- name: Show interpreter discovery
+  ansible.builtin.setup:
+    gather_subset:
+      - all
 
-- name: Show Python executable
+- name: Show discovered interpreter
   ansible.builtin.debug:
-    msg: "{{ ansible_facts.python.executable }}"
+    msg: "{{ ansible_facts.discovered_interpreter_python }}"
 
-- name: Check PyMySQL import
+- name: Verify PyMySQL package
   ansible.builtin.command:
-    cmd: "{{ ansible_facts.python.executable }} -c 'import pymysql; print(pymysql.__version__)'"
+    cmd: dpkg -l python3-pymysql
+  changed_when: false
+
+- name: Verify PyMySQL import
+  ansible.builtin.command:
+    cmd: python3 -c "import pymysql; print(pymysql.__version__)"
   changed_when: false
 
 - name: Create WordPress database
