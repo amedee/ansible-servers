@@ -69,7 +69,7 @@ jobs:
             /home/runner/work/ansible-servers/ansible-servers \
             /home/runner/work/ansible-servers/ansible-servers/.venv \
             /home/runner/work/ansible-servers/ansible-servers/.venv/bin
-      
+
           namei -l /home/runner/work/ansible-servers/ansible-servers/.venv/bin/python3.11
 
       - name: Prepare Ansible temporary directory
