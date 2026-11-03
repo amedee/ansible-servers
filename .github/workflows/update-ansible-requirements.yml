@@ -10,7 +10,6 @@ on: # yamllint disable-line rule:truthy
       - "requirements.yml"
       - ".github/actions/setup-python-pip/action.yml"
       - ".github/scripts/update_ansible_requirements.py"
-      - ".github/workflows/update-ansible-requirements.yml"
   schedule:
     - cron: "0 5 * * 1" # Every Monday at 05:00 UTC
   workflow_dispatch:
@@ -22,7 +21,6 @@ concurrency:
 permissions:
   actions: write
   contents: write
-  pull-requests: write
 
 jobs:
   update-ansible-deps:
@@ -70,6 +68,8 @@ jobs:
           github.ref == 'refs/heads/main' &&
           steps.changes.outputs.has_changes == 'true'
         run: |
+          set -euo pipefail
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "⬆️ Update Ansible requirements"
