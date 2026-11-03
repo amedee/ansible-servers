@@ -91,6 +91,7 @@ jobs:
           VALIDATE_EDITORCONFIG: false
           VALIDATE_ENV: false
           VALIDATE_GIT_COMMITLINT: false
+          VALIDATE_GITHUB_ACTIONS: false
           VALIDATE_GO: false
           VALIDATE_GOOGLE_JAVA_FORMAT: false
           VALIDATE_GO_MODULES: false
