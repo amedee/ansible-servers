@@ -20,7 +20,8 @@ permissions:
 
 jobs:
   generate-docs:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-26.04
+
     steps:
       - name: Collect Workflow Telemetry
         # yamllint disable-line rule:line-length

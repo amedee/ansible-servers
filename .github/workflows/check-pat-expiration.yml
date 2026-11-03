@@ -15,8 +15,9 @@ permissions:
 
 jobs:
   check-token-expiration:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-26.04
     environment: production
+
     steps:
       - name: Collect Workflow Telemetry
         # yamllint disable-line rule:line-length

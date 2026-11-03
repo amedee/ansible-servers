@@ -33,8 +33,9 @@ permissions:
 jobs:
   lint:
     name: Super-linter
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     environment: production
+
     permissions:
       contents: write
       pull-requests: read

@@ -22,7 +22,7 @@ env:
 jobs:
   gource:
     name: Generate, upload, and publish Gource video
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     environment: production
 
     steps:

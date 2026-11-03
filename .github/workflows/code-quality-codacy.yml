@@ -24,13 +24,15 @@ permissions:
 
 jobs:
   codacy-security-scan:
+    name: Codacy Security Scan
+    runs-on: ubuntu-26.04
+    environment: production
+
     permissions:
       actions: read
       contents: read
       security-events: write
-    name: Codacy Security Scan
-    runs-on: ubuntu-latest
-    environment: production
+
     steps:
       - name: Collect Workflow Telemetry
         # yamllint disable-line rule:line-length

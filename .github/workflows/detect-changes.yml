@@ -15,7 +15,8 @@ permissions:
 jobs:
   detect:
     name: 🔎 Detect production changes
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-26.04
+
     outputs:
       production: ${{ steps.filter.outputs.production }}
 

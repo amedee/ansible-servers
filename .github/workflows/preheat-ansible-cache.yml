@@ -23,7 +23,7 @@ permissions:
 jobs:
   ansible-cache:
     name: Warm Ansible dependency cache
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     steps:
       - name: Collect Workflow Telemetry

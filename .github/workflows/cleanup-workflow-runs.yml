@@ -16,10 +16,12 @@ permissions:
 jobs:
   del_runs:
     name: Delete old workflow runs
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-26.04
+
     permissions:
       actions: write
       contents: read
+
     steps:
       - name: Collect Workflow Telemetry
         # yamllint disable-line rule:line-length

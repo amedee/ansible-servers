@@ -22,8 +22,9 @@ permissions:
 jobs:
   ansible-playbook:
     name: Ansible Playbook
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     environment: production
+
     strategy:
       matrix:
         host:
