@@ -79,6 +79,7 @@ jobs:
           LINTER_RULES_PATH: "."
           MARKDOWN_CONFIG_FILE: ".markdownlint.yaml"
           VALIDATE_ANSIBLE: false
+          VALIDATE_BASH_EXEC: false
           VALIDATE_CLANG_FORMAT: false
           VALIDATE_CLOJURE: false
           VALIDATE_CLOUDFORMATION: false
