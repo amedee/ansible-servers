@@ -10,10 +10,12 @@
   ansible.mysql.mysql_user:
     name: "{{ wp_db_user }}"
     host: "{{ wp_db_host }}"
-    password: "{{ wp_db_password }}"
+    plugin: caching_sha2_password
+    plugin_auth_string: "{{ wp_db_password }}"
     priv: "{{ wp_db_name }}.*:ALL"
     column_case_sensitive: true
     state: present
+    update_password: on_create # pragma: allowlist secret
     login_user: root
     login_unix_socket: /run/mysqld/mysqld.sock
-  no_log: true
+  no_log: "{{ not lookup('env', 'MOLECULE_SCENARIO_NAME') }}"

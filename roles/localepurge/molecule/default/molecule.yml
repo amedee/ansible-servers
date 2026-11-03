@@ -16,6 +16,7 @@ provisioner:
       instance:
         ansible_connection: local
         ansible_become: true
+        ansible_python_interpreter: /usr/bin/python3
         locale: en_US.UTF-8
 
 scenario:
