@@ -6,11 +6,6 @@ on: # yamllint disable-line rule:truthy
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      skip_interval_hours:
-        description: Skip interval in hours (default 24)
-        required: false
-        default: "24"
 
 concurrency:
   group: gource-${{ github.workflow }}-${{ github.ref }}
@@ -46,41 +41,38 @@ jobs:
 
       - name: Decide whether to run Gource
         id: check
-        env:
-          HOURS: ${{ github.event.inputs.skip_interval_hours }}
         run: |
           set -Eeuo pipefail
           IFS=$'\n\t'
-
-          SKIP_HOURS="${HOURS:-24}"
-          SKIP_SECONDS=$((SKIP_HOURS * 3600))
 
           RUN_JOB=false
 
           if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
             echo "Manual trigger → run"
-            RUN_JOB=true
+            echo "run_job=true" >> "${GITHUB_OUTPUT}"
+            exit 0
           fi
 
-          if [[ "$RUN_JOB" == false ]]; then
-            if aws s3 cp \
-              "s3://${BUCKET}/${METADATA_KEY}" \
-              metadata.json >/dev/null 2>&1; then
+          readonly REGENERATION_INTERVAL_HOURS=24
+          readonly REGENERATION_INTERVAL_SECONDS=$((REGENERATION_INTERVAL_HOURS * 3600))
 
-              LAST_GENERATED="$(jq -r '.generated_at' metadata.json)"
-              NOW="$(date +%s)"
-              AGE=$((NOW - LAST_GENERATED))
+          if aws s3 cp \
+            "s3://${BUCKET}/${METADATA_KEY}" \
+            metadata.json >/dev/null 2>&1; then
 
-              if (( AGE > SKIP_SECONDS )); then
-                echo "Interval expired → run"
-                RUN_JOB=true
-              else
-                echo "Interval not expired → skip"
-              fi
-            else
-              echo "No metadata found → run"
+            LAST_GENERATED="$(jq -r '.generated_at' metadata.json)"
+            NOW="$(date +%s)"
+            AGE=$((NOW - LAST_GENERATED))
+
+            if (( AGE > REGENERATION_INTERVAL_SECONDS )); then
+              echo "Interval expired → run"
               RUN_JOB=true
+            else
+              echo "Interval not expired → skip"
             fi
+          else
+            echo "No metadata found → run"
+            RUN_JOB=true
           fi
 
           echo "run_job=${RUN_JOB}" >> "${GITHUB_OUTPUT}"
