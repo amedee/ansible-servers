@@ -12,8 +12,4 @@ runs:
 
     - name: Format Markdown
       shell: bash
-      run: |
-        npx --yes prettier \
-          --prose-wrap always \
-          --print-width 80 \
-          --write "**/*.md"
+      run: npx --yes prettier --write "**/*.md"

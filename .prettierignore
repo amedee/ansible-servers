@@ -1,3 +1,4 @@
 biome.json
+.venv/
 dist/
 node_modules/
