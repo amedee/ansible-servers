@@ -8,6 +8,17 @@ on: # yamllint disable-line rule:truthy
       - ready_for_review
       - reopened
       - synchronize
+    paths:
+      - 'roles/**'
+      - 'playbooks/**'
+      - 'requirements.yml'
+      - 'ansible.cfg'
+      - '.github/requirements-molecule.txt'
+      - '.github/actions/setup-python-pip/**'
+      - '.github/actions/restore-ansible-cache/**'
+      - '.github/workflows/molecule-discover.yml'
+      - '.github/workflows/molecule.yml'
+      - '!**/*.md'
   workflow_call:
   workflow_dispatch:
 
