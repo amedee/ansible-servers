@@ -31,8 +31,8 @@ jobs:
           fetch-depth: 0 # Full history needed for accurate SHA checks
           persist-credentials: false
 
-      - name: Install aws-sdk
-        run: npm install aws-sdk
+      - name: Install AWS SDK v3
+        run: npm install @aws-sdk/client-s3
 
       - name: Delete orphaned Gource files
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -43,19 +43,20 @@ jobs:
           S3_BUCKET: gource-by-amedee
         with:
           script: |
-            const AWS = require('aws-sdk');
+            const { S3, ListObjectsV2Command, DeleteObjectCommand } = require('@aws-sdk/client-s3');
             const { execSync } = require('child_process');
             const fs = require('fs');
 
-            const s3 = new AWS.S3({
+            const s3 = new S3({
               accessKeyId: process.env.AWS_ACCESS_KEY_ID,
               secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
               region: process.env.AWS_REGION
             });
 
-            const listParams = { Bucket: process.env.S3_BUCKET };
-            const response = await s3.listObjectsV2(listParams).promise();
-            const allKeys = response.Contents.map(obj => obj.Key);
+            const response = await s3.send(new ListObjectsV2Command({
+              Bucket: process.env.S3_BUCKET
+            }));
+            const allKeys = (response.Contents || []).map(obj => obj.Key);
 
             const orphanedSHAs = [];
             let totalMp4Count = 0;
@@ -90,10 +91,10 @@ jobs:
               for (const ext of ['mp4', 'gif']) {
                 const fileKey = `gource-${sha}.${ext}`;
                 try {
-                  await s3.deleteObject({
+                  await s3.send(new DeleteObjectCommand({
                     Bucket: process.env.S3_BUCKET,
                     Key: fileKey
-                  }).promise();
+                  }));
                   console.log(`🗑 Deleted ${fileKey}`);
                   deletedFiles++;
                 } catch (err) {
