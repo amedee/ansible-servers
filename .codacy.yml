@@ -1,16 +1,7 @@
 ---
 engines:
   eslint:
-    exclude_paths:
-      - .vagrant/
-      - dist/
-      - node_modules/
-
-  semgrep:
-    exclude_paths:
-      - .vagrant/
-      - dist/
-      - node_modules/
+    exclude_paths: []
 
   pydocstyle:
     enabled: true

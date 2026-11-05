@@ -1,4 +1,2 @@
 ---
-suppress:
-  - path: dist/**
-    reason: "Build artifacts, ignore."
+suppress: []

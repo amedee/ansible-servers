@@ -2,10 +2,6 @@
 venv/
 **/venv/
 
-# Ignore Node dependencies
-node_modules/
-**/node_modules/
-
 # Ignore downloaded Ansible roles
 .ansible/
 .ansible/**
@@ -17,6 +13,5 @@ node_modules/
 **/*.dist-info/**
 
 # Ignore common build/CI directories
-dist/
 build/
 coverage/

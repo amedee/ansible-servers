@@ -44,8 +44,5 @@ repos:
 
 exclude: |
   (?x)(
-    .ansible/|
-    .vagrant/|
-    dist/|
-    node_modules/
+    .ansible/
   )

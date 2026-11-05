@@ -2,6 +2,4 @@
 profile: production
 
 exclude_paths:
-  - "/**/node_modules/**"
-  - "node_modules/"
   - "roles/geerlingguy.*/"
