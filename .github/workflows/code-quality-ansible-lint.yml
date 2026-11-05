@@ -8,6 +8,14 @@ on: # yamllint disable-line rule:truthy
       - ready_for_review
       - reopened
       - synchronize
+    paths:
+      - 'roles/**'
+      - 'playbooks/**'
+      - 'requirements.yml'
+      - 'ansible.cfg'
+      - '.github/actions/restore-ansible-cache/**'
+      - '.github/workflows/code-quality-ansible-lint.yml'
+      - '!**/*.md'
   workflow_call:
   workflow_dispatch:
 
