@@ -31,10 +31,11 @@ jobs:
           fetch-depth: 0 # Full history needed for accurate SHA checks
           persist-credentials: false
 
-      - name: Install aws-sdk
-        run: npm install aws-sdk
+      - name: Install AWS SDK v3
+        run: npm install @aws-sdk/client-s3
 
-      - name: Delete orphaned Gource files
+      - name: List S3 objects and identify orphans
+        id: identify
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -43,70 +44,140 @@ jobs:
           S3_BUCKET: gource-by-amedee
         with:
           script: |
-            const AWS = require('aws-sdk');
+            const { S3, ListObjectsV2Command } = require('@aws-sdk/client-s3');
             const { execSync } = require('child_process');
-            const fs = require('fs');
 
-            const s3 = new AWS.S3({
+            const s3 = new S3({
               accessKeyId: process.env.AWS_ACCESS_KEY_ID,
               secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
               region: process.env.AWS_REGION
             });
 
-            const listParams = { Bucket: process.env.S3_BUCKET };
-            const response = await s3.listObjectsV2(listParams).promise();
-            const allKeys = response.Contents.map(obj => obj.Key);
+            console.log(`📡 Listing objects in S3 bucket: ${process.env.S3_BUCKET}`);
+            const response = await s3.send(new ListObjectsV2Command({
+              Bucket: process.env.S3_BUCKET
+            }));
+            const allKeys = (response.Contents || []).map(obj => obj.Key);
+            console.log(`📦 Found ${allKeys.length} total objects in S3`);
 
             const orphanedSHAs = [];
             let totalMp4Count = 0;
+            let skippedCount = 0;
 
             for (const key of allKeys) {
-              if (!key.endsWith('.mp4')) continue;
-              if (key === 'gource-latest.mp4') continue;
+              if (!key.endsWith('.mp4')) {
+                skippedCount++;
+                continue;
+              }
+              if (key === 'gource-latest.mp4') {
+                console.log(`⏭ Skipping gource-latest.mp4`);
+                continue;
+              }
 
               totalMp4Count++;
 
               const match = key.match(/^gource-([0-9a-f]{7,})\.mp4$/);
-              if (!match) continue;
+              if (!match) {
+                console.log(`⏭ Skipping non-matching key: ${key}`);
+                continue;
+              }
 
               const sha = match[1];
+              console.log(`🔍 Checking ${key} (SHA: ${sha})...`);
 
               let isValid = false;
               try {
-                execSync(`git merge-base --is-ancestor ${sha} origin/main`);
+                execSync(`git merge-base --is-ancestor ${sha} HEAD`);
                 isValid = true;
               } catch {
                 isValid = false;
               }
 
-              if (!isValid) {
+              if (isValid) {
+                console.log(`  ✅ Valid commit, keeping`);
+              } else {
+                console.log(`  ❌ Orphaned commit, marking for deletion`);
                 orphanedSHAs.push(sha);
               }
             }
 
+            console.log(``);
+            console.log(`📊 Identification complete:`);
+            console.log(`   - Non-MP4 objects skipped: ${skippedCount}`);
+            console.log(`   - Total .mp4 files (excluding latest): ${totalMp4Count}`);
+            console.log(`   - Orphaned SHAs found: ${orphanedSHAs.length}`);
+
+            // Pass results to next steps via environment variables
+            const fs = require('fs');
+            fs.appendFileSync(process.env.GITHUB_ENV, `ORPHANED_SHAS=${JSON.stringify(orphanedSHAs)}\n`);
+            fs.appendFileSync(process.env.GITHUB_ENV, `TOTAL_MP4_COUNT=${totalMp4Count}\n`);
+
+      - name: Delete orphaned Gource files
+        if: env.ORPHANED_SHAS != '[]'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+          S3_BUCKET: gource-by-amedee
+          ORPHANED_SHAS: ${{ env.ORPHANED_SHAS }}
+        with:
+          script: |
+            const { S3, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+            const fs = require('fs');
+
+            const orphanedSHAs = JSON.parse(process.env.ORPHANED_SHAS || '[]');
+            if (orphanedSHAs.length === 0) {
+              console.log(`ℹ️ No orphaned files to delete`);
+              fs.appendFileSync(process.env.GITHUB_ENV, `DELETED_FILES=0\n`);
+              return;
+            }
+
+            const s3 = new S3({
+              accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+              region: process.env.AWS_REGION
+            });
+
             let deletedFiles = 0;
+            let failedFiles = 0;
 
             for (const sha of orphanedSHAs) {
               for (const ext of ['mp4', 'gif']) {
                 const fileKey = `gource-${sha}.${ext}`;
                 try {
-                  await s3.deleteObject({
+                  console.log(`🗑 Deleting ${fileKey}...`);
+                  await s3.send(new DeleteObjectCommand({
                     Bucket: process.env.S3_BUCKET,
                     Key: fileKey
-                  }).promise();
-                  console.log(`🗑 Deleted ${fileKey}`);
+                  }));
+                  console.log(`  ✅ Deleted ${fileKey}`);
                   deletedFiles++;
                 } catch (err) {
-                  console.warn(`⚠️ Failed to delete ${fileKey}: ${err.message}`);
+                  console.warn(`  ⚠️ Failed to delete ${fileKey}: ${err.message}`);
+                  failedFiles++;
                 }
               }
             }
 
-            const summary = [
-              `### 🧹 Gource Cleanup Summary`,
-              `- 📦 Total \`.mp4\` files (excluding latest): \`${totalMp4Count}\``,
-              `- 🚫 Orphaned SHAs found: \`${orphanedSHAs.length}\``,
-              `- 🗑 Total files deleted: \`${deletedFiles}\``
-            ].join('\n');
+            console.log(``);
+            console.log(`📊 Deletion complete:`);
+            console.log(`   - Files deleted: ${deletedFiles}`);
+            console.log(`   - Files failed: ${failedFiles}`);
 
-            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+            fs.appendFileSync(process.env.GITHUB_ENV, `DELETED_FILES=${deletedFiles}\n`);
+
+      - name: Write cleanup summary
+        shell: bash
+        run: |
+          totalMp4="${TOTAL_MP4_COUNT:-0}"
+          deletedFiles="${DELETED_FILES:-0}"
+          # Count orphaned SHAs from the JSON array
+          orphanedCount=$(echo "${ORPHANED_SHAS:-[]}" | python3 -c "import sys,json; print(len(json.load(sys.stdin)))")
+
+          {
+            echo "### 🧹 Gource Cleanup Summary"
+            echo "- 📦 Total \`.mp4\` files (excluding latest): \`${totalMp4}\`"
+            echo "- 🚫 Orphaned SHAs found: \`${orphanedCount}\`"
+            echo "- 🗑 Total files deleted: \`${deletedFiles}\`"
+          } | tee "$GITHUB_STEP_SUMMARY"
