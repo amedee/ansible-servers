@@ -8,6 +8,9 @@ on: # yamllint disable-line rule:truthy
       - ready_for_review
       - reopened
       - synchronize
+    paths:
+      - '**/*.py'
+      - '.github/workflows/code-quality-pylint.yml'
   workflow_call:
   workflow_dispatch:
 
