@@ -40,3 +40,12 @@ runs:
         ansible-galaxy collection install \
           -r requirements.yml \
           -p /home/runner/.ansible/collections
+
+    - name: Save Ansible roles and collections cache
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+      with:
+        path: |
+          /home/runner/.ansible/collections
+          /home/runner/.ansible/roles
+        key: ${{ steps.cache.outputs.cache-primary-key }}
