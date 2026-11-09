@@ -1,15 +1,15 @@
 {% set pattern_width = 40 -%}
 
+{% if postfix_invalid_recipients -%}
+{% for address in postfix_invalid_recipients -%}
+/^{{ '%-*s' | format(pattern_width, address | regex_escape ~ '$/') }} REJECT Invalid recipient
+{% endfor %}
+{% endif %}
+
 {% if postfix_recipient_domains -%}
 # Domains hosted by this server
 {% for domain in postfix_recipient_domains | sort -%}
 /@{{ '%-*s' | format(pattern_width, domain | regex_escape ~ '$/') }} DUNNO
-{% endfor %}
-{% endif %}
-
-{% if postfix_invalid_recipients -%}
-{% for address in postfix_invalid_recipients -%}
-/^{{ '%-*s' | format(pattern_width, address | regex_escape ~ '$/') }} REJECT Invalid recipient
 {% endfor %}
 {% endif %}
 
