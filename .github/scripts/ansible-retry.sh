@@ -10,13 +10,9 @@ readonly MAX_ATTEMPTS=5
 readonly BASE_SLEEP=5
 readonly JITTER_MAX=5
 WAIT=$BASE_SLEEP
-ansible_args=()
 
 umask 077
 VAULT_FILE="$(mktemp)"
-if [[ -n "${CHECK_MODE:-}" ]]; then
-	ansible_args+=("$CHECK_MODE")
-fi
 
 mkdir --parents ~/.ssh/controlmasters
 
@@ -80,7 +76,6 @@ for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
 	if ansible-playbook playbooks/site.yml \
 		--inventory inventory/production \
 		--limit "$ANSIBLE_HOST" \
-		"${ansible_args[@]}" \
 		--vault-password-file "$VAULT_FILE" \
 		2>&1 | tee "$LOG"; then
 

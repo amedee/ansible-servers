@@ -3,12 +3,6 @@ name: 🚀 Ansible Run
 
 on: # yamllint disable-line rule:truthy
   workflow_call:
-    inputs:
-      check-mode:
-        description: "Run in dry-run mode (ansible --check)"
-        required: false
-        default: false
-        type: boolean
     secrets:
       SSH_PRIVATE_KEY:
         required: true
@@ -32,16 +26,11 @@ jobs:
           - box.vangasse.eu
 
     concurrency:
-      group: ${{ format(
-        'ansible-run-{0}-{1}-{2}',
-        (inputs.check-mode && 'check-' || ''),
-        matrix.host,
-        github.ref) }}
+      group: ${{ format('ansible-run-{0}-{1}', matrix.host, github.ref) }}
       cancel-in-progress: true
 
     env:
       ANSIBLE_CONFIG: ansible.cfg
-      CHECK_MODE_INPUT: ${{ inputs.check-mode }}
 
     steps:
       - name: Collect Workflow Telemetry
@@ -58,38 +47,12 @@ jobs:
       - name: Restore Ansible cache
         uses: ./.github/actions/restore-ansible-cache
 
-      - name: Determine Ansible check mode
-        id: set_check_mode
-        run: |
-          # Normalize the input to lowercase
-          normalized="$(echo "${CHECK_MODE_INPUT:-false}" | tr '[:upper:]' '[:lower:]')"
-
-          if [[ "$normalized" == "true" ]]; then
-            # Always dry-run if input explicitly true
-            check="--check"
-          else
-            if [[ "$GITHUB_EVENT" == "workflow_dispatch" ]]; then
-              echo "check_mode=" >> "$GITHUB_OUTPUT"
-            elif [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
-              echo "check_mode=" >> "$GITHUB_OUTPUT"
-            else
-              echo "check_mode=--check" >> "$GITHUB_OUTPUT"
-            fi
-          fi
-
-          echo "check_mode=$check" >> "$GITHUB_OUTPUT"
-          echo "🛠️ Ansible check mode set to: '$check'"
-        env:
-          GITHUB_EVENT: ${{ github.event_name }}
-          GITHUB_REF: ${{ github.ref }}
-
       - name: Deploy changes to servers
         shell: bash
         run: |
           .github/scripts/ansible-retry.sh
         env:
           ANSIBLE_HOST: ${{ matrix.host }}
-          CHECK_MODE: ${{ steps.set_check_mode.outputs.check_mode }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
 
@@ -102,10 +65,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ format(
-            'ansible-{0}{1}.log',
-            steps.set_check_mode.outputs.check_mode,
-            matrix.host) }}
+          name: ${{ format('ansible-{0}.log', matrix.host) }}
           path: ~/.ansible/ansible.log
           compression-level: 9
           overwrite: true

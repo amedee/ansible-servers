@@ -81,8 +81,6 @@ jobs:
     needs:
       - detect-changes
       - quality-gate
-    with:
-      check-mode: false
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
