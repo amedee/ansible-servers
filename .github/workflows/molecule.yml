@@ -63,7 +63,7 @@ jobs:
       - name: Set up Python
         uses: ./.github/actions/setup-python-pip
         with:
-          python-version: "3.11"
+          python-version: "3.14"
           requirements-file: .github/requirements-molecule.txt
 
       - name: Restore Ansible cache
