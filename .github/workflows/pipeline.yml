@@ -6,13 +6,10 @@ on: # yamllint disable-line rule:truthy
     branches:
       - main
     paths:
-      - "**"
+      - "inventory/**"
+      - "playbooks/**"
+      - "roles/**"
       - "!**/*.md"
-      - "!.github/scripts/molecule-coverage.py"
-      - "!.github/workflows/ansible-doctor.yml"
-      - "!.github/workflows/gource.yml"
-      - "!.github/workflows/molecule-coverage.yml"
-      - "!.pre-commit-config.yaml"
   schedule:
     - cron: "10 3 * * SAT"
   workflow_dispatch:
