@@ -9,13 +9,58 @@
     autoremove: true
 
 - name: Install snap Certbot
-  ansible.builtin.command:
-    cmd: snap install --classic certbot
-    creates: /snap/bin/certbot
-  register: letsencrypt_certbot_install
-  retries: 3
-  delay: 10
-  until: letsencrypt_certbot_install.rc == 0
+  block:
+    - name: Install Certbot
+      ansible.builtin.command:
+        cmd: snap install --classic certbot
+        creates: /snap/bin/certbot
+      register: letsencrypt_certbot_install
+      retries: 5
+      delay: 60
+      until: letsencrypt_certbot_install.rc == 0
+
+  rescue:
+    - name: Show snap version
+      ansible.builtin.command: snap version
+      register: letsencrypt_snap_version
+      changed_when: false
+
+    - name: Show snap changes
+      ansible.builtin.command: snap changes
+      register: letsencrypt_snap_changes
+      changed_when: false
+      failed_when: false
+
+    - name: Show snap tasks for recent changes
+      ansible.builtin.shell: |
+        set -o pipefail
+        snap changes --abs-time | tail -n +2 | head -n 5 | awk '{print $1}' | while read id; do
+          echo "===== CHANGE $id ====="
+          snap tasks "$id" || true
+        done
+      args:
+        executable: /bin/bash
+      register: letsencrypt_snap_tasks
+      changed_when: false
+      failed_when: false
+
+    - name: Snap connectivity diagnostics
+      ansible.builtin.command: snap debug connectivity 2>&1
+      register: letsencrypt_snap_connectivity
+      changed_when: false
+      failed_when: false
+
+    - name: Display snap diagnostics
+      ansible.builtin.debug:
+        msg:
+          - "{{ letsencrypt_snap_version.stdout_lines | default([]) }}"
+          - "{{ letsencrypt_snap_changes.stdout_lines | default([]) }}"
+          - "{{ letsencrypt_snap_tasks.stdout_lines | default([]) }}"
+          - "{{ letsencrypt_snap_connectivity.stdout_lines | default([]) }}"
+
+    - name: Re-raise failure
+      ansible.builtin.fail:
+        msg: "{{ ansible_failed_result.msg }}"
 
 - name: Create Certbot symlink
   ansible.builtin.file:
