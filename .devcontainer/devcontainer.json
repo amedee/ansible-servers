@@ -1,18 +1,22 @@
 {
 	"name": "Ansible Lightweight",
-	"image": "mcr.microsoft.com/devcontainers/python:3.11",
+	"image": "mcr.microsoft.com/devcontainers/python:3.14",
 
-	"features": {},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+			"moby": false
+		}
+	},
 
-	"onCreateCommand": "pip install --upgrade pip",
-
-	"postCreateCommand": "pip install ansible",
+	"postCreateCommand": "python -m pip install --upgrade pip ansible ansible-lint molecule",
 
 	"remoteUser": "vscode",
 
 	"customizations": {
 		"vscode": {
-			"extensions": ["redhat.ansible", "ms-python.python"]
+			"extensions": ["redhat.ansible", "redhat.vscode-yaml", "ms-python.python"]
 		}
 	}
 }
