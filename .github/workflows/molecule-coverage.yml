@@ -74,19 +74,30 @@ jobs:
           node-version: 24
 
       - name: Format Markdown
-        shell: bash
-        run: npx --yes prettier --write "**/*.md"
+        run: npx --yes prettier --write README.md
 
-      - name: Commit README changes
+      - name: Detect generated README changes
+        id: changes
         run: |
-          if git diff --quiet -- README.md; then
-            echo "README.md is already up to date."
-            exit 0
+          git add README.md
+
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Show generated changes
+        if: steps.changes.outputs.has_changes == 'true'
+        run: git diff --cached
+
+      - name: 🔁 Commit and Push
+        if: |
+          github.ref == 'refs/heads/main' &&
+          steps.changes.outputs.has_changes == 'true'
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md
           git commit -m "docs: update Molecule coverage"
           git restore --worktree -- .
 

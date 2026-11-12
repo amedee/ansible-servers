@@ -49,15 +49,13 @@ jobs:
           node-version: 24
 
       - name: Format Markdown
-        shell: bash
-        run: npx --yes prettier --write "**/*.md"
-
-      - name: Stage generated documentation
-        run: git add roles/*/README.md
+        run: npx --yes prettier --write roles/*/README.md
 
       - name: Detect generated README changes
         id: changes
         run: |
+          git add roles/*/README.md
+
           if git diff --cached --quiet; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           else
