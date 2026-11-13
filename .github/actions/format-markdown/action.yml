@@ -17,5 +17,7 @@ runs:
         node-version: 24
 
     - name: Format Markdown
-      run: npx --yes prettier --write "${{ inputs.files }}"
+      run: npx --yes prettier --write "${INPUTS_FILES}"
       shell: bash
+      env:
+        INPUTS_FILES: ${{ inputs.files }}

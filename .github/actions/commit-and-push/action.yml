@@ -16,7 +16,7 @@ runs:
 
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git commit -m "${{ inputs.commit-message }}"
+        git commit -m "${INPUTS_COMMIT_MESSAGE}"
         git restore --worktree -- .
 
         retries=0
@@ -32,3 +32,5 @@ runs:
         done
 
         exit 1
+      env:
+        INPUTS_COMMIT_MESSAGE: ${{ inputs.commit-message }}
