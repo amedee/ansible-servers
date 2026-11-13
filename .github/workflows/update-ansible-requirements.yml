@@ -15,7 +15,10 @@ on: # yamllint disable-line rule:truthy
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ format(
+    '{0}-{1}',
+    github.workflow,
+    github.event_name == 'pull_request' && github.head_ref || github.ref) }}
   cancel-in-progress: true
 
 permissions:
