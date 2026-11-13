@@ -38,12 +38,6 @@ jobs:
     environment: production
 
     steps:
-      - name: Collect Workflow Telemetry
-        # yamllint disable-line rule:line-length
-        uses: tsviz/actions-runner-telemetry@0fbec1ca185a193c94e4540e244110fdee912693 # v1.7.3
-        with:
-          enabled: ${{ vars.RUNNER_TELEMETRY_ENABLED || 'true' }}
-
       - name: Delete old closed issues
         env:
           GH_TOKEN: ${{ secrets.GH_FINEGRAINED_PAT }}
