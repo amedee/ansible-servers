@@ -61,13 +61,10 @@ jobs:
           publish_dir: badge
           force_orphan: true
 
-      - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-
       - name: Format Markdown
-        run: npx --yes prettier --write README.md
+        uses: ./.github/actions/format-markdown
+        with:
+          files: README.md
 
       - name: Detect generated README changes
         id: changes
