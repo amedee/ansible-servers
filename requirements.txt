@@ -1,5 +1,5 @@
-boto3
-botocore
-packaging
-requests
-ruamel.yaml
+boto3==1.44.1
+botocore==1.44.1
+packaging==26.3
+requests==2.34.2
+ruamel.yaml==0.19.1

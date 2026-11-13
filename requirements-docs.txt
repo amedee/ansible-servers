@@ -1,2 +1,2 @@
-ansible-core
-ansible-doctor
+ansible-core==2.22.0
+ansible-doctor==8.4.4
