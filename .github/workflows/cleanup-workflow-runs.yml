@@ -32,5 +32,5 @@ jobs:
         uses: Mattraks/delete-workflow-runs@b3018382ca039b53d238908238bd35d1fb14f8ee # v2.1.0
         with:
           check_branch_existence: true
-          keep_minimum_runs: 0
-          retain_days: 0
+          keep_minimum_runs: 3
+          retain_days: 30
