@@ -1,8 +1,5 @@
 ---
 engines:
-  eslint:
-    exclude_paths: []
-
   pydocstyle:
     enabled: true
     config: .pydocstyle
