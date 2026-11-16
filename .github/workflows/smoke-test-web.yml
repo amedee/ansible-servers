@@ -2,6 +2,13 @@
 name: Smoke Test Web
 
 on: # yamllint disable-line rule:truthy
+  workflow_dispatch:
+    inputs:
+      host:
+        required: true
+        type: string
+        default: amedee.be
+
   workflow_call:
     inputs:
       host:
