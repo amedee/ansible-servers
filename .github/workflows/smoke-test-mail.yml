@@ -1,0 +1,95 @@
+---
+name: Smoke Test Mail
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+    inputs:
+      host:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-26.04
+
+    steps:
+      - name: Verify SMTP (25)
+        id: smtp
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          nc -zv "${INPUTS_HOST}" 25
+
+      - name: Verify Submission (587)
+        id: submission
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          nc -zv "${INPUTS_HOST}" 587
+
+      - name: Verify SMTPS (465)
+        id: smtps
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          nc -zv "${INPUTS_HOST}" 465
+
+      - name: Verify IMAPS (993)
+        id: imaps
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          nc -zv "${INPUTS_HOST}" 993
+
+      - name: Generate smoke-test summary
+        if: always()
+        env:
+          SMTP_RESULT: >-
+            ${{ steps.smtp.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          SUBMISSION_RESULT: >-
+            ${{ steps.submission.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          SMTPS_RESULT: >-
+            ${{ steps.smtps.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          IMAPS_RESULT: >-
+            ${{ steps.imaps.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+          INPUTS_HOST: ${{ inputs.host }}
+
+        run: |
+          {
+            echo "# Smoke Test Summary"
+            echo
+            echo "Host: \`${INPUTS_HOST}\`"
+            echo
+            echo "| Test | Result |"
+            echo "|------|--------|"
+            echo "| SMTP (25) | ${SMTP_RESULT} |"
+            echo "| Submission (587) | ${SUBMISSION_RESULT} |"
+            echo "| SMTPS (465) | ${SMTPS_RESULT} |"
+            echo "| IMAPS (993) | ${IMAPS_RESULT} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail if any smoke test failed
+        if: |
+          steps.smtp.outcome != 'success' ||
+          steps.submission.outcome != 'success' ||
+          steps.smtps.outcome != 'success' ||
+          steps.imaps.outcome != 'success'
+        run: exit 1

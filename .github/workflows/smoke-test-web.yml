@@ -1,0 +1,120 @@
+---
+name: Smoke Test Web
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+    inputs:
+      host:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-26.04
+
+    steps:
+      - name: Verify homepage
+        id: homepage
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            "https://${INPUTS_HOST}/" \
+            >/dev/null
+
+      - name: Verify HTTP to HTTPS redirect
+        id: redirect
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          headers="$(mktemp)"
+
+          curl \
+            --silent \
+            --output /dev/null \
+            --dump-header "$headers" \
+            "http://${INPUTS_HOST}/"
+
+          status="$(
+            awk 'NR == 1 {print $2}' "$headers"
+          )"
+
+          location="$(
+            awk 'BEGIN{IGNORECASE=1}
+                /^Location:/ {print $2}' "$headers" \
+            | tr -d '\r'
+          )"
+
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "location=$location" >> "$GITHUB_OUTPUT"
+
+          test "$status" = "301" \
+            || test "$status" = "302" \
+            || test "$status" = "307" \
+            || test "$status" = "308"
+
+          grep -iq "^location: https://${INPUTS_HOST}/" "$headers"
+
+      - name: Verify WordPress login page
+        id: wp_login
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            "https://${INPUTS_HOST}/wp-login.php" \
+            >/dev/null
+
+      - name: Generate smoke-test summary
+        if: always()
+        env:
+          HOMEPAGE_RESULT: >-
+            ${{ steps.homepage.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          REDIRECT_RESULT: >-
+            ${{ steps.redirect.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          REDIRECT_DETAILS: >-
+            Status: `${{ steps.redirect.outputs.status || 'N/A' }}`,
+            Location: `${{ steps.redirect.outputs.location || 'N/A' }}`
+
+          WP_LOGIN_RESULT: >-
+            ${{ steps.wp_login.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+          INPUTS_HOST: ${{ inputs.host }}
+
+        run: |
+          {
+            echo "# Smoke Test Summary"
+            echo
+            echo "Host: \`${INPUTS_HOST}\`"
+            echo
+            echo "| Test | Result | Details |"
+            echo "|------|--------|---------|"
+            echo "| Homepage | ${HOMEPAGE_RESULT} | |"
+            echo "| HTTP→HTTPS redirect | ${REDIRECT_RESULT} | ${REDIRECT_DETAILS} |"
+            echo "| WordPress login page | ${WP_LOGIN_RESULT} | |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail if any smoke test failed
+        if: |
+          steps.homepage.outcome != 'success' ||
+          steps.redirect.outcome != 'success' ||
+          steps.wp_login.outcome != 'success'
+        run: exit 1
