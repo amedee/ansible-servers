@@ -20,6 +20,7 @@ jobs:
     environment: production
 
     strategy:
+      fail-fast: false
       matrix:
         host:
           - amedee.be
@@ -49,6 +50,65 @@ jobs:
           ANSIBLE_HOST: ${{ matrix.host }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
+
+      #
+      # WordPress smoke tests
+      #
+
+      - name: Smoke test homepage
+        if: matrix.host == 'amedee.be'
+        run: |
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            https://amedee.be/ \
+            >/dev/null
+
+      - name: Smoke test HTTP→HTTPS redirect
+        if: matrix.host == 'amedee.be'
+        run: |
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            http://amedee.be/ \
+            >/dev/null
+
+      - name: Smoke test WordPress login
+        if: matrix.host == 'amedee.be'
+        run: |
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            https://amedee.be/wp-login.php \
+            >/dev/null
+
+      #
+      # Mail-in-a-Box smoke tests
+      #
+
+      - name: Smoke test SMTP
+        if: matrix.host == 'box.vangasse.eu'
+        run: |
+          nc -zv box.vangasse.eu 25
+
+      - name: Smoke test Submission
+        if: matrix.host == 'box.vangasse.eu'
+        run: |
+          nc -zv box.vangasse.eu 587
+
+      - name: Smoke test SMTPS
+        if: matrix.host == 'box.vangasse.eu'
+        run: |
+          nc -zv box.vangasse.eu 465
+
+      - name: Smoke test IMAPS
+        if: matrix.host == 'box.vangasse.eu'
+        run: |
+          nc -zv box.vangasse.eu 993
 
       - name: Generate Ansible summary
         if: always()
