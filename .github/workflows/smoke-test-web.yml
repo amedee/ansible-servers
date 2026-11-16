@@ -83,6 +83,92 @@ jobs:
             "https://${INPUTS_HOST}/wp-login.php" \
             >/dev/null
 
+      - name: Verify SSL certificate
+        id: ssl_cert
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          echo | openssl s_client \
+            -servername "${INPUTS_HOST}" \
+            -connect "${INPUTS_HOST}:443" \
+            2>/dev/null \
+            | openssl x509 -noout -dates -subject
+
+      - name: Verify WordPress REST API
+        id: wp_rest
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            "https://${INPUTS_HOST}/wp-json/" \
+            | grep -q '"name"'
+
+      - name: Verify RSS feed
+        id: rss_feed
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            "https://${INPUTS_HOST}/feed/" \
+            | grep -q '<rss'
+
+      - name: Verify security headers
+        id: security_headers
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          headers="$(mktemp)"
+
+          curl \
+            --silent \
+            --dump-header "$headers" \
+            --output /dev/null \
+            "https://${INPUTS_HOST}/"
+
+          grep -qi 'strict-transport-security' "$headers"
+
+      - name: Verify 404 handling
+        id: not_found
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          status="$(
+            curl \
+              --silent \
+              --output /dev/null \
+              --write-out '%{http_code}' \
+              "https://${INPUTS_HOST}/nonexistent-page-12345/"
+          )"
+
+          test "$status" = "404"
+
+      - name: Verify response time
+        id: response_time
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          time="$(
+            curl \
+              --silent \
+              --output /dev/null \
+              --write-out '%{time_total}' \
+              "https://${INPUTS_HOST}/"
+          )"
+
+          awk "BEGIN {exit !(${time} < 10)}"
+
       - name: Generate smoke-test summary
         if: always()
         env:
@@ -104,6 +190,37 @@ jobs:
             ${{ steps.wp_login.outcome == 'success'
                 && '✅ PASS'
                 || '❌ FAIL' }}
+
+          SSL_CERT_RESULT: >-
+            ${{ steps.ssl_cert.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          WP_REST_RESULT: >-
+            ${{ steps.wp_rest.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          RSS_FEED_RESULT: >-
+            ${{ steps.rss_feed.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          SECURITY_HEADERS_RESULT: >-
+            ${{ steps.security_headers.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          NOT_FOUND_RESULT: >-
+            ${{ steps.not_found.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          RESPONSE_TIME_RESULT: >-
+            ${{ steps.response_time.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
           INPUTS_HOST: ${{ inputs.host }}
 
         run: |
@@ -117,11 +234,23 @@ jobs:
             echo "| Homepage | ${HOMEPAGE_RESULT} | |"
             echo "| HTTP→HTTPS redirect | ${REDIRECT_RESULT} | ${REDIRECT_DETAILS} |"
             echo "| WordPress login page | ${WP_LOGIN_RESULT} | |"
+            echo "| SSL certificate | ${SSL_CERT_RESULT} | |"
+            echo "| WordPress REST API | ${WP_REST_RESULT} | |"
+            echo "| RSS feed | ${RSS_FEED_RESULT} | |"
+            echo "| Security headers (HSTS) | ${SECURITY_HEADERS_RESULT} | |"
+            echo "| 404 handling | ${NOT_FOUND_RESULT} | |"
+            echo "| Response time (<10s) | ${RESPONSE_TIME_RESULT} | |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail if any smoke test failed
         if: |
           steps.homepage.outcome != 'success' ||
           steps.redirect.outcome != 'success' ||
-          steps.wp_login.outcome != 'success'
+          steps.wp_login.outcome != 'success' ||
+          steps.ssl_cert.outcome != 'success' ||
+          steps.wp_rest.outcome != 'success' ||
+          steps.rss_feed.outcome != 'success' ||
+          steps.security_headers.outcome != 'success' ||
+          steps.not_found.outcome != 'success' ||
+          steps.response_time.outcome != 'success'
         run: exit 1

@@ -23,21 +23,21 @@ jobs:
     runs-on: ubuntu-26.04
 
     steps:
-      - name: Verify SMTP (25)
+      - name: Verify SMTP banner (25)
         id: smtp
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
-          nc -zv "${INPUTS_HOST}" 25
+          echo "QUIT" | nc -w 5 "${INPUTS_HOST}" 25 | grep -q '220'
 
-      - name: Verify Submission (587)
+      - name: Verify Submission STARTTLS (587)
         id: submission
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
-          nc -zv "${INPUTS_HOST}" 587
+          echo "EHLO smoke-test" | nc -w 5 "${INPUTS_HOST}" 587 | grep -q 'STARTTLS'
 
       - name: Verify SMTPS (465)
         id: smtps
@@ -47,13 +47,48 @@ jobs:
         run: |
           nc -zv "${INPUTS_HOST}" 465
 
-      - name: Verify IMAPS (993)
+      - name: Verify IMAPS capability (993)
         id: imaps
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
-          nc -zv "${INPUTS_HOST}" 993
+          echo "QUIT" | openssl s_client \
+            -quiet \
+            -connect "${INPUTS_HOST}:993" \
+            2>/dev/null \
+            | grep -q 'OK'
+
+      - name: Verify Mail-in-a-Box web UI
+        id: web_ui
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            "https://${INPUTS_HOST}/" \
+            >/dev/null
+
+      - name: Verify DNS MX record
+        id: dns_mx
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          domain="${INPUTS_HOST#*.}"
+          dig +short MX "$domain" | grep -q "${INPUTS_HOST}"
+
+      - name: Verify DNS SPF record
+        id: dns_spf
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          domain="${INPUTS_HOST#*.}"
+          dig +short TXT "$domain" | grep -q 'v=spf1'
 
       - name: Generate smoke-test summary
         if: always()
@@ -77,6 +112,22 @@ jobs:
             ${{ steps.imaps.outcome == 'success'
                 && '✅ PASS'
                 || '❌ FAIL' }}
+
+          WEB_UI_RESULT: >-
+            ${{ steps.web_ui.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          DNS_MX_RESULT: >-
+            ${{ steps.dns_mx.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          DNS_SPF_RESULT: >-
+            ${{ steps.dns_spf.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
           INPUTS_HOST: ${{ inputs.host }}
 
         run: |
@@ -87,10 +138,13 @@ jobs:
             echo
             echo "| Test | Result |"
             echo "|------|--------|"
-            echo "| SMTP (25) | ${SMTP_RESULT} |"
-            echo "| Submission (587) | ${SUBMISSION_RESULT} |"
+            echo "| SMTP banner (25) | ${SMTP_RESULT} |"
+            echo "| Submission STARTTLS (587) | ${SUBMISSION_RESULT} |"
             echo "| SMTPS (465) | ${SMTPS_RESULT} |"
-            echo "| IMAPS (993) | ${IMAPS_RESULT} |"
+            echo "| IMAPS capability (993) | ${IMAPS_RESULT} |"
+            echo "| Mail-in-a-Box web UI | ${WEB_UI_RESULT} |"
+            echo "| DNS MX record | ${DNS_MX_RESULT} |"
+            echo "| DNS SPF record | ${DNS_SPF_RESULT} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail if any smoke test failed
@@ -98,5 +152,8 @@ jobs:
           steps.smtp.outcome != 'success' ||
           steps.submission.outcome != 'success' ||
           steps.smtps.outcome != 'success' ||
-          steps.imaps.outcome != 'success'
+          steps.imaps.outcome != 'success' ||
+          steps.web_ui.outcome != 'success' ||
+          steps.dns_mx.outcome != 'success' ||
+          steps.dns_spf.outcome != 'success'
         run: exit 1
