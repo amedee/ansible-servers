@@ -59,28 +59,19 @@ jobs:
     name: 🔎 Detect production changes
     uses: ./.github/workflows/detect-changes.yml
 
-  quality-gate:
-    name: 🚦 Quality Gate
-    runs-on: ubuntu-26.04
+  deploy:
+    name: 🚀 Deploy to Production
+    if: >
+      github.event_name != 'schedule' &&
+      needs.detect-changes.outputs.production == 'true'
     needs:
       - super-linter
       - ansible-lint
       - molecule
       - pylint
       - validate-configs
-    steps:
-      - name: 🚦 Quality gate passed
-        run: echo "All quality checks passed."
-
-  deploy:
-    name: 🚀 Deploy to Production
-    if: >
-      github.event_name != 'schedule' &&
-      needs.detect-changes.outputs.production == 'true'
-    uses: ./.github/workflows/ansible-run.yml
-    needs:
       - detect-changes
-      - quality-gate
+    uses: ./.github/workflows/ansible-run.yml
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       VAULT_PASSWORD: ${{ secrets.VAULT_PASSWORD }}
