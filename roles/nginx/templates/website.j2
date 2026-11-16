@@ -4,8 +4,6 @@ server {
     index {{ nginx_default_indexfiles | default(['index.php']) | join(' ') }};
     server_name {{ nginx_hostname }};
 
-    add_header Cache-Control "public, max-age=31536000, immutable";
-
     location / {
         limit_req zone=mylimit burst=20 nodelay;
         try_files $uri $uri/ /index.php?q=$uri&$args;
@@ -57,6 +55,8 @@ server {
     listen 443 ssl; # managed by Certbot
     listen [::]:443 ssl;
 
+    add_header Strict-Transport-Security "max-age=300" always;
+
     ssl_certificate /etc/letsencrypt/live/{{ nginx_hostname }}/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/{{ nginx_hostname }}/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
@@ -71,8 +71,6 @@ server {
     server_name _;
 
     server_tokens off;
-
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
     location / {
         return 301 https://{{ nginx_hostname }}$request_uri;
