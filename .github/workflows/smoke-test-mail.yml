@@ -148,7 +148,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail if any smoke test failed
-        if: |
+        if: >-
           steps.smtp.outcome != 'success' ||
           steps.submission.outcome != 'success' ||
           steps.smtps.outcome != 'success' ||

@@ -243,7 +243,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail if any smoke test failed
-        if: |
+        if: >-
           steps.homepage.outcome != 'success' ||
           steps.redirect.outcome != 'success' ||
           steps.wp_login.outcome != 'success' ||
