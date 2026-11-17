@@ -163,6 +163,8 @@ jobs:
           test -n "$max_age"
           test "$max_age" -gt 0
 
+          echo "max_age=$max_age" >> "$GITHUB_OUTPUT"
+
       - name: Verify 404 handling
         id: not_found
         continue-on-error: true
@@ -237,6 +239,9 @@ jobs:
                 && '✅ PASS'
                 || '❌ FAIL' }}
 
+          SECURITY_HEADERS_DETAILS: >-
+            max-age=`${{ steps.security_headers.outputs.max_age || 'N/A' }}`
+
           NOT_FOUND_RESULT: >-
             ${{ steps.not_found.outcome == 'success'
                 && '✅ PASS'
@@ -263,7 +268,7 @@ jobs:
             echo "| SSL certificate | ${SSL_CERT_RESULT} | |"
             echo "| WordPress REST API | ${WP_REST_RESULT} | |"
             echo "| RSS feed | ${RSS_FEED_RESULT} | |"
-            echo "| Security headers (HSTS) | ${SECURITY_HEADERS_RESULT} | |"
+            echo "| Security headers (HSTS) | ${SECURITY_HEADERS_RESULT} | ${SECURITY_HEADERS_DETAILS} |"
             echo "| 404 handling | ${NOT_FOUND_RESULT} | |"
             echo "| Response time (<10s) | ${RESPONSE_TIME_RESULT} | |"
           } >> "$GITHUB_STEP_SUMMARY"
