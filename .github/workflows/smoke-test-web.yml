@@ -86,12 +86,22 @@ jobs:
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
-          curl \
-            --fail \
-            --silent \
-            --show-error \
-            "https://${INPUTS_HOST}/wp-login.php" \
-            >/dev/null
+          output="$(
+            curl \
+              --fail \
+              --silent \
+              --show-error \
+              --write-out '%{http_code} %{size_download}' \
+              "https://${INPUTS_HOST}/wp-login.php" \
+              2>/dev/null \
+              | tail -1
+          )"
+
+          status="$(echo "$output" | awk '{print $1}')"
+          size="$(echo "$output" | awk '{print $2}')"
+
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "size=$size" >> "$GITHUB_OUTPUT"
 
       - name: Verify SSL certificate
         id: ssl_cert
@@ -298,6 +308,9 @@ jobs:
                 && '✅ PASS'
                 || '❌ FAIL' }}
 
+          WP_LOGIN_DETAILS: >-
+            HTTP `${{ steps.wp_login.outputs.status || 'N/A' }}`, `${{ steps.wp_login.outputs.size || 'N/A' }}` bytes
+
           SSL_CERT_RESULT: >-
             ${{ steps.ssl_cert.outcome == 'success'
                 && '✅ PASS'
@@ -361,7 +374,7 @@ jobs:
             echo "|------|--------|---------|"
             echo "| Homepage | ${HOMEPAGE_RESULT} | ${HOMEPAGE_DETAILS} |"
             echo "| HTTP→HTTPS redirect | ${REDIRECT_RESULT} | ${REDIRECT_DETAILS} |"
-            echo "| WordPress login page | ${WP_LOGIN_RESULT} | |"
+            echo "| WordPress login page | ${WP_LOGIN_RESULT} | ${WP_LOGIN_DETAILS} |"
             echo "| SSL certificate | ${SSL_CERT_RESULT} | ${SSL_CERT_DETAILS} |"
             echo "| WordPress REST API | ${WP_REST_RESULT} | ${WP_REST_DETAILS} |"
             echo "| RSS feed | ${RSS_FEED_RESULT} | ${RSS_FEED_DETAILS} |"
