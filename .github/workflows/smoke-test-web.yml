@@ -197,6 +197,8 @@ jobs:
 
           awk "BEGIN {exit !(${time} < 10)}"
 
+          echo "time=$time" >> "$GITHUB_OUTPUT"
+
       - name: Generate smoke-test summary
         if: always()
         env:
@@ -252,6 +254,9 @@ jobs:
                 && '✅ PASS'
                 || '❌ FAIL' }}
 
+          RESPONSE_TIME_DETAILS: >-
+            ${{ steps.response_time.outputs.time || 'N/A' }}s
+
           INPUTS_HOST: ${{ inputs.host }}
 
         run: |
@@ -270,7 +275,7 @@ jobs:
             echo "| RSS feed | ${RSS_FEED_RESULT} | |"
             echo "| Security headers (HSTS) | ${SECURITY_HEADERS_RESULT} | ${SECURITY_HEADERS_DETAILS} |"
             echo "| 404 handling | ${NOT_FOUND_RESULT} | |"
-            echo "| Response time (<10s) | ${RESPONSE_TIME_RESULT} | |"
+            echo "| Response time (<10s) | ${RESPONSE_TIME_RESULT} | ${RESPONSE_TIME_DETAILS} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail if any smoke test failed
