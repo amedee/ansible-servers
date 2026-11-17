@@ -89,11 +89,32 @@ jobs:
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
-          echo | openssl s_client \
-            -servername "${INPUTS_HOST}" \
-            -connect "${INPUTS_HOST}:443" \
-            2>/dev/null \
-            | openssl x509 -noout -dates -subject
+          cert_info="$(
+            echo | openssl s_client \
+              -servername "${INPUTS_HOST}" \
+              -connect "${INPUTS_HOST}:443" \
+              2>/dev/null \
+              | openssl x509 -noout -dates -subject
+          )"
+
+          echo "$cert_info"
+
+          expires="$(
+            echo "$cert_info" \
+              | grep 'notAfter=' \
+              | cut -d= -f2
+          )"
+
+          issuer="$(
+            echo "$cert_info" \
+              | grep 'subject=' \
+              | grep -oE 'CN = [^/]+|CN=[^/]+|CN =[^/]+' \
+              | sed 's/CN[ =]//' \
+              | head -n 1
+          )"
+
+          echo "expires=$expires" >> "$GITHUB_OUTPUT"
+          echo "issuer=$issuer" >> "$GITHUB_OUTPUT"
 
       - name: Verify WordPress REST API
         id: wp_rest
@@ -226,6 +247,10 @@ jobs:
                 && '✅ PASS'
                 || '❌ FAIL' }}
 
+          SSL_CERT_DETAILS: >-
+            expires=`${{ steps.ssl_cert.outputs.expires || 'N/A' }}`,
+            issuer=`${{ steps.ssl_cert.outputs.issuer || 'N/A' }}`
+
           WP_REST_RESULT: >-
             ${{ steps.wp_rest.outcome == 'success'
                 && '✅ PASS'
@@ -270,7 +295,7 @@ jobs:
             echo "| Homepage | ${HOMEPAGE_RESULT} | |"
             echo "| HTTP→HTTPS redirect | ${REDIRECT_RESULT} | ${REDIRECT_DETAILS} |"
             echo "| WordPress login page | ${WP_LOGIN_RESULT} | |"
-            echo "| SSL certificate | ${SSL_CERT_RESULT} | |"
+            echo "| SSL certificate | ${SSL_CERT_RESULT} | ${SSL_CERT_DETAILS} |"
             echo "| WordPress REST API | ${WP_REST_RESULT} | |"
             echo "| RSS feed | ${RSS_FEED_RESULT} | |"
             echo "| Security headers (HSTS) | ${SECURITY_HEADERS_RESULT} | ${SECURITY_HEADERS_DETAILS} |"
