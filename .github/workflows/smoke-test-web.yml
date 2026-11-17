@@ -78,7 +78,7 @@ jobs:
             || test "$status" = "307" \
             || test "$status" = "308"
 
-          grep -iq "^location: https://${INPUTS_HOST}/" "$headers"
+          test "$location" = "https://${INPUTS_HOST}/"
 
       - name: Verify WordPress login page
         id: wp_login
