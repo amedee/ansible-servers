@@ -200,6 +200,8 @@ jobs:
               "https://${INPUTS_HOST}/nonexistent-page-12345/"
           )"
 
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
           test "$status" = "404"
 
       - name: Verify response time
@@ -274,6 +276,9 @@ jobs:
                 && '✅ PASS'
                 || '❌ FAIL' }}
 
+          NOT_FOUND_DETAILS: >-
+            HTTP `${{ steps.not_found.outputs.status || 'N/A' }}`
+
           RESPONSE_TIME_RESULT: >-
             ${{ steps.response_time.outcome == 'success'
                 && '✅ PASS'
@@ -299,7 +304,7 @@ jobs:
             echo "| WordPress REST API | ${WP_REST_RESULT} | |"
             echo "| RSS feed | ${RSS_FEED_RESULT} | |"
             echo "| Security headers (HSTS) | ${SECURITY_HEADERS_RESULT} | ${SECURITY_HEADERS_DETAILS} |"
-            echo "| 404 handling | ${NOT_FOUND_RESULT} | |"
+            echo "| 404 handling | ${NOT_FOUND_RESULT} | ${NOT_FOUND_DETAILS} |"
             echo "| Response time (<10s) | ${RESPONSE_TIME_RESULT} | ${RESPONSE_TIME_DETAILS} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
