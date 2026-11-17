@@ -29,7 +29,21 @@ jobs:
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
-          echo "QUIT" | nc -w 5 "${INPUTS_HOST}" 25 | grep -q '220'
+          error=""
+          banner="$(
+            echo "QUIT" | nc -w 5 "${INPUTS_HOST}" 25 2>&1 | head -n 1
+          )" || error="Connection failed"
+
+          echo "$banner" | grep -q '220' || error="No 220 banner"
+
+          banner_text="$(
+            echo "$banner" \
+              | sed 's/^220 //' \
+              | tr -d '\r'
+          )"
+
+          echo "banner=$banner_text" >> "$GITHUB_OUTPUT"
+          echo "error=$error" >> "$GITHUB_OUTPUT"
 
       - name: Verify Submission STARTTLS (587)
         id: submission
@@ -37,7 +51,22 @@ jobs:
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
-          echo "EHLO smoke-test" | nc -w 5 "${INPUTS_HOST}" 587 | grep -q 'STARTTLS'
+          error=""
+          ehlo_response="$(
+            echo "EHLO smoke-test" | nc -w 5 "${INPUTS_HOST}" 587 2>&1
+          )" || error="Connection failed"
+
+          echo "$ehlo_response" | grep -q 'STARTTLS' || error="No STARTTLS advertised"
+
+          ehlo_name="$(
+            echo "$ehlo_response" \
+              | head -n 1 \
+              | awk '{print $2}' \
+              | tr -d '\r'
+          )"
+
+          echo "ehlo_name=$ehlo_name" >> "$GITHUB_OUTPUT"
+          echo "error=$error" >> "$GITHUB_OUTPUT"
 
       - name: Verify SMTPS (465)
         id: smtps
@@ -45,7 +74,11 @@ jobs:
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
-          nc -zv "${INPUTS_HOST}" 465
+          error=""
+          nc -zv "${INPUTS_HOST}" 465 2>&1 || error="Connection refused"
+
+          echo "tls_version=Connected" >> "$GITHUB_OUTPUT"
+          echo "error=$error" >> "$GITHUB_OUTPUT"
 
       - name: Verify IMAPS capability (993)
         id: imaps
@@ -53,11 +86,26 @@ jobs:
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
-          echo "QUIT" | openssl s_client \
-            -quiet \
-            -connect "${INPUTS_HOST}:993" \
-            2>/dev/null \
-            | grep -q 'OK'
+          error=""
+          imap_response="$(
+            echo "QUIT" | openssl s_client \
+              -quiet \
+              -connect "${INPUTS_HOST}:993" \
+              2>/dev/null
+          )" || error="Connection failed"
+
+          echo "$imap_response" | grep -q 'OK' || error="No OK response"
+
+          software="$(
+            echo "$imap_response" \
+              | head -n 1 \
+              | sed 's/.*\] //' \
+              | awk '{print $1}' \
+              | tr -d '\r'
+          )"
+
+          echo "software=$software" >> "$GITHUB_OUTPUT"
+          echo "error=$error" >> "$GITHUB_OUTPUT"
 
       - name: Verify Mail-in-a-Box web UI
         id: web_ui
@@ -65,12 +113,24 @@ jobs:
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
-          curl \
-            --fail \
-            --silent \
-            --show-error \
-            "https://${INPUTS_HOST}/" \
-            >/dev/null
+          error=""
+          output="$(
+            curl \
+              --fail \
+              --silent \
+              --show-error \
+              --write-out '%{http_code} %{size_download}' \
+              "https://${INPUTS_HOST}/" \
+              2>&1 \
+              | tail -1
+          )" || error="Request failed"
+
+          status="$(echo "$output" | awk '{print $1}')"
+          size="$(echo "$output" | awk '{print $2}')"
+
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "size=$size" >> "$GITHUB_OUTPUT"
+          echo "error=$error" >> "$GITHUB_OUTPUT"
 
       - name: Verify DNS MX record
         id: dns_mx
@@ -78,8 +138,32 @@ jobs:
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
+          error=""
           domain="${INPUTS_HOST#*.}"
-          dig +short MX "$domain" | grep -q "${INPUTS_HOST}"
+          mx_record="$(dig +short MX "$domain" 2>&1)" || error="DNS query failed"
+
+          echo "$mx_record" | grep -q "${INPUTS_HOST}" || error="MX record not found"
+
+          mx_priority="$(
+            echo "$mx_record" \
+              | grep "${INPUTS_HOST}" \
+              | awk '{print $1}' \
+              | head -n 1 \
+              | tr -d '\r'
+          )"
+
+          mx_server="$(
+            echo "$mx_record" \
+              | grep "${INPUTS_HOST}" \
+              | awk '{print $2}' \
+              | head -n 1 \
+              | tr -d '\r' \
+              | sed 's/\.$//'
+          )"
+
+          echo "priority=$mx_priority" >> "$GITHUB_OUTPUT"
+          echo "server=$mx_server" >> "$GITHUB_OUTPUT"
+          echo "error=$error" >> "$GITHUB_OUTPUT"
 
       - name: Verify DNS SPF record
         id: dns_spf
@@ -87,8 +171,23 @@ jobs:
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
+          error=""
           domain="${INPUTS_HOST#*.}"
-          dig +short TXT "$domain" | grep -q 'v=spf1'
+          spf_record="$(
+            dig +short TXT "$domain" 2>&1 | grep 'v=spf1'
+          )" || error="DNS query failed"
+
+          echo "$spf_record" | grep -q 'v=spf1' || error="SPF record not found"
+
+          spf_policy="$(
+            echo "$spf_record" \
+              | head -n 1 \
+              | tr -d '"' \
+              | tr -d '\r'
+          )"
+
+          echo "policy=$spf_policy" >> "$GITHUB_OUTPUT"
+          echo "error=$error" >> "$GITHUB_OUTPUT"
 
       - name: Generate smoke-test summary
         if: always()
@@ -98,35 +197,66 @@ jobs:
                 && '✅ PASS'
                 || '❌ FAIL' }}
 
+          SMTP_DETAILS: >-
+            ${{ steps.smtp.outputs.banner && format('Banner: `{0}`', steps.smtp.outputs.banner)
+                || format('Error: `{0}`', steps.smtp.outputs.error || 'Unknown') }}
+
           SUBMISSION_RESULT: >-
             ${{ steps.submission.outcome == 'success'
                 && '✅ PASS'
                 || '❌ FAIL' }}
+
+          SUBMISSION_DETAILS: >-
+            ${{ steps.submission.outputs.ehlo_name && format('EHLO: `{0}`', steps.submission.outputs.ehlo_name)
+                || format('Error: `{0}`', steps.submission.outputs.error || 'Unknown') }}
 
           SMTPS_RESULT: >-
             ${{ steps.smtps.outcome == 'success'
                 && '✅ PASS'
                 || '❌ FAIL' }}
 
+          SMTPS_DETAILS: >-
+            ${{ steps.smtps.outcome == 'success'
+                && 'Port open'
+                || format('Error: `{0}`', steps.smtps.outputs.error || 'Unknown') }}
+
           IMAPS_RESULT: >-
             ${{ steps.imaps.outcome == 'success'
                 && '✅ PASS'
                 || '❌ FAIL' }}
+
+          IMAPS_DETAILS: >-
+            ${{ steps.imaps.outputs.software && format('Software: `{0}`', steps.imaps.outputs.software)
+                || format('Error: `{0}`', steps.imaps.outputs.error || 'Unknown') }}
 
           WEB_UI_RESULT: >-
             ${{ steps.web_ui.outcome == 'success'
                 && '✅ PASS'
                 || '❌ FAIL' }}
 
+          WEB_UI_DETAILS: >-
+            ${{ steps.web_ui.outputs.status
+                && format('HTTP `{0}`, `{1}` bytes', steps.web_ui.outputs.status, steps.web_ui.outputs.size)
+                || format('Error: `{0}`', steps.web_ui.outputs.error || 'Unknown') }}
+
           DNS_MX_RESULT: >-
             ${{ steps.dns_mx.outcome == 'success'
                 && '✅ PASS'
                 || '❌ FAIL' }}
 
+          DNS_MX_DETAILS: >-
+            ${{ steps.dns_mx.outputs.priority
+                && format('Priority: `{0}`, Server: `{1}`', steps.dns_mx.outputs.priority, steps.dns_mx.outputs.server)
+                || format('Error: `{0}`', steps.dns_mx.outputs.error || 'Unknown') }}
+
           DNS_SPF_RESULT: >-
             ${{ steps.dns_spf.outcome == 'success'
                 && '✅ PASS'
                 || '❌ FAIL' }}
+
+          DNS_SPF_DETAILS: >-
+            ${{ steps.dns_spf.outputs.policy && format('Policy: `{0}`', steps.dns_spf.outputs.policy)
+                || format('Error: `{0}`', steps.dns_spf.outputs.error || 'Unknown') }}
 
           INPUTS_HOST: ${{ inputs.host }}
 
@@ -136,15 +266,15 @@ jobs:
             echo
             echo "Host: \`${INPUTS_HOST}\`"
             echo
-            echo "| Test | Result |"
-            echo "|------|--------|"
-            echo "| SMTP banner (25) | ${SMTP_RESULT} |"
-            echo "| Submission STARTTLS (587) | ${SUBMISSION_RESULT} |"
-            echo "| SMTPS (465) | ${SMTPS_RESULT} |"
-            echo "| IMAPS capability (993) | ${IMAPS_RESULT} |"
-            echo "| Mail-in-a-Box web UI | ${WEB_UI_RESULT} |"
-            echo "| DNS MX record | ${DNS_MX_RESULT} |"
-            echo "| DNS SPF record | ${DNS_SPF_RESULT} |"
+            echo "| Test | Result | Details |"
+            echo "|------|--------|---------|"
+            echo "| SMTP banner (25) | ${SMTP_RESULT} | ${SMTP_DETAILS} |"
+            echo "| Submission STARTTLS (587) | ${SUBMISSION_RESULT} | ${SUBMISSION_DETAILS} |"
+            echo "| SMTPS (465) | ${SMTPS_RESULT} | ${SMTPS_DETAILS} |"
+            echo "| IMAPS capability (993) | ${IMAPS_RESULT} | ${IMAPS_DETAILS} |"
+            echo "| Mail-in-a-Box web UI | ${WEB_UI_RESULT} | ${WEB_UI_DETAILS} |"
+            echo "| DNS MX record | ${DNS_MX_RESULT} | ${DNS_MX_DETAILS} |"
+            echo "| DNS SPF record | ${DNS_SPF_RESULT} | ${DNS_SPF_DETAILS} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail if any smoke test failed
