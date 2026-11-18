@@ -1,4 +1,7 @@
 ---
+webserver_user: www-data
+webserver_directory: /var/www/html
+
 dbserver_wp_db_host: localhost
 
 redis_password: !vault |
