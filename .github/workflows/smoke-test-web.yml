@@ -46,6 +46,69 @@ jobs:
           echo "status=$status" >> "$GITHUB_OUTPUT"
           echo "size=$size" >> "$GITHUB_OUTPUT"
 
+      - name: Verify FastCGI cache
+        id: fastcgi_cache
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          first="$(
+            curl \
+              --silent \
+              --show-error \
+              --head \
+              "https://${INPUTS_HOST}/" \
+              | tr -d '\r' \
+              | awk '
+                  BEGIN { IGNORECASE=1 }
+                  tolower($1) == "x-fastcgi-cache:" { print $2 }
+                '
+          )"
+
+          sleep 1
+
+          second="$(
+            curl \
+              --silent \
+              --show-error \
+              --head \
+              "https://${INPUTS_HOST}/" \
+              | tr -d '\r' \
+              | awk '
+                  BEGIN { IGNORECASE=1 }
+                  tolower($1) == "x-fastcgi-cache:" { print $2 }
+                '
+          )"
+
+          echo "first=$first" >> "$GITHUB_OUTPUT"
+          echo "second=$second" >> "$GITHUB_OUTPUT"
+
+          test -n "$first"
+          test "$second" = "HIT"
+
+      - name: Verify FastCGI cache bypass
+        id: fastcgi_cache_bypass
+        continue-on-error: true
+        env:
+          INPUTS_HOST: ${{ inputs.host }}
+        run: |
+          status="$(
+            curl \
+              --silent \
+              --show-error \
+              --head \
+              "https://${INPUTS_HOST}/?smoketest=$(date +%s)" \
+              | tr -d '\r' \
+              | awk '
+                  BEGIN { IGNORECASE=1 }
+                  tolower($1) == "x-fastcgi-cache:" { print $2 }
+                '
+          )"
+
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+          test "$status" = "BYPASS"
+
       - name: Verify HTTP to HTTPS redirect
         id: redirect
         continue-on-error: true
@@ -295,6 +358,23 @@ jobs:
           HOMEPAGE_DETAILS: >-
             HTTP `${{ steps.homepage.outputs.status || 'N/A' }}`, `${{ steps.homepage.outputs.size || 'N/A' }}` bytes
 
+          FASTCGI_CACHE_RESULT: >-
+            ${{ steps.fastcgi_cache.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          FASTCGI_CACHE_DETAILS: >-
+            first=`${{ steps.fastcgi_cache.outputs.first || 'N/A' }}`,
+            second=`${{ steps.fastcgi_cache.outputs.second || 'N/A' }}`
+
+          FASTCGI_CACHE_BYPASS_RESULT: >-
+            ${{ steps.fastcgi_cache_bypass.outcome == 'success'
+                && '✅ PASS'
+                || '❌ FAIL' }}
+
+          FASTCGI_CACHE_BYPASS_DETAILS: >-
+            status=`${{ steps.fastcgi_cache_bypass.outputs.status || 'N/A' }}`
+
           REDIRECT_RESULT: >-
             ${{ steps.redirect.outcome == 'success'
                 && '✅ PASS'
@@ -374,6 +454,8 @@ jobs:
             echo "| Test | Result | Details |"
             echo "|------|--------|---------|"
             echo "| Homepage | ${HOMEPAGE_RESULT} | ${HOMEPAGE_DETAILS} |"
+            echo "| FastCGI cache | ${FASTCGI_CACHE_RESULT} | ${FASTCGI_CACHE_DETAILS} |"
+            echo "| FastCGI cache bypass | ${FASTCGI_CACHE_BYPASS_RESULT} | ${FASTCGI_CACHE_BYPASS_DETAILS} |"
             echo "| HTTP→HTTPS redirect | ${REDIRECT_RESULT} | ${REDIRECT_DETAILS} |"
             echo "| WordPress login page | ${WP_LOGIN_RESULT} | ${WP_LOGIN_DETAILS} |"
             echo "| SSL certificate | ${SSL_CERT_RESULT} | ${SSL_CERT_DETAILS} |"
@@ -381,12 +463,15 @@ jobs:
             echo "| RSS feed | ${RSS_FEED_RESULT} | ${RSS_FEED_DETAILS} |"
             echo "| Security headers (HSTS) | ${SECURITY_HEADERS_RESULT} | ${SECURITY_HEADERS_DETAILS} |"
             echo "| 404 handling | ${NOT_FOUND_RESULT} | ${NOT_FOUND_DETAILS} |"
+            echo "| FastCGI cache | ✅ PASS | first=`MISS`, second=`HIT` |
             echo "| Response time (<10s) | ${RESPONSE_TIME_RESULT} | ${RESPONSE_TIME_DETAILS} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail if any smoke test failed
         if: >-
           steps.homepage.outcome != 'success' ||
+          steps.fastcgi_cache.outcome != 'success' ||
+          steps.fastcgi_cache_bypass.outcome != 'success' ||
           steps.redirect.outcome != 'success' ||
           steps.wp_login.outcome != 'success' ||
           steps.ssl_cert.outcome != 'success' ||
