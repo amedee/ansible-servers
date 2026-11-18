@@ -4,16 +4,65 @@ server {
     index {{ nginx_default_indexfiles | default(['index.php']) | join(' ') }};
     server_name {{ nginx_hostname }};
 
+    set $skip_cache 0;
+
+    # Never cache POST requests
+    if ($request_method = POST) {
+        set $skip_cache 1;
+    }
+
+    # Never cache requests with query strings
+    if ($args != "") {
+        set $skip_cache 1;
+    }
+
+    # Never cache logged-in users
+    if ($http_cookie ~* "wordpress_logged_in") {
+        set $skip_cache 1;
+    }
+
+    # Never cache password-protected posts
+    if ($http_cookie ~* "wp-postpass") {
+        set $skip_cache 1;
+    }
+
     location / {
         limit_req zone=mylimit burst=20 nodelay;
-        try_files $uri $uri/ /index.php?q=$uri&$args;
+        try_files $uri $uri/ /index.php?$args;
     }
 
     # PHP Processing
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
+
         fastcgi_pass unix:/var/run/php/php{{ nginx_php_version }}-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+        fastcgi_cache wordpress;
+        fastcgi_cache_key "$scheme$request_method$host$request_uri";
+
+        fastcgi_cache_valid 200 10m;
+        fastcgi_cache_valid 301 302 10m;
+
+        fastcgi_cache_methods GET HEAD;
+
+        fastcgi_cache_bypass $skip_cache;
+        fastcgi_no_cache $skip_cache;
+
+        fastcgi_cache_lock on;
+        fastcgi_cache_lock_timeout 10s;
+
+        fastcgi_cache_background_update on;
+
+        fastcgi_cache_use_stale
+            error
+            timeout
+            invalid_header
+            updating
+            http_500
+            http_503;
+
+        add_header X-FastCGI-Cache $upstream_cache_status always;
     }
 
     # Restrict Access to Hidden Files
