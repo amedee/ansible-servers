@@ -33,6 +33,14 @@
     cache_valid_time: 86400 # One day
     lock_timeout: 300 # 5 minutes
 
+- name: Create nginx FastCGI cache directory
+  ansible.builtin.file:
+    path: /var/cache/nginx/wordpress
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_user }}"
+    mode: "0755"
+
 - name: Deploy nginx configuration files
   ansible.builtin.copy:
     src: "{{ item.src }}"
