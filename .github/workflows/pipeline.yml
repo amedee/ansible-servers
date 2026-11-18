@@ -55,42 +55,14 @@ jobs:
     name: 🧪 Molecule Tests
     uses: ./.github/workflows/molecule.yml
 
-  detect-changes:
-    name: 🔎 Detect production changes
-    runs-on: ubuntu-26.04
-
-    outputs:
-      production: ${{ steps.filter.outputs.production }}
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
-        id: filter
-        with:
-          filters: |
-            production:
-              - 'inventory/**'
-              - 'playbooks/**'
-              - 'roles/**'
-              - '!**/molecule/**'
-              - '!**/*.md'
-          list-files: "shell"
-
   deploy:
     name: 🚀 Deploy to Production
-    if: >
-      github.event_name != 'schedule' &&
-      needs.detect-changes.outputs.production == 'true'
     needs:
       - super-linter
       - ansible-lint
       - molecule
       - pylint
       - validate-configs
-      - detect-changes
     uses: ./.github/workflows/ansible-run.yml
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
