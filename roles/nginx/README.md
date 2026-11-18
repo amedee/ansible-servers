@@ -55,6 +55,8 @@ nginx_config_files:
     dest: /etc/nginx/nginx.conf
   - src: gzip.conf
     dest: /etc/nginx/conf.d/gzip.conf
+  - src: fastcgi-cache.conf
+    dest: /etc/nginx/conf.d/fastcgi-cache.conf
 ```
 
 ### nginx_default_indexfiles
