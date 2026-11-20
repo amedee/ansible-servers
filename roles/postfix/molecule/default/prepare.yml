@@ -2,7 +2,10 @@
 - name: Prepare
   hosts: all
   become: true
-  gather_facts: false
+  gather_facts: true
+
+  roles:
+    - apt
 
   tasks:
     - name: Ensure /etc/mailname exists
