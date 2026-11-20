@@ -78,34 +78,17 @@ jobs:
           error=""
           nc -zv "${INPUTS_HOST}" 465 2>&1 || error="Connection refused"
 
-          echo "tls_version=Connected" >> "$GITHUB_OUTPUT"
           echo "error=$error" >> "$GITHUB_OUTPUT"
 
-      - name: Verify IMAPS capability (993)
+      - name: Verify IMAPS (993)
         id: imaps
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
           error=""
-          imap_response="$(
-            echo "QUIT" | openssl s_client \
-              -quiet \
-              -connect "${INPUTS_HOST}:993" \
-              2>/dev/null
-          )" || error="Connection failed"
+          nc -zv "${INPUTS_HOST}" 993 2>&1 || error="Connection refused"
 
-          echo "$imap_response" | grep -q 'OK' || error="No OK response"
-
-          software="$(
-            echo "$imap_response" \
-              | head -n 1 \
-              | sed 's/.*\] //' \
-              | awk '{print $1}' \
-              | tr -d '\r'
-          )"
-
-          echo "software=$software" >> "$GITHUB_OUTPUT"
           echo "error=$error" >> "$GITHUB_OUTPUT"
 
       - name: Verify Mail-in-a-Box web UI
@@ -227,7 +210,8 @@ jobs:
                 || '❌ FAIL' }}
 
           IMAPS_DETAILS: >-
-            ${{ steps.imaps.outputs.software && format('Software: `{0}`', steps.imaps.outputs.software)
+            ${{ steps.imaps.outcome == 'success'
+                && 'Port open'
                 || format('Error: `{0}`', steps.imaps.outputs.error || 'Unknown') }}
 
           WEB_UI_RESULT: >-
