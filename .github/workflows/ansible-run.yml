@@ -3,6 +3,16 @@ name: 🚀 Ansible Run
 
 on: # yamllint disable-line rule:truthy
   workflow_dispatch:
+    inputs:
+      target:
+        description: Target host(s) to deploy
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - web
+          - mail
   workflow_call:
     secrets:
       SSH_PRIVATE_KEY:
@@ -16,6 +26,7 @@ permissions:
 jobs:
   deploy-web:
     name: Deploy amedee.be
+    if: ${{ github.event_name != 'workflow_dispatch' || contains('both,web', github.event.inputs.target) }}
     uses: ./.github/workflows/deploy-host.yml
     with:
       host: amedee.be
@@ -25,6 +36,7 @@ jobs:
 
   deploy-mail:
     name: Deploy box.vangasse.eu
+    if: ${{ github.event_name != 'workflow_dispatch' || contains('both,mail', github.event.inputs.target) }}
     uses: ./.github/workflows/deploy-host.yml
     with:
       host: box.vangasse.eu
@@ -35,6 +47,7 @@ jobs:
   smoke-web:
     name: Smoke Test amedee.be
     needs: deploy-web
+    if: ${{ github.event_name != 'workflow_dispatch' || contains('both,web', github.event.inputs.target) }}
     uses: ./.github/workflows/smoke-test-web.yml
     with:
       host: amedee.be
@@ -42,6 +55,7 @@ jobs:
   smoke-mail:
     name: Smoke Test box.vangasse.eu
     needs: deploy-mail
+    if: ${{ github.event_name != 'workflow_dispatch' || contains('both,mail', github.event.inputs.target) }}
     uses: ./.github/workflows/smoke-test-mail.yml
     with:
       host: box.vangasse.eu
