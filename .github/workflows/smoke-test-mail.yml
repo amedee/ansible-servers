@@ -19,7 +19,8 @@ permissions:
   contents: read
 
 jobs:
-  smoke-test:
+  smoke-test-mail:
+    name: Smoke Test ${{ inputs.host }}
     runs-on: ubuntu-26.04
 
     steps:
