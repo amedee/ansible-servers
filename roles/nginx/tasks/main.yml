@@ -26,8 +26,8 @@
   ansible.builtin.apt:
     name:
       - nginx
-      - php
-      - php-fpm
+      - "php{{ nginx_php_version }}"
+      - "php{{ nginx_php_version }}-fpm"
     state: present
     update_cache: true
     cache_valid_time: 86400 # One day

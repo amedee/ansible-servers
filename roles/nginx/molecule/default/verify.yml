@@ -6,8 +6,8 @@
   vars:
     nginx_packages:
       - nginx
-      - php
-      - php-fpm
+      - "php{{ nginx_php_version }}"
+      - "php{{ nginx_php_version }}-fpm"
 
   tasks:
     - name: Gather package facts
