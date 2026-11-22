@@ -1,0 +1,32 @@
+---
+- name: Update packages
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Install all available APT updates
+      ansible.builtin.apt:
+        upgrade: dist
+        update_cache: true
+        autoremove: true
+        autoclean: true
+
+    - name: Refresh snap package list
+      ansible.builtin.command: snap refresh --list
+      register: snap_refresh_list
+      changed_when: false
+      failed_when: false
+
+    - name: Install all available snap updates
+      ansible.builtin.command: snap refresh
+      register: snap_refresh
+      changed_when: snap_refresh.rc == 0
+      failed_when: false
+
+- name: Reboot servers if needed
+  hosts: all
+  become: true
+
+  roles:
+    - debops.debops.reboot

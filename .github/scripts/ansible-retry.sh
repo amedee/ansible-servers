@@ -4,6 +4,7 @@ set -euo pipefail
 : "${ANSIBLE_HOST:?ANSIBLE_HOST is required}"
 : "${SSH_PRIVATE_KEY:?SSH_PRIVATE_KEY is required}"
 : "${VAULT_PASSWORD:?VAULT_PASSWORD is required}"
+ANSIBLE_PLAYBOOK="${ANSIBLE_PLAYBOOK:-playbooks/site.yml}"
 
 # Retry policy
 readonly MAX_ATTEMPTS=5
@@ -73,7 +74,7 @@ for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
 
 	LOG=$(mktemp)
 
-	if ansible-playbook playbooks/site.yml \
+	if ansible-playbook "$ANSIBLE_PLAYBOOK" \
 		--inventory inventory/production \
 		--limit "$ANSIBLE_HOST" \
 		--vault-password-file "$VAULT_FILE" \
