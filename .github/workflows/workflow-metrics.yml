@@ -23,7 +23,8 @@ jobs:
 
     steps:
       # yamllint disable-line rule:line-length
-      - uses: yykamei/github-workflows-metrics@f79ad4a1ff5f537d85f8b132eb31846226d93f82 # v0.4.3
+      - uses: yykamei/github-workflows-metrics@d44ecf5b3f1eabe5c2d750c484bb476033678c96 # v0.4.6
         with:
           only: pipeline.yml
           status: success
+          aggregate: median
