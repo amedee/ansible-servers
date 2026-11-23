@@ -9,8 +9,6 @@ Install and configure PHP and PHP-FPM.
   - [php_fpm_socket](#php_fpm_socket)
   - [php_module_packages](#php_module_packages)
   - [php_packages](#php_packages)
-  - [php_repository](#php_repository)
-  - [php_repository_suite](#php_repository_suite)
   - [php_version](#php_version)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -48,27 +46,6 @@ php_module_packages: []
 php_packages:
   - php{{ php_version }}-cli
   - php{{ php_version }}-fpm
-```
-
-### php_repository
-
-#### Default value
-
-```YAML
-php_repository:
-  name: sury-php
-  uri: https://packages.sury.org/php/
-  component: main
-  key: https://packages.sury.org/php/apt.gpg
-```
-
-### php_repository_suite
-
-#### Default value
-
-```YAML
-php_repository_suite: >-
-  {{ ansible_facts['distribution_release'] | default('noble') }}
 ```
 
 ### php_version
