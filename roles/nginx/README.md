@@ -103,10 +103,6 @@ nginx_repositories:
     uri: https://nginx.org/packages/ubuntu
     component: nginx
     key: https://nginx.org/keys/nginx_signing.key
-  - name: sury-php
-    uri: https://packages.sury.org/php/
-    component: main
-    key: https://packages.sury.org/php/apt.gpg
 ```
 
 ### nginx_user

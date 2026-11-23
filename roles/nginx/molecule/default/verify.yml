@@ -1,7 +1,7 @@
 ---
 - name: Verify
   hosts: all
-  gather_facts: true
+  gather_facts: false
 
   vars:
     nginx_packages:
@@ -43,16 +43,6 @@
       ansible.builtin.assert:
         that:
           - nginx_repo.stat.exists
-
-    - name: Verify Sury repository is configured
-      ansible.builtin.stat:
-        path: /etc/apt/sources.list.d/sury-php.sources
-      register: nginx_sury_repo
-
-    - name: Verify Sury repository file exists
-      ansible.builtin.assert:
-        that:
-          - nginx_sury_repo.stat.exists
 
     - name: Verify nginx APT pinning exists
       ansible.builtin.stat:
