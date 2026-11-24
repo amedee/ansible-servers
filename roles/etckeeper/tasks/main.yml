@@ -1,0 +1,61 @@
+---
+- name: Install etckeeper and Git
+  ansible.builtin.apt:
+    name:
+      - etckeeper
+      - git
+    state: present
+    update_cache: true
+    cache_valid_time: 86400 # One day
+
+- name: Initialize etckeeper repository
+  ansible.builtin.command:
+    argv:
+      - etckeeper
+      - init
+    creates: /etc/.etckeeper
+
+- name: Configure ignored /etc paths
+  ansible.builtin.blockinfile:
+    path: /etc/.gitignore
+    block: "{{ (etckeeper__default_gitignore + etckeeper__gitignore) | join('\n') }}"
+    insertbefore: BOF
+    marker: '# {mark} Ansible managed'
+    create: true
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Configure Git identity
+  community.general.ini_file:
+    path: /etc/.git/config
+    section: user
+    option: '{{ item.option }}'
+    value: '{{ item.value }}'
+    mode: '0644'
+  loop:
+    - option: name
+      value: The /etc Keeper
+    - option: email
+      value: 'root@{{ inventory_hostname }}'
+
+- name: Check for uncommitted /etc changes
+  ansible.builtin.command:
+    argv:
+      - etckeeper
+      - unclean
+  register: etckeeper__unclean_result
+  changed_when: false
+  failed_when: etckeeper__unclean_result.rc not in [0, 1]
+  check_mode: false
+
+- name: Commit /etc changes
+  ansible.builtin.command:
+    argv:
+      - etckeeper
+      - commit
+      - Committed by Ansible
+  when:
+    - etckeeper__unclean_result.rc == 0
+    - not ansible_check_mode
+  changed_when: true

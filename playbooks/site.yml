@@ -45,7 +45,7 @@
     - base_linux
     - localepurge
     - hadori
-    - debops.debops.etckeeper
+    - etckeeper
     - debops.debops.etc_aliases
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades

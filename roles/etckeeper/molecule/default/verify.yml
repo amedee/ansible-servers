@@ -1,0 +1,67 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Get the /etc repository root
+      ansible.builtin.command:
+        argv:
+          - git
+          - -C
+          - /etc
+          - rev-parse
+          - --show-toplevel
+      register: etckeeper_repository
+      changed_when: false
+
+    - name: Get the configured Git name
+      ansible.builtin.command:
+        argv:
+          - git
+          - -C
+          - /etc
+          - config
+          - --get
+          - user.name
+      register: etckeeper_git_name
+      changed_when: false
+
+    - name: Get the configured Git email
+      ansible.builtin.command:
+        argv:
+          - git
+          - -C
+          - /etc
+          - config
+          - --get
+          - user.email
+      register: etckeeper_git_email
+      changed_when: false
+
+    - name: Read configured ignored /etc paths
+      ansible.builtin.slurp:
+        src: /etc/.gitignore
+      register: etckeeper_gitignore
+
+    - name: Check for uncommitted /etc changes
+      ansible.builtin.command:
+        argv:
+          - git
+          - -C
+          - /etc
+          - status
+          - --porcelain
+      register: etckeeper_git_status
+      changed_when: false
+
+    - name: Assert etckeeper repository configuration
+      ansible.builtin.assert:
+        that:
+          - etckeeper_repository.stdout == '/etc'
+          - etckeeper_git_name.stdout == 'The /etc Keeper'
+          - etckeeper_git_email.stdout == 'root@' ~ inventory_hostname
+          - "'tor/keys/' in (etckeeper_gitignore.content | b64decode)"
+          - "'molecule/custom-ignore' in (etckeeper_gitignore.content | b64decode)"
+          - etckeeper_git_status.stdout == ''
