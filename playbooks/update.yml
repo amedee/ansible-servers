@@ -28,5 +28,15 @@
   hosts: all
   become: true
 
-  roles:
-    - debops.debops.reboot
+  tasks:
+    - name: Check if reboot is required
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+        get_attributes: false
+        get_checksum: false
+        get_mime: false
+      register: reboot_required
+
+    - name: Reboot if required
+      ansible.builtin.reboot:
+      when: reboot_required.stat.exists
