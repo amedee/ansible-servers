@@ -1,0 +1,5 @@
+---
+wpcli__version: "2.12.0"
+wpcli__checksum: "sha256:f12126a3ca1c48e53b7f89fd30e60b9cf3335dfb0c94403a2e5c125be0e66c77"
+wpcli__src: /usr/local/src/wpcli
+wpcli__binary: /usr/local/bin/wp

@@ -1,0 +1,18 @@
+---
+- name: Prepare
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Install PHP CLI
+      ansible.builtin.apt:
+        name: php-cli
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+  roles:
+    - role: keyring
+      keyring__dependent_gpg_keys:
+        - id: "{{ wpcli__signing_key_fingerprint }}"

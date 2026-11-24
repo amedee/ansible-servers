@@ -61,6 +61,7 @@ This repository uses CI to continuously validate configuration quality:
 | [`redis`](https://github.com/amedee/ansible-servers/tree/main/roles/redis)             | Role to configure Redis.                                                                                                                                                        |    ✅    |
 | [`swapfile`](https://github.com/amedee/ansible-servers/tree/main/roles/swapfile)       | Wrapper role for `debops.debops.swapfile` because it doesn't run `swapon --all`.                                                                                                |    ✅    |
 | [`wp`](https://github.com/amedee/ansible-servers/tree/main/roles/wp)                   | Configure a WordPress installation with MySQL, Redis, plugins, themes and backup restoration.                                                                                   |    ✅    |
+| [`wpcli`](https://github.com/amedee/ansible-servers/tree/main/roles/wpcli)             | Install WP-CLI framework.                                                                                                                                                       |    ✅    |
 
 <!-- molecule-coverage:end -->
 

@@ -1,0 +1,39 @@
+---
+- name: Create WP-CLI source directory
+  ansible.builtin.file:
+    path: "{{ wpcli__src }}"
+    state: directory
+    mode: "0755"
+
+- name: Download signed WP-CLI archive
+  ansible.builtin.get_url:
+    url: "https://github.com/wp-cli/wp-cli/releases/download/v{{ wpcli__version }}/wp-cli-{{ wpcli__version }}.phar.gpg"
+    dest: "{{ wpcli__src }}/wp-cli-{{ wpcli__version }}.phar.gpg"
+    checksum: "{{ wpcli__checksum }}"
+    mode: "0644"
+  register: wpcli__download
+
+- name: Check whether WP-CLI is installed
+  ansible.builtin.stat:
+    path: "{{ wpcli__binary }}"
+  register: wpcli__binary_stat
+
+- name: Verify and install WP-CLI
+  ansible.builtin.command:
+    argv:
+      - gpg
+      - --batch
+      - --yes
+      - --output
+      - "{{ wpcli__binary }}"
+      - --decrypt
+      - "{{ wpcli__src }}/wp-cli-{{ wpcli__version }}.phar.gpg"
+  when: wpcli__download.changed or not wpcli__binary_stat.stat.exists
+  changed_when: true
+
+- name: Set WP-CLI permissions
+  ansible.builtin.file:
+    path: "{{ wpcli__binary }}"
+    owner: root
+    group: root
+    mode: "0755"
