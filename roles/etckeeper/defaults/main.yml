@@ -1,0 +1,15 @@
+---
+etckeeper__default_gitignore:
+  - 'tor/keys/'
+  - 'ssh/ssh_host_*_key'
+  - 'keys/mandos/seckey.txt'
+  - 'borgmatic/*passphrase*'
+  - 'borgmatic.d/*passphrase*'
+  - 'X11/xorg.conf.backup'
+  - 'apparmor.d/libvirt/*.files'
+  - 'zfs/zpool.cache'
+  - 'gitlab/gitlab-secrets.json'
+  - 'gitlab-runner/config.toml'
+  - 'docker/key.json'
+
+etckeeper__gitignore: []
