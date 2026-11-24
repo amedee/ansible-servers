@@ -27,13 +27,12 @@
       }}
 
   pre_tasks:
-    - name: Gather minimal facts for swapfile, postfix, ufw, munin-node
+    - name: Gather minimal facts for APT, postfix, ufw, munin-node
       ansible.builtin.setup:
         filter:
+          - ansible_distribution_release
           - ansible_hostname
           - ansible_os_family
-          - ansible_system_capabilities
-          - ansible_system_capabilities_enforced
           - ansible_virtualization_role
         gather_subset:
           - virtual

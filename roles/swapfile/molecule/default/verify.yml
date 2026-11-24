@@ -3,11 +3,16 @@
   hosts: all
   become: true
   gather_facts: false
+  vars_files:
+    - ../../defaults/main.yml
+  vars:
+    swapfile_fstab_pattern: >-
+      {{ swapfile_path }}\s+none\s+swap\s+sw,nofail,pri=-1\s+0\s+0
 
   tasks:
     - name: Check swapfile
       ansible.builtin.stat:
-        path: /swapfile
+        path: "{{ swapfile_path }}"
       register: swapfile_check
 
     - name: Verify swapfile
@@ -15,6 +20,16 @@
         that:
           - swapfile_check.stat.exists
           - swapfile_check.stat.isreg
+
+    - name: Read /etc/fstab
+      ansible.builtin.slurp:
+        src: /etc/fstab
+      register: swapfile_fstab
+
+    - name: Verify swapfile is configured in /etc/fstab
+      ansible.builtin.assert:
+        that:
+          - (swapfile_fstab.content | b64decode) is search(swapfile_fstab_pattern)
 
     - name: Get active swap devices
       ansible.builtin.command:
@@ -28,9 +43,9 @@
           - swapfile_active.stdout_lines
             | map('split')
             | map('first')
-            | select('equalto','/swapfile')
+            | select('equalto', swapfile_path)
             | list
             | length == 1
         fail_msg: >-
-          /swapfile is not active.
+          {{ swapfile_path }} is not active.
           Active swap devices: {{ swapfile_active.stdout_lines | join(', ') }}

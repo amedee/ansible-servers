@@ -1,6 +1,6 @@
 # swapfile
 
-Wrapper role for `debops.debops.swapfile` because it doesn't run `swapon --all`.
+Create and enable a swapfile.
 
 ## Table of contents
 
@@ -16,7 +16,7 @@ Wrapper role for `debops.debops.swapfile` because it doesn't run `swapon --all`.
 
 ## Requirements
 
-- Minimum Ansible version: `2.1`
+- Minimum Ansible version: `2.21`
 
 ## Default Variables
 
