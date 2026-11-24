@@ -1,0 +1,15 @@
+---
+- name: Prepare
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Install Postfix for aliases database verification
+      ansible.builtin.apt:
+        name: postfix
+        state: present
+        update_cache: true
+        cache_valid_time: 86400
+      environment:
+        DEBIAN_FRONTEND: noninteractive
