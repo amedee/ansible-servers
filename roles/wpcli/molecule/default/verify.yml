@@ -1,0 +1,21 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - ../../defaults/main.yml
+
+  tasks:
+    - name: Get WP-CLI version
+      ansible.builtin.command:
+        argv:
+          - /usr/local/bin/wp
+          - --allow-root
+          - --version
+      register: wpcli_version
+      changed_when: false
+
+    - name: Assert WP-CLI reports the configured version
+      ansible.builtin.assert:
+        that:
+          - wpcli_version.stdout | trim == 'WP-CLI ' ~ wpcli__version
