@@ -1,0 +1,23 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: List the configured GPG key
+      ansible.builtin.command:
+        argv:
+          - gpg
+          - --batch
+          - --with-colons
+          - --list-keys
+          - "{{ keyring__dependent_gpg_keys[0].id }}"
+      register: keyring_key
+      changed_when: false
+      failed_when: false
+
+    - name: Assert the configured GPG key is present
+      ansible.builtin.assert:
+        that:
+          - keyring_key.rc == 0
+          - keyring__dependent_gpg_keys[0].id in keyring_key.stdout

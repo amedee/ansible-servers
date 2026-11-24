@@ -1,0 +1,30 @@
+---
+- name: Install GnuPG
+  ansible.builtin.apt:
+    name: gnupg
+    state: present
+
+- name: Check if requested GPG keys are already present
+  ansible.builtin.command:
+    argv:
+      - gpg
+      - --batch
+      - --list-keys
+      - "{{ item.id | default(item) | replace(' ', '') }}"
+  loop: "{{ keyring__dependent_gpg_keys }}"
+  register: keyring__key_check
+  changed_when: false
+  failed_when: keyring__key_check.rc not in [0, 2]
+
+- name: Import requested GPG keys
+  ansible.builtin.command:
+    argv:
+      - gpg
+      - --batch
+      - --keyserver
+      - "{{ keyring__keyserver }}"
+      - --recv-keys
+      - "{{ item.item.id | default(item.item) | replace(' ', '') }}"
+  loop: "{{ keyring__key_check.results }}"
+  when: item.rc == 2
+  changed_when: true
