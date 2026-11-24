@@ -1,0 +1,7 @@
+---
+- name: Update aliases database
+  ansible.builtin.command:
+    argv:
+      - newaliases
+  when: etc_aliases__newaliases.stat.exists
+  changed_when: true

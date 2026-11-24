@@ -1,0 +1,14 @@
+---
+- name: Check whether newaliases is installed
+  ansible.builtin.stat:
+    path: /usr/bin/newaliases
+  register: etc_aliases__newaliases
+
+- name: Configure /etc/aliases
+  ansible.builtin.template:
+    src: etc/aliases.j2
+    dest: /etc/aliases
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Update aliases database

@@ -1,0 +1,16 @@
+---
+# @meta author:value: [Amedee Van Gasse](https://amedee.be)
+galaxy_info:
+  description: Configure mail aliases in /etc/aliases.
+  author: Amedee Van Gasse
+  namespace: amedee
+  license: MIT
+  min_ansible_version: '2.21'
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+        - noble
+        - resolute
+
+dependencies: []

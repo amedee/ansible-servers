@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+# Local alias database
+# See aliases(5) for more details
+
+{% for alias_map in etc_aliases__recipients %}
+{% for alias, recipient in alias_map.items() %}
+{{ alias }}: {{ recipient if recipient is string else recipient | join(', ') }}
+{% endfor %}
+{% endfor %}

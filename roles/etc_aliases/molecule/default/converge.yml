@@ -1,0 +1,12 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    etc_aliases__recipients:
+      - root: admin@example.test
+      - postmaster: root
+
+  roles:
+    - etc_aliases

@@ -46,7 +46,7 @@
     - localepurge
     - hadori
     - etckeeper
-    - debops.debops.etc_aliases
+    - etc_aliases
     - debops.debops.apt_listchanges
     - debops.debops.unattended_upgrades
     - debops.debops.journald

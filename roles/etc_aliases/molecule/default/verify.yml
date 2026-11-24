@@ -1,0 +1,23 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Read configured aliases
+      ansible.builtin.slurp:
+        src: /etc/aliases
+      register: etc_aliases__content
+
+    - name: Check for the compiled aliases database
+      ansible.builtin.stat:
+        path: /etc/aliases.db
+      register: etc_aliases__database
+
+    - name: Assert aliases and database are configured
+      ansible.builtin.assert:
+        that:
+          - "'root: admin@example.test' in (etc_aliases__content.content | b64decode)"
+          - "'postmaster: root' in (etc_aliases__content.content | b64decode)"
+          - etc_aliases__database.stat.exists
