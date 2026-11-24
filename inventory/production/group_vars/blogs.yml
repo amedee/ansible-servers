@@ -2,6 +2,9 @@
 webserver_user: www-data
 webserver_directory: /var/www/html
 
+keyring__dependent_gpg_keys:
+  - id: 63AF7AA15067C05616FDDD88A3A2E8F226F0BC06
+
 dbserver_wp_db_host: localhost
 
 redis_password: !vault |
