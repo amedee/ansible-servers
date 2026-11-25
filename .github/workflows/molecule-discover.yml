@@ -32,7 +32,7 @@ jobs:
       - name: 🐍 Setup Python and Install Dependencies
         uses: ./.github/actions/setup-python-pip
         with:
-          requirements-file: ".github/requirements-molecule.txt"
+          requirements-file: "requirements-molecule.txt"
 
       - name: Discover roles and scenarios
         id: discover

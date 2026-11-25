@@ -13,7 +13,7 @@ on: # yamllint disable-line rule:truthy
       - 'playbooks/**'
       - 'requirements.yml'
       - 'ansible.cfg'
-      - '.github/requirements-molecule.txt'
+      - 'requirements-molecule.txt'
       - '.github/actions/setup-python-pip/**'
       - '.github/actions/restore-ansible-cache/**'
       - '.github/workflows/molecule-discover.yml'
@@ -57,7 +57,7 @@ jobs:
       - name: Set up Python
         uses: ./.github/actions/setup-python-pip
         with:
-          requirements-file: .github/requirements-molecule.txt
+          requirements-file: requirements-molecule.txt
 
       - name: Restore Ansible cache
         uses: ./.github/actions/restore-ansible-cache
