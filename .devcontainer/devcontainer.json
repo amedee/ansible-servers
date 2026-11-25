@@ -1,6 +1,10 @@
 {
 	"name": "Ansible Lightweight",
-	"image": "mcr.microsoft.com/devcontainers/python:3.14",
+
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "."
+	},
 
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {},
@@ -10,13 +14,18 @@
 		}
 	},
 
-	"postCreateCommand": "python -m pip install --upgrade pip ansible ansible-lint molecule",
+	"postCreateCommand": "python -m pip install --upgrade pip && python -m pip install -r requirements-molecule.txt",
 
 	"remoteUser": "vscode",
 
 	"customizations": {
 		"vscode": {
-			"extensions": ["redhat.ansible", "redhat.vscode-yaml", "ms-python.python"]
+			"extensions": [
+				"redhat.ansible",
+				"redhat.vscode-yaml",
+				"ms-python.python",
+				"timonwong.shellcheck"
+			]
 		}
 	}
 }
