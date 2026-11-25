@@ -1,2 +1,16 @@
 ---
 munin_node_server_ip: 142.93.227.16
+munin_node_bind_host: "*"
+munin_node_bind_port: "4949"
+munin_node_host_name: ""
+
+munin_node_allowed_ips:
+  - '^127\.0\.0\.1$'
+  - '^::1$'
+
+munin_node_plugin_src_path: /usr/share/munin/plugins/
+munin_node_plugin_dest_path: /etc/munin/plugins/
+
+munin_node_plugins: []
+munin_node_install_plugins: []
+munin_node_config: {}

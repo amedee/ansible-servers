@@ -2,9 +2,6 @@
 driver:
   name: default
 
-dependency:
-  name: galaxy
-
 platforms:
   - name: instance
     connection: local
@@ -24,7 +21,6 @@ provisioner:
 
 scenario:
   test_sequence:
-    - dependency
     - syntax
     - converge
     - idempotence

@@ -11,6 +11,42 @@
     cache_valid_time: 86400 # One day
     lock_timeout: 300 # 5 minutes
 
+- name: Configure munin-node
+  ansible.builtin.template:
+    src: munin-node.conf.j2
+    dest: /etc/munin/munin-node.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart munin-node
+
+- name: Configure munin plugins
+  ansible.builtin.template:
+    src: plugin-conf.j2
+    dest: /etc/munin/plugin-conf.d/zzz-ansible.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart munin-node
+
+- name: Install additional munin plugins
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ munin_node_plugin_src_path }}{{ item.src | basename }}"
+    owner: root
+    group: root
+    mode: "0755"
+  loop: "{{ munin_node_install_plugins }}"
+  notify: Restart munin-node
+
+- name: Enable additional munin plugins
+  ansible.builtin.file:
+    path: "{{ munin_node_plugin_dest_path }}{{ item.name }}"
+    src: "{{ munin_node_plugin_src_path }}{{ item.plugin | default(item.name) }}"
+    state: link
+  loop: "{{ munin_node_plugins }}"
+  notify: Restart munin-node
+
 - name: Ensure munin-node is enabled and running
   ansible.builtin.service:
     name: munin-node

@@ -1,4 +1,0 @@
----
-roles:
-  - name: geerlingguy.munin-node
-    version: 1.4.0

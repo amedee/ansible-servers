@@ -15,6 +15,39 @@
           - "'ufw' in ansible_facts.packages"
           - "'uptimed' in ansible_facts.packages"
 
+    - name: Read munin-node configuration
+      ansible.builtin.slurp:
+        src: /etc/munin/munin-node.conf
+      register: munin_node__configuration
+
+    - name: Verify listener and access control are configured
+      ansible.builtin.assert:
+        that:
+          - "'host *' in (munin_node__configuration.content | b64decode)"
+          - "'port 4949' in (munin_node__configuration.content | b64decode)"
+          - "'allow ^192\\.0\\.2\\.10$' in (munin_node__configuration.content | b64decode)"
+
+    - name: Read plugin configuration
+      ansible.builtin.slurp:
+        src: /etc/munin/plugin-conf.d/zzz-ansible.conf
+      register: munin_node__plugin_configuration
+
+    - name: Verify plugin configuration is rendered
+      ansible.builtin.assert:
+        that:
+          - "'[uptime]' in (munin_node__plugin_configuration.content | b64decode)"
+          - "'user root' in (munin_node__plugin_configuration.content | b64decode)"
+
+    - name: Check uptime plugin link
+      ansible.builtin.stat:
+        path: /etc/munin/plugins/uptime
+      register: munin_node__uptime_plugin
+
+    - name: Verify uptime plugin is enabled
+      ansible.builtin.assert:
+        that:
+          - munin_node__uptime_plugin.stat.islnk
+
     - name: Check effective ProtectHome setting
       # noqa: command-instead-of-module
       ansible.builtin.command:

@@ -1,0 +1,6 @@
+{% for plugin, directives in munin_node_config.items() %}
+[{{ plugin }}]
+{% for name, value in directives.items() %}
+{{ name }} {{ value }}
+{% endfor %}
+{% endfor %}

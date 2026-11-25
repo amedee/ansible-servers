@@ -4,6 +4,16 @@
   gather_facts: true
   become: true
 
+  vars:
+    munin_node_allowed_ips:
+      - '^127\.0\.0\.1$'
+      - '^192\.0\.2\.10$'
+    munin_node_plugins:
+      - name: uptime
+    munin_node_config:
+      uptime:
+        user: root
+
   pre_tasks:
     - name: Update APT cache
       ansible.builtin.apt:

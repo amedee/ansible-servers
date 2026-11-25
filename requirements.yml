@@ -1,8 +1,4 @@
 ---
-roles:
-  - name: geerlingguy.munin-node
-    version: 1.4.0
-
 collections:
   - name: amazon.aws
     version: 12.1.0

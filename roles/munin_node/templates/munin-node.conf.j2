@@ -1,0 +1,28 @@
+log_level 4
+log_file /var/log/munin/munin-node.log
+pid_file /var/run/munin/munin-node.pid
+
+background 1
+setsid 1
+
+user root
+group root
+
+ignore_file [\#~]$
+ignore_file DEADJOE$
+ignore_file \.bak$
+ignore_file %$
+ignore_file \.dpkg-(tmp|new|old|dist)$
+ignore_file \.rpm(save|new)$
+ignore_file \.pod$
+
+{% if munin_node_host_name %}
+host_name {{ munin_node_host_name }}
+{% endif %}
+
+{% for allowed_ip in munin_node_allowed_ips %}
+allow {{ allowed_ip }}
+{% endfor %}
+
+host {{ munin_node_bind_host }}
+port {{ munin_node_bind_port }}
