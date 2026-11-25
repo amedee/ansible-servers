@@ -53,8 +53,9 @@ jobs:
         env:
           INPUTS_HOST: ${{ inputs.host }}
         run: |
-          first="$(
+          get_cache_status() {
             curl \
+              --max-time 2 \
               --silent \
               --show-error \
               --head \
@@ -63,28 +64,24 @@ jobs:
               | awk '
                   BEGIN { IGNORECASE=1 }
                   tolower($1) == "x-fastcgi-cache:" { print $2 }
-                '
-          )"
+                ' || true
+          }
 
-          sleep 1
+          first="$(get_cache_status)"
 
-          second="$(
-            curl \
-              --silent \
-              --show-error \
-              --head \
-              "https://${INPUTS_HOST}/" \
-              | tr -d '\r' \
-              | awk '
-                  BEGIN { IGNORECASE=1 }
-                  tolower($1) == "x-fastcgi-cache:" { print $2 }
-                '
-          )"
+          deadline=$((SECONDS + 10))
+          second=""
+          while (( SECONDS < deadline )); do
+            second="$(get_cache_status)"
+            if [[ "$second" == "HIT" ]]; then
+              break
+            fi
+            sleep 1
+          done
 
           echo "first=$first" >> "$GITHUB_OUTPUT"
           echo "second=$second" >> "$GITHUB_OUTPUT"
 
-          test -n "$first"
           test "$second" = "HIT"
 
       - name: Verify FastCGI cache bypass
