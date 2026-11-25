@@ -24,326 +24,89 @@ jobs:
     runs-on: ubuntu-26.04
 
     steps:
+      - name: Checkout smoke-test scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/scripts/smoketests/web
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
       - name: Verify homepage
         id: homepage
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          output="$(
-            curl \
-              --fail \
-              --silent \
-              --show-error \
-              --write-out '%{http_code} %{size_download}' \
-              "https://${INPUTS_HOST}/" \
-              2>/dev/null \
-              | tail -1
-          )"
-
-          status="$(echo "$output" | awk '{print $1}')"
-          size="$(echo "$output" | awk '{print $2}')"
-
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          echo "size=$size" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/web/web-homepage.sh
 
       - name: Verify FastCGI cache
         id: fastcgi_cache
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          get_cache_status() {
-            curl \
-              --max-time 2 \
-              --silent \
-              --show-error \
-              --head \
-              "https://${INPUTS_HOST}/" \
-              | tr -d '\r' \
-              | awk '
-                  BEGIN { IGNORECASE=1 }
-                  tolower($1) == "x-fastcgi-cache:" { print $2 }
-                ' || true
-          }
-
-          first="$(get_cache_status)"
-
-          deadline=$((SECONDS + 10))
-          second=""
-          while (( SECONDS < deadline )); do
-            second="$(get_cache_status)"
-            if [[ "$second" == "HIT" ]]; then
-              break
-            fi
-            sleep 1
-          done
-
-          echo "first=$first" >> "$GITHUB_OUTPUT"
-          echo "second=$second" >> "$GITHUB_OUTPUT"
-
-          test "$second" = "HIT"
+        run: bash .github/scripts/smoketests/web/web-fastcgi-cache.sh
 
       - name: Verify FastCGI cache bypass
         id: fastcgi_cache_bypass
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          status="$(
-            curl \
-              --silent \
-              --show-error \
-              --head \
-              "https://${INPUTS_HOST}/?smoketest=$(date +%s)" \
-              | tr -d '\r' \
-              | awk '
-                  BEGIN { IGNORECASE=1 }
-                  tolower($1) == "x-fastcgi-cache:" { print $2 }
-                '
-          )"
-
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-
-          test "$status" = "BYPASS"
+        run: bash .github/scripts/smoketests/web/web-fastcgi-cache-bypass.sh
 
       - name: Verify HTTP to HTTPS redirect
         id: redirect
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          headers="$(mktemp)"
-
-          curl \
-            --silent \
-            --output /dev/null \
-            --dump-header "$headers" \
-            "http://${INPUTS_HOST}/"
-
-          status="$(
-            awk 'NR == 1 {print $2}' "$headers"
-          )"
-
-          location="$(
-            awk 'BEGIN{IGNORECASE=1}
-                /^Location:/ {print $2}' "$headers" \
-            | tr -d '\r'
-          )"
-
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          echo "location=$location" >> "$GITHUB_OUTPUT"
-
-          test "$status" = "301" \
-            || test "$status" = "302" \
-            || test "$status" = "307" \
-            || test "$status" = "308"
-
-          test "$location" = "https://${INPUTS_HOST}/"
+        run: bash .github/scripts/smoketests/web/web-redirect.sh
 
       - name: Verify WordPress login page
         id: wp_login
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          output="$(
-            curl \
-              --fail \
-              --silent \
-              --show-error \
-              --write-out '%{http_code} %{size_download}' \
-              "https://${INPUTS_HOST}/wp-login.php" \
-              2>/dev/null \
-              | tail -1
-          )"
-
-          status="$(echo "$output" | awk '{print $1}')"
-          size="$(echo "$output" | awk '{print $2}')"
-
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          echo "size=$size" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/web/web-wp-login.sh
 
       - name: Verify SSL certificate
         id: ssl_cert
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          cert_info="$(
-            echo | openssl s_client \
-              -servername "${INPUTS_HOST}" \
-              -connect "${INPUTS_HOST}:443" \
-              -verify_return_error \
-              2>&1 \
-              | openssl x509 -noout -dates -subject
-          )"
-
-          echo "$cert_info"
-
-          expires="$(
-            echo "$cert_info" \
-              | grep 'notAfter=' \
-              | cut -d= -f2
-          )"
-
-          issuer="$(
-            echo "$cert_info" \
-              | grep 'subject=' \
-              | grep -oE 'CN = [^/]+|CN=[^/]+|CN =[^/]+' \
-              | sed 's/CN[ =]//' \
-              | head -n 1
-          )"
-
-          echo "expires=$expires" >> "$GITHUB_OUTPUT"
-          echo "issuer=$issuer" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/web/web-ssl-cert.sh
 
       - name: Verify WordPress REST API
         id: wp_rest
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          json="$(
-            curl \
-              --fail \
-              --silent \
-              --show-error \
-              "https://${INPUTS_HOST}/wp-json/"
-          )"
-
-          echo "$json" | grep -q '"name"'
-
-          site_name="$(
-            echo "$json" \
-              | grep -oE '"name":"[^"]*"' \
-              | head -n 1 \
-              | cut -d'"' -f4
-          )"
-
-          posts_count="$(
-            curl \
-              --silent \
-              --head \
-              "https://${INPUTS_HOST}/wp-json/wp/v2/posts?per_page=1" \
-              | grep -i '^X-WP-Total:' \
-              | awk '{print $2}' \
-              | tr -d '\r'
-          )"
-
-          echo "site_name=$site_name" >> "$GITHUB_OUTPUT"
-          echo "posts_count=$posts_count" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/web/web-wp-rest.sh
 
       - name: Verify RSS feed
         id: rss_feed
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          feed="$(
-            curl \
-              --fail \
-              --silent \
-              --show-error \
-              "https://${INPUTS_HOST}/feed/"
-          )"
-
-          echo "$feed" | grep -q '<rss'
-
-          item_count="$(
-            echo "$feed" \
-              | grep -c '<item>'
-          )"
-
-          latest_title="$(
-            echo "$feed" \
-              | tr '\n' ' ' \
-              | grep -oP '<item>\s*<title>\K[^<]+' \
-              | head -n 1
-          )"
-
-          echo "item_count=$item_count" >> "$GITHUB_OUTPUT"
-          echo "latest_title=$latest_title" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/web/web-rss-feed.sh
 
       - name: Verify security headers
         id: security_headers
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          headers="$(mktemp)"
-
-          curl \
-            --fail \
-            --silent \
-            --show-error \
-            --dump-header "$headers" \
-            --output /dev/null \
-            "https://${INPUTS_HOST}/"
-
-          hsts="$(
-            awk '
-              BEGIN { IGNORECASE=1 }
-              tolower($1) == "strict-transport-security:" {
-                sub(/\r$/, "")
-                $1 = ""
-                sub(/^[[:space:]]+/, "")
-                print
-              }
-            ' "$headers"
-          )"
-
-          echo "HSTS: ${hsts}"
-
-          test -n "$hsts"
-
-          max_age="$(
-            printf '%s\n' "$hsts" \
-              | grep -oiE 'max-age=[0-9]+' \
-              | head -n 1 \
-              | cut -d= -f2
-          )"
-
-          test -n "$max_age"
-          test "$max_age" -gt 0
-
-          echo "max_age=$max_age" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/web/web-security-headers.sh
 
       - name: Verify 404 handling
         id: not_found
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          status="$(
-            curl \
-              --silent \
-              --output /dev/null \
-              --write-out '%{http_code}' \
-              "https://${INPUTS_HOST}/nonexistent-page-12345/"
-          )"
-
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-
-          test "$status" = "404"
+        run: bash .github/scripts/smoketests/web/web-not-found.sh
 
       - name: Verify response time
         id: response_time
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          time="$(
-            curl \
-              --silent \
-              --output /dev/null \
-              --write-out '%{time_total}' \
-              "https://${INPUTS_HOST}/"
-          )"
-
-          awk "BEGIN {exit !(${time} < 10)}"
-
-          echo "time=$time" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/web/web-response-time.sh
 
       - name: Generate smoke-test summary
         if: always()
