@@ -1,0 +1,32 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Check that unattended-upgrades is installed
+      ansible.builtin.package_facts:
+        manager: apt
+
+    - name: Read effective APT configuration
+      ansible.builtin.command:
+        argv:
+          - apt-config
+          - dump
+      register: unattended_upgrades__apt_config
+      changed_when: false
+
+    - name: Assert unattended upgrades are enabled
+      ansible.builtin.assert:
+        that:
+          - "'unattended-upgrades' in ansible_facts.packages"
+          - >-
+            'APT::Periodic::Update-Package-Lists "1";'
+            in unattended_upgrades__apt_config.stdout
+          - >-
+            'APT::Periodic::Unattended-Upgrade "1";'
+            in unattended_upgrades__apt_config.stdout
+          - >-
+            'APT::Periodic::AutocleanInterval "7";'
+            in unattended_upgrades__apt_config.stdout

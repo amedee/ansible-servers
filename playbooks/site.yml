@@ -48,7 +48,7 @@
     - etckeeper
     - etc_aliases
     - apt_listchanges
-    - debops.debops.unattended_upgrades
+    - unattended_upgrades
     - debops.debops.journald
     - munin_node
     - postfix
