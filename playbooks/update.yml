@@ -5,30 +5,71 @@
   gather_facts: false
 
   tasks:
-    - name: Install all available APT updates
+    - name: Preview APT package upgrades
       ansible.builtin.apt:
-        upgrade: dist
+        upgrade: safe
         update_cache: true
-        autoremove: true
-        autoclean: true
+      check_mode: true
+      register: upgrade_check
 
-    - name: Refresh snap package list
+    - name: Normalize APT package summary
+      ansible.builtin.set_fact:
+        apt_upgradable_summary: >-
+          {{ (((upgrade_check.stdout | default('')) ~ '\n'
+               ~ (upgrade_check.stderr | default('')))
+              | replace('\\n', '\n')
+              | regex_findall(
+                  '(?m)^Inst .+|^[0-9]+ upgraded, [0-9]+ newly installed, '
+                  ~ '[0-9]+ to remove and [0-9]+ not upgraded[.]$')
+              | join('\n')
+              | default('None', true)) }}
+
+    - name: List upgradable Snap packages
       ansible.builtin.command: snap refresh --list
-      register: snap_refresh_list
+      register: snap_upgradable
       changed_when: false
       failed_when: false
 
-    - name: Install all available snap updates
+    - name: Install all available APT updates
+      ansible.builtin.apt:
+        upgrade: safe
+        autoremove: true
+        autoclean: true
+
+    - name: Install all available Snap updates
       ansible.builtin.command: snap refresh
       register: snap_refresh
-      changed_when: snap_refresh.rc == 0
+      changed_when: >-
+        snap_refresh.rc == 0 and
+        'all snaps up to date' not in
+        (((snap_refresh.stdout | default('')) ~ (snap_refresh.stderr | default(''))) | lower)
       failed_when: false
 
-- name: Reboot servers if needed
-  hosts: all
-  become: true
+    - name: Add upgradable package lists to the job summary
+      ansible.builtin.blockinfile:
+        path: "{{ lookup('env', 'GITHUB_STEP_SUMMARY') }}"
+        marker: "<!-- ansible-update-{mark}:{{ inventory_hostname }} -->"
+        create: true
+        mode: "0644"
+        block: |
+          ## Upgradable packages: {{ inventory_hostname }}
 
-  tasks:
+          ### APT
+
+          ```text
+          {{ apt_upgradable_summary }}
+          ```
+
+          ### Snap
+
+          ```text
+          {{ snap_upgradable.stdout | default('') | trim | default('None', true) }}
+          ```
+      delegate_to: localhost
+      become: false
+      when: lookup('env', 'GITHUB_STEP_SUMMARY') | length > 0
+      changed_when: false
+
     - name: Check if reboot is required
       ansible.builtin.stat:
         path: /var/run/reboot-required
