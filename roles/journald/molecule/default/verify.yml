@@ -1,0 +1,33 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Read effective journald configuration
+      ansible.builtin.command:
+        argv:
+          - systemd-analyze
+          - cat-config
+          - systemd/journald.conf
+      register: journald_effective_config
+      changed_when: false
+
+    - name: Check that journald is active
+      ansible.builtin.command:
+        argv:
+          - systemctl
+          - is-active
+          - systemd-journald
+      register: journald_service_state
+      changed_when: false
+
+    - name: Assert journald configuration and service state
+      ansible.builtin.assert:
+        that:
+          - "'MaxRetentionSec=1month' in journald_effective_config.stdout"
+          - "'SystemKeepFree=2G' in journald_effective_config.stdout"
+          - "'SystemMaxFileSize=100M' in journald_effective_config.stdout"
+          - "'SystemMaxUse=1G' in journald_effective_config.stdout"
+          - journald_service_state.stdout == 'active'

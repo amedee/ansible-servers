@@ -4,12 +4,6 @@
   gather_facts: false
 
   vars:
-    journald__configuration:
-      - 'MaxRetentionSec': '1month'
-      - 'SystemKeepFree': '2G'
-      - 'SystemMaxFileSize': '100M'
-      - 'SystemMaxUse': '1G'
-
     munin_node_config: >-
       {{
         (munin_node_config_base | default({}))
@@ -49,7 +43,7 @@
     - etc_aliases
     - apt_listchanges
     - unattended_upgrades
-    - debops.debops.journald
+    - journald
     - munin_node
     - postfix
     - magic
