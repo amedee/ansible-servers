@@ -1,0 +1,28 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Check that apt-listchanges is installed
+      ansible.builtin.package_facts:
+        manager: apt
+
+    - name: Read apt-listchanges configuration
+      ansible.builtin.slurp:
+        src: /etc/apt/listchanges.conf
+      register: apt_listchanges_config
+
+    - name: Assert package and profile behavior
+      ansible.builtin.assert:
+        that:
+          - "'apt-listchanges' in ansible_facts.packages"
+          - "'[apt]' in (apt_listchanges_config.content | b64decode)"
+          - "'frontend = mail' in (apt_listchanges_config.content | b64decode)"
+          - "'email_address = root' in (apt_listchanges_config.content | b64decode)"
+          - "'confirm = 0' in (apt_listchanges_config.content | b64decode)"
+          - "'which = news' in (apt_listchanges_config.content | b64decode)"
+          - "'save_seen = /var/lib/apt/listchanges.db' in (apt_listchanges_config.content | b64decode)"
+          - "'[cmdline]' in (apt_listchanges_config.content | b64decode)"
+          - "'frontend = pager' in (apt_listchanges_config.content | b64decode)"

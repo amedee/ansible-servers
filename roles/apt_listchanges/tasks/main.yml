@@ -1,0 +1,25 @@
+---
+- name: Install apt-listchanges
+  ansible.builtin.apt:
+    name: apt-listchanges
+    state: present
+    update_cache: true
+    cache_valid_time: 86400
+    lock_timeout: 300
+
+- name: Configure apt-listchanges
+  ansible.builtin.copy:
+    dest: /etc/apt/listchanges.conf
+    content: |
+      [apt]
+      frontend = mail
+      email_address = root
+      confirm = 0
+      which = news
+      save_seen = /var/lib/apt/listchanges.db
+
+      [cmdline]
+      frontend = pager
+    owner: root
+    group: root
+    mode: '0644'

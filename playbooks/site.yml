@@ -47,7 +47,7 @@
     - hadori
     - etckeeper
     - etc_aliases
-    - debops.debops.apt_listchanges
+    - apt_listchanges
     - debops.debops.unattended_upgrades
     - debops.debops.journald
     - munin_node

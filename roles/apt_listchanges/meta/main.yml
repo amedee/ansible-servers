@@ -1,0 +1,16 @@
+---
+# @meta author:value: [Amedee Van Gasse](https://amedee.be)
+galaxy_info:
+  description: Configure apt-listchanges for APT package news.
+  author: Amedee Van Gasse
+  license: MIT
+  min_ansible_version: '2.21'
+  namespace: amedee
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+        - noble
+        - resolute
+
+dependencies: []
