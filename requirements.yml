@@ -16,5 +16,3 @@ collections:
     version: 14.0.1
   - name: ansible.mysql
     version: 5.2.1
-  - name: debops.debops
-    version: 3.4.1
