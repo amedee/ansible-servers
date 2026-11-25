@@ -11,7 +11,6 @@ provisioner:
   env:
     ANSIBLE_ROLES_PATH:
       "${MOLECULE_PROJECT_DIRECTORY}/..:${HOME}/.ansible/roles"
-
   inventory:
     host_vars:
       instance:

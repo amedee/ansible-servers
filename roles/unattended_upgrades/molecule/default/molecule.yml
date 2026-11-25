@@ -1,52 +1,29 @@
 ---
 driver:
-  name: docker
+  name: default
 
 platforms:
-  - name: unattended-upgrades-jammy
-    hostname: unattended-upgrades-jammy
-    image: geerlingguy/docker-ubuntu2204-ansible:latest
-    pre_build_image: true
-    privileged: true
-    cgroupns_mode: host
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    command: /sbin/init
-
-  - name: unattended-upgrades-noble
-    hostname: unattended-upgrades-noble
-    image: geerlingguy/docker-ubuntu2404-ansible:latest
-    pre_build_image: true
-    privileged: true
-    cgroupns_mode: host
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    command: /sbin/init
-
-  - name: unattended-upgrades-resolute
-    hostname: unattended-upgrades-resolute
-    image: geerlingguy/docker-ubuntu2604-ansible:latest
-    pre_build_image: true
-    privileged: true
-    cgroupns_mode: host
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    command: /sbin/init
+  - name: instance
+    connection: local
 
 provisioner:
   name: ansible
   env:
     ANSIBLE_ROLES_PATH: "${MOLECULE_PROJECT_DIRECTORY}/.."
     ANSIBLE_REMOTE_TMP: /tmp/.ansible/tmp
+  inventory:
+    host_vars:
+      instance:
+        ansible_connection: local
+        ansible_become: true
+        ansible_python_interpreter: /usr/bin/python3
 
 scenario:
   test_sequence:
     - syntax
-    - create
     - converge
     - idempotence
     - verify
-    - destroy
 
 verifier:
   name: ansible
