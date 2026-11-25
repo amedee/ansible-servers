@@ -1,0 +1,19 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Read configured environment variables
+      ansible.builtin.slurp:
+        src: /etc/environment
+      register: environment__file
+
+    - name: Assert managed values and unmanaged content are present
+      ansible.builtin.assert:
+        that:
+          - "'MOLECULE_ENVIRONMENT=configured' in (environment__file.content | b64decode)"
+          - "'MOLECULE_PATH=/usr/local/bin:/usr/bin' in (environment__file.content | b64decode)"
+          - "'MOLECULE_UNMANAGED=preserved' in (environment__file.content | b64decode)"
+          - "'MOLECULE_OLD=obsolete' not in (environment__file.content | b64decode)"

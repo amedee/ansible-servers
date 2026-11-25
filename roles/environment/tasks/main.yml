@@ -1,0 +1,7 @@
+---
+- name: Configure /etc/environment
+  ansible.builtin.blockinfile:
+    path: /etc/environment
+    state: "{{ 'present' if environment__group_variables else 'absent' }}"
+    block: "{{ lookup('template', 'etc/environment.j2') }}"
+    insertbefore: BOF

@@ -1,0 +1,6 @@
+---
+environment__group_variables:
+  - name: MOLECULE_ENVIRONMENT
+    value: configured
+  - name: MOLECULE_PATH
+    value: /usr/local/bin:/usr/bin

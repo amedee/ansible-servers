@@ -59,7 +59,7 @@
           - ansible_os_family
 
   roles:
-    - debops.debops.environment
+    - environment
     - imapsync
     - mailinabox
     - dovecot

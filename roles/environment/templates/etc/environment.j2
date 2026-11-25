@@ -1,0 +1,3 @@
+{% for variable in environment__group_variables -%}
+{{ variable.name }}={{ variable.value }}
+{% endfor %}
