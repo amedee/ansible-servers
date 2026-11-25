@@ -24,154 +24,61 @@ jobs:
     runs-on: ubuntu-26.04
 
     steps:
+      - name: Checkout smoke-test scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/scripts/smoketests/mail
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
       - name: Verify SMTP banner (25)
         id: smtp
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          error=""
-          banner="$(
-            echo "QUIT" | nc -w 5 "${INPUTS_HOST}" 25 2>&1 | head -n 1
-          )" || error="Connection failed"
-
-          echo "$banner" | grep -q '220' || error="No 220 banner"
-
-          banner_text="$(
-            echo "$banner" \
-              | sed 's/^220 //' \
-              | tr -d '\r'
-          )"
-
-          echo "banner=$banner_text" >> "$GITHUB_OUTPUT"
-          echo "error=$error" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/mail/mail-smtp.sh
 
       - name: Verify Submission STARTTLS (587)
         id: submission
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          error=""
-          ehlo_response="$(
-            echo "EHLO smoke-test" | nc -w 5 "${INPUTS_HOST}" 587 2>&1
-          )" || error="Connection failed"
-
-          echo "$ehlo_response" | grep -q 'STARTTLS' || error="No STARTTLS advertised"
-
-          ehlo_name="$(
-            echo "$ehlo_response" \
-              | head -n 1 \
-              | awk '{print $2}' \
-              | tr -d '\r'
-          )"
-
-          echo "ehlo_name=$ehlo_name" >> "$GITHUB_OUTPUT"
-          echo "error=$error" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/mail/mail-submission.sh
 
       - name: Verify SMTPS (465)
         id: smtps
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          error=""
-          nc -zv "${INPUTS_HOST}" 465 2>&1 || error="Connection refused"
-
-          echo "error=$error" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/mail/mail-smtps.sh
 
       - name: Verify IMAPS (993)
         id: imaps
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          error=""
-          nc -zv "${INPUTS_HOST}" 993 2>&1 || error="Connection refused"
-
-          echo "error=$error" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/mail/mail-imaps.sh
 
       - name: Verify Mail-in-a-Box web UI
         id: web_ui
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          error=""
-          output="$(
-            curl \
-              --fail \
-              --silent \
-              --show-error \
-              --write-out '%{http_code} %{size_download}' \
-              "https://${INPUTS_HOST}/" \
-              2>&1 \
-              | tail -1
-          )" || error="Request failed"
-
-          status="$(echo "$output" | awk '{print $1}')"
-          size="$(echo "$output" | awk '{print $2}')"
-
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          echo "size=$size" >> "$GITHUB_OUTPUT"
-          echo "error=$error" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/mail/mail-web-ui.sh
 
       - name: Verify DNS MX record
         id: dns_mx
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          error=""
-          domain="${INPUTS_HOST#*.}"
-          mx_record="$(dig +short MX "$domain" 2>&1)" || error="DNS query failed"
-
-          echo "$mx_record" | grep -q "${INPUTS_HOST}" || error="MX record not found"
-
-          mx_priority="$(
-            echo "$mx_record" \
-              | grep "${INPUTS_HOST}" \
-              | awk '{print $1}' \
-              | head -n 1 \
-              | tr -d '\r'
-          )"
-
-          mx_server="$(
-            echo "$mx_record" \
-              | grep "${INPUTS_HOST}" \
-              | awk '{print $2}' \
-              | head -n 1 \
-              | tr -d '\r' \
-              | sed 's/\.$//'
-          )"
-
-          echo "priority=$mx_priority" >> "$GITHUB_OUTPUT"
-          echo "server=$mx_server" >> "$GITHUB_OUTPUT"
-          echo "error=$error" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/mail/mail-dns-mx.sh
 
       - name: Verify DNS SPF record
         id: dns_spf
         continue-on-error: true
         env:
           INPUTS_HOST: ${{ inputs.host }}
-        run: |
-          error=""
-          domain="${INPUTS_HOST#*.}"
-          spf_record="$(
-            dig +short TXT "$domain" 2>&1 | grep 'v=spf1'
-          )" || error="DNS query failed"
-
-          echo "$spf_record" | grep -q 'v=spf1' || error="SPF record not found"
-
-          spf_policy="$(
-            echo "$spf_record" \
-              | head -n 1 \
-              | tr -d '"' \
-              | tr -d '\r'
-          )"
-
-          echo "policy=$spf_policy" >> "$GITHUB_OUTPUT"
-          echo "error=$error" >> "$GITHUB_OUTPUT"
+        run: bash .github/scripts/smoketests/mail/mail-dns-spf.sh
 
       - name: Generate smoke-test summary
         if: always()
