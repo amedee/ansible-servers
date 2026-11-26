@@ -9,8 +9,8 @@
     lock_timeout: 300
 
 - name: Enable periodic APT updates and upgrades
-  ansible.builtin.template:
-    src: etc/apt/apt.conf.d/20auto-upgrades.j2
+  ansible.builtin.copy:
+    src: etc/apt/apt.conf.d/20auto-upgrades
     dest: /etc/apt/apt.conf.d/20auto-upgrades
     owner: root
     group: root
