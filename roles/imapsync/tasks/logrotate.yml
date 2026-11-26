@@ -1,7 +1,7 @@
 ---
 - name: Add imapsync logrotate config
   ansible.builtin.template:
-    src: imapsync-logrotate.j2
+    src: etc/logrotate.d/imapsync.j2
     dest: /etc/logrotate.d/imapsync
     owner: root
     group: root

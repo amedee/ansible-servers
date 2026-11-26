@@ -1,7 +1,7 @@
 ---
 - name: Configure cron job for imapsync
   ansible.builtin.template:
-    src: imapsync-cron.j2
+    src: etc/cron.d/imapsync.j2
     dest: /etc/cron.d/imapsync
     mode: "0644"
     owner: root
