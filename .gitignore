@@ -1,13 +1,13 @@
 *.iml
 *.log
+*.sarif
 *.sql
 *.xz
-.telemetry_data.json
 .ansible/
 .idea/
 .logs/
+.telemetry_data.json
 diff.txt
 github_conf/
 report/
-roles/geerlingguy.*/
 super-linter-output/
