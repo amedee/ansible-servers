@@ -9,7 +9,7 @@
 
 - name: Install Munin host configuration files
   ansible.builtin.copy:
-    src: munin-conf.d/
+    src: etc/munin/munin-conf.d/
     dest: /etc/munin/munin-conf.d/
     owner: root
     group: root
