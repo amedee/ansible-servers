@@ -54,6 +54,15 @@ jobs:
         run: |
           jq '.runs = [ { tool: .runs[0].tool, results: [ .runs[] | .results ] | add } ]' results.sarif > merged.sarif
 
+      - name: Upload SARIF artifacts
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: codacy-sarif
+          path: |
+            results.sarif
+            merged.sarif
+          retention-days: 7
+
       - name: Upload SARIF results file
         uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
         with:
