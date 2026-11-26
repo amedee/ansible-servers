@@ -6,7 +6,7 @@
 
 - name: Add rsyslog logrotate config
   ansible.builtin.copy:
-    src: rsyslog-logrotate
+    src: etc/logrotate.d/rsyslog
     dest: /etc/logrotate.d/rsyslog
     owner: root
     group: root
