@@ -48,8 +48,8 @@
 
 - name: Clear legacy sources.list
   ansible.builtin.copy:
+    src: etc/apt/sources.list
     dest: /etc/apt/sources.list
-    content: "# Ubuntu sources have moved to /etc/apt/sources.list.d/ubuntu.sources\n"
     owner: root
     group: root
     mode: "0644"
@@ -58,8 +58,8 @@
 
 - name: Disable APT Phasing
   ansible.builtin.copy:
+    src: etc/apt/apt.conf.d/99disable-phasing
     dest: /etc/apt/apt.conf.d/99disable-phasing
-    content: 'APT::Get::Always-Include-Phased-Updates "true";'
     owner: root
     group: root
     mode: "0644"
