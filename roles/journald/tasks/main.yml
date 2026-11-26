@@ -8,8 +8,8 @@
     mode: '0755'
 
 - name: Configure journald
-  ansible.builtin.template:
-    src: etc/systemd/journald.conf.d/ansible.conf.j2
+  ansible.builtin.copy:
+    src: etc/systemd/journald.conf.d/ansible.conf
     dest: /etc/systemd/journald.conf.d/ansible.conf
     owner: root
     group: root
