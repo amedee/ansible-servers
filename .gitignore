@@ -1,6 +1,5 @@
 *.iml
 *.log
-*.sarif
 *.sql
 *.xz
 .ansible/

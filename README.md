@@ -72,7 +72,6 @@ This repository uses CI to continuously validate configuration quality:
 <!-- molecule-coverage:end -->
 
 [![Deployment Status][deployment-badge]][deployment-status]
-[![Codacy Badge][codacy-badge]][codacy-grade]
 [![Super-Linter][superlinter-badge]][superlinter-status]
 [![CodeFactor][codefactor-badge]][codefactor-status]
 [![pre-commit.ci status][pre-commit-badge]][pre-commit-status]
@@ -98,10 +97,6 @@ Timelapse visualisation of how this infrastructure codebase evolved over time.
   https://github.com/amedee/ansible-servers/actions/workflows/pipeline.yml/badge.svg
 [deployment-status]:
   https://github.com/amedee/ansible-servers/actions/workflows/pipeline.yml
-[codacy-badge]:
-  https://app.codacy.com/project/badge/Grade/14aefeb38e4e4313a524d732264dc9fc
-[codacy-grade]:
-  https://app.codacy.com/gh/amedee/ansible-servers/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
 [superlinter-badge]:
   https://github.com/amedee/ansible-servers/actions/workflows/code-quality-super-linter.yml/badge.svg
 [superlinter-status]:
