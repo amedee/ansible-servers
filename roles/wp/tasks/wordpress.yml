@@ -19,7 +19,7 @@
 
 - name: Deploy wp-config.php
   ansible.builtin.template:
-    src: wp-config.php.j2
+    src: var/www/html/wp-config.php.j2
     dest: "{{ wp_webserver_directory }}/wp-config.php"
     owner: "{{ wp_webserver_user }}"
     group: "{{ wp_webserver_user }}"
@@ -37,7 +37,7 @@
 
 - name: Deploy robots.txt
   ansible.builtin.copy:
-    src: robots.txt
+    src: var/www/html/robots.txt
     dest: "{{ wp_webserver_directory }}/robots.txt"
     owner: "{{ wp_webserver_user }}"
     group: "{{ wp_webserver_user }}"
