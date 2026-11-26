@@ -1,6 +1,6 @@
 # journald
 
-Configure systemd-journald on Ubuntu.
+Configure systemd journal settings.
 
 ## Table of contents
 

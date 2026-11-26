@@ -1,6 +1,6 @@
 # etc_aliases
 
-Configure mail aliases in /etc/aliases.
+Configure system mail aliases.
 
 ## Table of contents
 

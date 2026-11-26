@@ -1,6 +1,6 @@
 # environment
 
-Configure /etc/environment on Ubuntu.
+Configure system-wide environment variables.
 
 ## Table of contents
 

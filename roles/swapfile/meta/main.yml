@@ -1,7 +1,7 @@
 ---
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Create and enable a swapfile.
+  description: Create and enable a system swapfile.
   author: Amedee Van Gasse
   license: MIT
   min_ansible_version: "2.21"

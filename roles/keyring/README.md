@@ -1,6 +1,6 @@
 # keyring
 
-Import GPG keys into the root keyring.
+Import configured GPG keys into the root keyring.
 
 ## Table of contents
 

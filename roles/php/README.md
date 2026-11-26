@@ -1,6 +1,6 @@
 # php
 
-Install and configure PHP and PHP-FPM.
+Install PHP packages and PHP-FPM modules.
 
 ## Table of contents
 

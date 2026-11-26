@@ -1,7 +1,7 @@
 # imapsync
 
-Role to configure imapsync. See the upstream installation instructions:
-[imapsync Ubuntu installation instructions](https://imapsync.lamiral.info/INSTALL.d/INSTALL.Ubuntu.txt)
+Configure scheduled IMAP mailbox synchronization. Follow the
+[imapsync Ubuntu installation instructions](https://imapsync.lamiral.info/INSTALL.d/INSTALL.Ubuntu.txt).
 
 ## Table of contents
 

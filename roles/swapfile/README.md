@@ -1,6 +1,6 @@
 # swapfile
 
-Create and enable a swapfile.
+Create and enable a system swapfile.
 
 ## Table of contents
 

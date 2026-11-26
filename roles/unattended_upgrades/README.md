@@ -1,6 +1,6 @@
 # unattended_upgrades
 
-Enable automatic APT updates on Ubuntu.
+Enable automatic APT updates and upgrades.
 
 ## Table of contents
 

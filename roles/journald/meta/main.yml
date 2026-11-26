@@ -1,7 +1,7 @@
 ---
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Configure systemd-journald on Ubuntu.
+  description: Configure systemd journal settings.
   author: Amedee Van Gasse
   namespace: amedee
   license: MIT

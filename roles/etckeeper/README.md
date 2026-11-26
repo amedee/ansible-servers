@@ -1,6 +1,6 @@
 # etckeeper
 
-Track /etc changes with etckeeper.
+Track system configuration changes with Git.
 
 ## Table of contents
 

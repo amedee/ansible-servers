@@ -6,12 +6,13 @@ on: # yamllint disable-line rule:truthy
     branches:
       - main
     paths:
-      - 'roles/**/molecule/**'
       - '.github/scripts/molecule_coverage.py'
-      - '.github/workflows/molecule.yml'
       - '.github/workflows/molecule-coverage.yml'
+      - '.github/workflows/molecule-discover.yml'
       - 'README.md'
-      - "!roles/**/*.md"
+      - 'roles/*/meta/main.yml'
+      - 'roles/*/molecule/**'
+      - '!roles/**/*.md'
   workflow_dispatch:
 
 permissions:

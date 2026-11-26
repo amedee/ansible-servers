@@ -1,7 +1,6 @@
 # dovecot
 
-Dovecot-related maintenance tasks for Mail-in-a-Box, including mailbox expunge
-jobs and helper scripts scheduled via /etc/cron.d.
+Maintain Dovecot mailboxes and scheduled maintenance.
 
 ## Table of contents
 

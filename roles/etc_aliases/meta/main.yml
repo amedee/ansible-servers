@@ -1,7 +1,7 @@
 ---
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Configure mail aliases in /etc/aliases.
+  description: Configure system mail aliases.
   author: Amedee Van Gasse
   namespace: amedee
   license: MIT

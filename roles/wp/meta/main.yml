@@ -1,7 +1,7 @@
 ---
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Configure a WordPress installation with MySQL, Redis, plugins, themes and backup restoration.
+  description: Deploy and maintain WordPress with plugins and backups.
   author: Amedee Van Gasse
   namespace: amedee
   license: MIT

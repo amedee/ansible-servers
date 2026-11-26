@@ -1,7 +1,7 @@
 ---
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Install WP-CLI framework.
+  description: Install and verify the WP-CLI executable.
   author: Amedee Van Gasse
   license: MIT
   min_ansible_version: "2.21"

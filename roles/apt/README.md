@@ -1,6 +1,6 @@
 # apt
 
-Role to configure APT package management.
+Configure APT repositories and package management.
 
 ## Table of contents
 

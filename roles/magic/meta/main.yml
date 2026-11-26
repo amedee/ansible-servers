@@ -11,9 +11,8 @@ galaxy_info:
   namespace: amedee
   author: Ameðee Van Gasse
   description: >
-    Teaches Linux systems the ancient arts of prophecy and bovine
-    communication. Provides the `✨` command for consulting the
-    mysterious forces governing YAML and CI pipelines.
+    Invoke the ✨ command to divine mysterious prophecies and ancient
+    fortunes for keepers of YAML and their sacred CI pipelines.
 
   license: MIT
   min_ansible_version: "2.16"

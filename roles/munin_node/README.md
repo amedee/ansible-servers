@@ -1,6 +1,6 @@
 # munin_node
 
-Role to configure munin-node.
+Configure Munin monitoring agents and plugins.
 
 ## Table of contents
 

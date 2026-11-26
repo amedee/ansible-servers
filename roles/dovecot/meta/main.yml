@@ -5,9 +5,7 @@ galaxy_info:
   role_name: dovecot
   namespace: amedee
 
-  description: >
-    Dovecot-related maintenance tasks for Mail-in-a-Box, including
-    mailbox expunge jobs and helper scripts scheduled via /etc/cron.d.
+  description: Maintain Dovecot mailboxes and scheduled maintenance.
 
   license: MIT
   min_ansible_version: "2.16"

@@ -1,6 +1,6 @@
 # redis
 
-Role to configure Redis.
+Install and configure the Redis server.
 
 ## Table of contents
 

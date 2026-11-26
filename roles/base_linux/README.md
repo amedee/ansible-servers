@@ -1,6 +1,6 @@
 # base_linux
 
-Baseline Linux configuration
+Configure baseline Linux packages and logging.
 
 ## Table of contents
 

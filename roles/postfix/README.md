@@ -1,6 +1,6 @@
 # postfix
 
-Role to configure Postfix.
+Configure Postfix mail delivery and filtering.
 
 ## Table of contents
 

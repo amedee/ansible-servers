@@ -1,6 +1,6 @@
 # nginx
 
-Role to configure nginx.
+Install and configure Nginx web hosting.
 
 ## Table of contents
 

@@ -1,7 +1,6 @@
 # wp
 
-Configure a WordPress installation with MySQL, Redis, plugins, themes and backup
-restoration.
+Deploy and maintain WordPress with plugins and backups.
 
 ## Table of contents
 

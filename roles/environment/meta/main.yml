@@ -1,7 +1,7 @@
 ---
 # @meta author:value: [Amedee Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Configure /etc/environment on Ubuntu.
+  description: Configure system-wide environment variables.
   author: Amedee Van Gasse
   namespace: amedee
   license: MIT

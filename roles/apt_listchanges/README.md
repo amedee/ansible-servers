@@ -1,6 +1,6 @@
 # apt_listchanges
 
-Configure apt-listchanges for APT package news.
+Configure apt-listchanges package notifications.
 
 ## Table of contents
 

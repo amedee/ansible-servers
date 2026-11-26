@@ -1,6 +1,6 @@
 # duplicity
 
-Role to do configuration of duplicity backup of mailinabox.
+Configure Duplicity mail backups.
 
 ## Table of contents
 

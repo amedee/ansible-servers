@@ -1,6 +1,6 @@
 # letsencrypt
 
-Role to configure letsencrypt.
+Install Certbot and restore certificate configuration.
 
 ## Table of contents
 

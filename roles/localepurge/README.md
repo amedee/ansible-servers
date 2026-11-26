@@ -1,6 +1,6 @@
 # localepurge
 
-Role to install and configure localepurge.
+Configure locale retention and removal.
 
 ## Table of contents
 

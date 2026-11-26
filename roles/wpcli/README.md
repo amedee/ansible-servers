@@ -1,6 +1,6 @@
 # wpcli
 
-Install WP-CLI framework.
+Install and verify the WP-CLI executable.
 
 ## Table of contents
 

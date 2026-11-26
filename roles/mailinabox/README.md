@@ -1,6 +1,6 @@
 # mailinabox
 
-Role to customize mailinabox.
+Customize Mail-in-a-Box DNS, firewall, and web settings.
 
 ## Table of contents
 

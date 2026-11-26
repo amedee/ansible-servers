@@ -1,6 +1,6 @@
 # mysql
 
-Role to install and configure a MySQL database server.
+Install and secure the MySQL database service.
 
 ## Table of contents
 

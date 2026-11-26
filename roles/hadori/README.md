@@ -1,6 +1,6 @@
 # hadori
 
-Role to configure hadori.
+Install Hadori and its scheduled job.
 
 ## Table of contents
 

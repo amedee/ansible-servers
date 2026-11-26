@@ -1,7 +1,6 @@
 # munin
 
-Installs Munin monitoring server and configures monitored hosts with custom
-settings and maintenance fixes.
+Install and configure the Munin monitoring server.
 
 ## Table of contents
 
