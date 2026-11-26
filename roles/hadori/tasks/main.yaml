@@ -10,7 +10,7 @@
 
 - name: Configure cron job for hadori
   ansible.builtin.copy:
-    src: hadori-cron
+    src: etc/cron.d/hadori
     dest: /etc/cron.d/hadori
     owner: root
     group: root
