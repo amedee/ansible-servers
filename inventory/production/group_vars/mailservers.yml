@@ -14,10 +14,10 @@ munin_node_config_extra:
     user: root
     env.mailbox_user: amedee@vangasse.eu
 munin_node_install_plugins_extra:
-  - src: backup_size
-  - src: mailbox_base.py
-  - src: mailbox_messages.py
-  - src: mailbox_vsize.py
+  - src: usr/share/munin/plugins/backup_size
+  - src: usr/share/munin/plugins/mailbox_base.py
+  - src: usr/share/munin/plugins/mailbox_messages.py
+  - src: usr/share/munin/plugins/mailbox_vsize.py
 munin_node_plugins_extra:
   - name: backup_size
   - name: mailbox_messages

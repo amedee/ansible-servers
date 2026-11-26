@@ -13,7 +13,7 @@
 
 - name: Configure munin-node
   ansible.builtin.template:
-    src: munin-node.conf.j2
+    src: etc/munin/munin-node.conf.j2
     dest: /etc/munin/munin-node.conf
     owner: root
     group: root
@@ -22,7 +22,7 @@
 
 - name: Configure munin plugins
   ansible.builtin.template:
-    src: plugin-conf.j2
+    src: etc/munin/plugin-conf.d/zzz-ansible.conf.j2
     dest: /etc/munin/plugin-conf.d/zzz-ansible.conf
     owner: root
     group: root
@@ -63,7 +63,7 @@
 
 - name: Allow munin-node to read files in home directories
   ansible.builtin.copy:
-    src: override.conf
+    src: etc/systemd/system/munin-node.service.d/override.conf
     dest: /etc/systemd/system/munin-node.service.d/override.conf
     owner: root
     group: root
