@@ -19,9 +19,7 @@
 
     - name: Create dummy DNS update script
       ansible.builtin.copy:
-        content: |
-          #!/bin/sh
-          echo "$@" >> /tmp/dns-update-calls
+        src: "{{ playbook_dir }}/files/root/mailinabox/tools/dns_update"
         dest: /root/mailinabox/tools/dns_update
         owner: root
         group: root

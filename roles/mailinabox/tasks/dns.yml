@@ -1,7 +1,7 @@
 ---
 - name: Copy custom DNS settings
   ansible.builtin.copy:
-    src: custom.yaml
+    src: home/user-data/dns/custom.yaml
     dest: /home/user-data/dns/custom.yaml
     owner: root
     group: root
