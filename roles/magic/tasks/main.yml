@@ -9,7 +9,7 @@
 
 - name: Teach the Apprentice New Spells
   ansible.builtin.copy:
-    src: ✨
+    src: usr/share/games/fortunes/✨
     dest: "{{ magic_fortune }}"
     owner: root
     group: root
@@ -18,7 +18,7 @@
 
 - name: Imbue the System With Magic
   ansible.builtin.template:
-    src: ✨.j2
+    src: usr/local/bin/✨.j2
     dest: "{{ magic_script_dest }}"
     owner: root
     group: root
