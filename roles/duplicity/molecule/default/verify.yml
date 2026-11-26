@@ -78,7 +78,7 @@
 
     - name: Create test Duplicity package
       ansible.builtin.copy:
-        content: "Molecule test package"
+        src: "{{ playbook_dir }}/files/root/duplicity_molecule_test.deb"
         dest: /root/duplicity_molecule_test.deb
         mode: "0644"
 

@@ -1,7 +1,7 @@
 ---
 - name: Block broken Duplicity versions from installing
   ansible.builtin.template:
-    src: pin_duplicity.pref.j2
+    src: etc/apt/preferences.d/pin_duplicity.pref.j2
     dest: /etc/apt/preferences.d/pin_duplicity.pref
     owner: root
     group: root
@@ -26,7 +26,7 @@
 
 - name: Configure Duplicity
   ansible.builtin.template:
-    src: custom.yaml.j2
+    src: home/user-data/backup/custom.yaml.j2
     dest: /home/user-data/backup/custom.yaml
     owner: root
     group: root
@@ -35,7 +35,7 @@
 
 - name: Create apt-backup-duplicity.sh script
   ansible.builtin.copy:
-    src: apt-backup-duplicity.sh
+    src: usr/local/bin/apt-backup-duplicity.sh
     dest: /usr/local/bin/apt-backup-duplicity.sh
     owner: root
     group: root
@@ -43,7 +43,7 @@
 
 - name: Create APT Post-Invoke hook to run backup script
   ansible.builtin.copy:
-    src: 99backup-duplicity-debs
+    src: etc/apt/apt.conf.d/99backup-duplicity-debs
     dest: /etc/apt/apt.conf.d/99backup-duplicity-debs
     owner: root
     group: root
