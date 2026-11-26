@@ -139,10 +139,7 @@
 
     - name: Create PHP-FPM test script
       ansible.builtin.copy:
-        content: |
-          <?php
-          echo "PHP-FPM works\n";
-          echo PHP_VERSION . "\n";
+        src: "{{ playbook_dir }}/files/tmp/php-fpm-test.php"
         dest: /tmp/php-fpm-test.php
         mode: "0644"
 
