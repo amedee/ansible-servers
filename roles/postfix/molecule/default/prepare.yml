@@ -9,8 +9,8 @@
 
   tasks:
     - name: Ensure /etc/mailname exists
-      ansible.builtin.copy:
-        content: "{{ inventory_hostname }}\n"
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/templates/etc/mailname.j2"
         dest: /etc/mailname
         owner: root
         group: root

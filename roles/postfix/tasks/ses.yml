@@ -21,7 +21,7 @@
 
 - name: Deploy SES sendmail script
   ansible.builtin.copy:
-    src: ses_sendmail.py
+    src: usr/local/bin/ses_sendmail.py
     dest: /usr/local/bin/ses_sendmail.py
     owner: root
     group: root
@@ -29,7 +29,7 @@
 
 - name: Deploy SES wrapper script
   ansible.builtin.template:
-    src: ses_wrapper.sh.j2
+    src: usr/local/bin/ses_wrapper.sh.j2
     dest: /usr/local/bin/ses_wrapper.sh
     owner: root
     group: ses
@@ -45,7 +45,7 @@
 
 - name: Deploy SES transport map
   ansible.builtin.template:
-    src: transport.pcre.j2
+    src: etc/postfix/transport.pcre.j2
     dest: /etc/postfix/transport.pcre
     owner: root
     group: root

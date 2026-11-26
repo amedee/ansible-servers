@@ -23,7 +23,7 @@
 
 - name: Copy Postfix checks files
   ansible.builtin.copy:
-    src: checks/
+    src: etc/postfix/checks/
     dest: /etc/postfix/checks/
     owner: root
     group: root
@@ -34,7 +34,7 @@
 
 - name: Generate Postfix recipient access map
   ansible.builtin.template:
-    src: postfix_invalid_recipients.j2
+    src: etc/postfix/checks/invalid_recipients.pcre.j2
     dest: /etc/postfix/checks/invalid_recipients.pcre
     owner: root
     group: root
@@ -44,9 +44,8 @@
 
 - name: Ensure sender canonical PCRE map exists
   ansible.builtin.copy:
+    src: etc/postfix/sender-canonical-maps.pcre
     dest: /etc/postfix/sender-canonical-maps.pcre
-    content: |
-      /^.+$/    amedee@vangasse.eu
     owner: root
     group: root
     mode: "0644"
@@ -54,9 +53,8 @@
 
 - name: Ensure recipient canonical PCRE map exists
   ansible.builtin.copy:
+    src: etc/postfix/recipient-canonical-maps.pcre
     dest: /etc/postfix/recipient-canonical-maps.pcre
-    content: |
-      /^(.*)-[^@]+@(.*)$/     ${1}@$2
     owner: root
     group: root
     mode: "0644"
@@ -67,7 +65,7 @@
 
 - name: Configure Postfix main.cf
   ansible.builtin.template:
-    src: main.cf.j2
+    src: etc/postfix/main.cf.j2
     dest: /etc/postfix/main.cf
     owner: root
     group: root
@@ -76,7 +74,7 @@
 
 - name: Configure Postfix master.cf
   ansible.builtin.template:
-    src: master.cf.j2
+    src: etc/postfix/master.cf.j2
     dest: /etc/postfix/master.cf
     owner: root
     group: root
