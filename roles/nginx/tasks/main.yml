@@ -16,7 +16,7 @@
 - name: Configure APT pinning
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "/etc/apt/preferences.d/{{ item }}"
+    dest: "/etc/apt/preferences.d/{{ item | basename }}"
     owner: root
     group: root
     mode: "0644"
@@ -53,7 +53,7 @@
 
 - name: Copy website config file
   ansible.builtin.template:
-    src: website.j2
+    src: etc/nginx/sites-available/website.j2
     dest: /etc/nginx/sites-available/{{ nginx_hostname }}
     owner: root
     group: root

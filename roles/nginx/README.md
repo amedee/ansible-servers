@@ -33,8 +33,8 @@ Role to configure nginx.
 
 ```YAML
 nginx_apt_pinning_files:
-  - pin_nginx.pref
-  - pin_php.pref
+  - etc/apt/preferences.d/pin_nginx.pref
+  - etc/apt/preferences.d/pin_php.pref
 ```
 
 ### nginx_apt_suite
@@ -51,11 +51,11 @@ nginx_apt_suite: "{{ ansible_facts['distribution_release'] }}"
 
 ```YAML
 nginx_config_files:
-  - src: nginx.conf
+  - src: etc/nginx/nginx.conf
     dest: /etc/nginx/nginx.conf
-  - src: gzip.conf
+  - src: etc/nginx/conf.d/gzip.conf
     dest: /etc/nginx/conf.d/gzip.conf
-  - src: fastcgi-cache.conf
+  - src: etc/nginx/conf.d/fastcgi-cache.conf
     dest: /etc/nginx/conf.d/fastcgi-cache.conf
 ```
 

@@ -1,7 +1,7 @@
 ---
 - name: Add nginx logrotate config
   ansible.builtin.copy:
-    src: nginx-logrotate
+    src: etc/logrotate.d/nginx
     dest: /etc/logrotate.d/nginx
     owner: root
     group: root
