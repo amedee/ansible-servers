@@ -1,17 +1,20 @@
 ---
-# @meta author:value: [Amedee Van Gasse](https://amedee.be)
+# @meta author:value: [Ameðea Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Deploy and maintain WordPress with plugins and backups.
-  author: Amedee Van Gasse
+  author: Ameðea Van Gasse
+  role_name: wp
   namespace: amedee
-  license: MIT
 
-  min_ansible_version: "2.15"
+  description: Deploy and maintain WordPress with plugins and backups.
+  license: MIT
+  min_ansible_version: "2.21"
 
   platforms:
     - name: Ubuntu
       versions:
+        - jammy
         - noble
+        - resolute
 
   galaxy_tags:
     - wordpress
@@ -19,6 +22,5 @@ galaxy_info:
     - mysql
     - redis
     - php
-    - ubuntu
-
-dependencies: []
+    - backup
+    - web

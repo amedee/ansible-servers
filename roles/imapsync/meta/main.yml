@@ -1,15 +1,25 @@
 ---
-# @meta author:value: [Amedee Van Gasse](https://amedee.be)
+# @meta author:value: [Ameðea Van Gasse](https://amedee.be)
 galaxy_info:
-  description: >-
-    Configure scheduled IMAP mailbox synchronization.
-    Follow the [imapsync Ubuntu installation instructions](https://imapsync.lamiral.info/INSTALL.d/INSTALL.Ubuntu.txt).
-  author: Amedee Van Gasse
-  license: MIT
-  min_ansible_version: "2.1"
+  author: Ameðea Van Gasse
+  role_name: imapsync
   namespace: amedee
+
+  description: >-
+    Configure scheduled IMAP mailbox synchronization. Follow the
+    [imapsync Ubuntu installation instructions](https://imapsync.lamiral.info/INSTALL.d/INSTALL.Ubuntu.txt).
+  license: MIT
+  min_ansible_version: "2.21"
+
   platforms:
     - name: Ubuntu
       versions:
         - jammy
         - noble
+        - resolute
+
+  galaxy_tags:
+    - mail
+    - imap
+    - synchronization
+    - cron

@@ -1,14 +1,23 @@
 ---
-# @meta author:value: [Amedee Van Gasse](https://amedee.be)
+# @meta author:value: [Ameðea Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Track system configuration changes with Git.
-  author: Amedee Van Gasse
-  license: MIT
-  min_ansible_version: '2.21'
+  author: Ameðea Van Gasse
+  role_name: etckeeper
   namespace: amedee
+
+  description: Track system configuration changes with Git.
+  license: MIT
+  min_ansible_version: "2.21"
+
   platforms:
     - name: Ubuntu
       versions:
         - jammy
         - noble
         - resolute
+
+  galaxy_tags:
+    - git
+    - configuration
+    - vcs
+    - system

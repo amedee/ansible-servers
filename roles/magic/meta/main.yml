@@ -1,5 +1,5 @@
 ---
-# @meta author:value: [Ameðee Van Gasse](https://amedee.be)
+# @meta author:value: [Ameðea Van Gasse](https://amedee.be)
 # @meta license:value: MIT
 # @meta description: >
 # Teaches Linux systems the ancient arts of prophecy and bovine
@@ -8,14 +8,15 @@
 # the default description with an annotation.
 # @end
 galaxy_info:
+  author: Ameðea Van Gasse
+  role_name: magic
   namespace: amedee
-  author: Ameðee Van Gasse
+
   description: >
     Invoke the ✨ command to divine mysterious prophecies and ancient
     fortunes for keepers of YAML and their sacred CI pipelines.
-
   license: MIT
-  min_ansible_version: "2.16"
+  min_ansible_version: "2.21"
 
   platforms:
     - name: Ubuntu
@@ -24,4 +25,8 @@ galaxy_info:
         - noble
         - resolute
 
-dependencies: []
+  galaxy_tags:
+    - games
+    - fortune
+    - utilities
+    - shell

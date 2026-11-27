@@ -1,14 +1,23 @@
 ---
-# @meta author:value: [Amedee Van Gasse](https://amedee.be)
+# @meta author:value: [Ameðea Van Gasse](https://amedee.be)
 galaxy_info:
+  author: Ameðea Van Gasse
+  role_name: keyring
+  namespace: amedee
+
   description: Import configured GPG keys into the root keyring.
-  author: Amedee Van Gasse
   license: MIT
   min_ansible_version: "2.21"
-  namespace: amedee
+
   platforms:
     - name: Ubuntu
       versions:
+        - jammy
         - noble
+        - resolute
 
-dependencies: []
+  galaxy_tags:
+    - gpg
+    - gnupg
+    - keyring
+    - security

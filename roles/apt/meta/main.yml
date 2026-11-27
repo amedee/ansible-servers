@@ -1,13 +1,22 @@
 ---
-# @meta author:value: [Amedee Van Gasse](https://amedee.be)
+# @meta author:value: [Ameðea Van Gasse](https://amedee.be)
 galaxy_info:
-  description: Configure APT repositories and package management.
-  author: Amedee Van Gasse
-  license: MIT
-  min_ansible_version: "2.1"
+  author: Ameðea Van Gasse
+  role_name: apt
   namespace: amedee
+
+  description: Configure APT repositories and package management.
+  license: MIT
+  min_ansible_version: "2.21"
+
   platforms:
     - name: Ubuntu
       versions:
         - jammy
         - noble
+        - resolute
+
+  galaxy_tags:
+    - apt
+    - packages
+    - repositories
