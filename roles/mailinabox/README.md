@@ -16,7 +16,7 @@ Customize Mail-in-a-Box DNS, firewall, and web settings.
 This role requires a Mail-in-a-Box installation with
 `/root/mailinabox/tools/dns_update` available.
 
-- Minimum Ansible version: `2.16`
+- Minimum Ansible version: `2.21`
 
 ## Dependencies
 
@@ -28,4 +28,4 @@ MIT
 
 ## Author
 
-[Amedee Van Gasse](https://amedee.be)
+[Ameðea Van Gasse](https://amedee.be)

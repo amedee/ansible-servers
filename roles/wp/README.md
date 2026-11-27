@@ -68,7 +68,7 @@ collections:
   - amazon.aws
 ```
 
-- Minimum Ansible version: `2.15`
+- Minimum Ansible version: `2.21`
 
 ## Default Variables
 
@@ -341,4 +341,4 @@ MIT
 
 ## Author
 
-[Amedee Van Gasse](https://amedee.be)
+[Ameðea Van Gasse](https://amedee.be)

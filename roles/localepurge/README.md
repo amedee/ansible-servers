@@ -13,7 +13,7 @@ Configure locale retention and removal.
 
 ## Requirements
 
-- Minimum Ansible version: `2.1`
+- Minimum Ansible version: `2.21`
 
 ## Dependencies
 
@@ -25,4 +25,4 @@ MIT
 
 ## Author
 
-[Amedee Van Gasse](https://amedee.be)
+[Ameðea Van Gasse](https://amedee.be)

@@ -18,7 +18,7 @@ Install PHP packages and PHP-FPM modules.
 
 ## Requirements
 
-- Minimum Ansible version: `2.17`
+- Minimum Ansible version: `2.21`
 
 ## Default Variables
 
@@ -66,4 +66,4 @@ MIT
 
 ## Author
 
-[Amedee Van Gasse](https://amedee.be)
+[Ameðea Van Gasse](https://amedee.be)

@@ -37,4 +37,4 @@ MIT
 
 ## Author
 
-[Amedee Van Gasse](https://amedee.be)
+[Ameðea Van Gasse](https://amedee.be)

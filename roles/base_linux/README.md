@@ -16,7 +16,7 @@ Configure baseline Linux packages and logging.
 ## Requirements
 
 - Ubuntu-based Linux distribution
-- Minimum Ansible version: `2.16`
+- Minimum Ansible version: `2.21`
 
 ## Default Variables
 
@@ -41,4 +41,4 @@ MIT
 
 ## Author
 
-[Amedee Van Gasse](https://amedee.be)
+[Ameðea Van Gasse](https://amedee.be)
