@@ -20,19 +20,6 @@
         + (munin_node_plugins_extra | default([]))
       }}
 
-  pre_tasks:
-    - name: Gather minimal facts for APT, postfix, ufw, munin-node
-      ansible.builtin.setup:
-        filter:
-          - ansible_distribution_release
-          - ansible_hostname
-          - ansible_os_family
-          - ansible_virtualization_role
-        gather_subset:
-          - virtual
-          - hardware
-          - network
-
   roles:
     - swapfile
     - apt
@@ -51,12 +38,6 @@
 - name: Configure Mail-in-a-Box servers
   hosts: mailservers
   gather_facts: false
-
-  pre_tasks:
-    - name: Gather minimal facts for ufw
-      ansible.builtin.setup:
-        filter:
-          - ansible_os_family
 
   roles:
     - environment

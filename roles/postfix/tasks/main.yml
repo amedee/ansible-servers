@@ -63,6 +63,16 @@
 - name: Configure Amazon SES outbound email transport
   ansible.builtin.import_tasks: ses.yml
 
+- name: Gather Postfix hostname facts
+  ansible.builtin.setup:
+    filter:
+      - ansible_fqdn
+      - ansible_hostname
+    gather_subset:
+      - '!all'
+      - '!min'
+      - system
+
 - name: Configure Postfix main.cf
   ansible.builtin.template:
     src: etc/postfix/main.cf.j2

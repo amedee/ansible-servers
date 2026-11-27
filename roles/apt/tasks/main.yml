@@ -8,6 +8,15 @@
     cache_valid_time: 86400 # One day
     lock_timeout: 300 # 5 minutes
 
+- name: Gather Ubuntu release fact
+  ansible.builtin.setup:
+    filter:
+      - ansible_distribution_release
+    gather_subset:
+      - '!all'
+      - '!min'
+      - distribution_release
+
 - name: Configure Ubuntu package repositories
   ansible.builtin.deb822_repository:
     name: ubuntu

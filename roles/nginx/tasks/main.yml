@@ -1,4 +1,13 @@
 ---
+- name: Gather Ubuntu release fact
+  ansible.builtin.setup:
+    filter:
+      - ansible_distribution_release
+    gather_subset:
+      - '!all'
+      - '!min'
+      - distribution_release
+
 - name: Configure APT repositories
   ansible.builtin.deb822_repository:
     name: "{{ item.name }}"
